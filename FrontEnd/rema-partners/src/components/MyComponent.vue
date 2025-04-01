@@ -8,6 +8,16 @@
         <p v-if="error" class="error">{{ error }}</p>
         <p v-if="success" class="success">{{ success }}</p>
     </div>
+    <div v-for="user in users" :key="user.id">
+        <ul>
+            <input v-model="user.id" type="hidden">
+            <input v-model="user.username" type="text">
+            <input v-model="user.email" type="text">
+            <input v-model="user.password" type="password">
+            <button @click="updateUser(user)">Update</button>
+            <button @click="deleteUser(user.username)">Delete</button>
+        </ul>
+    </div>
 </template>
 
 <script>
@@ -24,7 +34,8 @@ export default {
                 password: ''
             },
             error: null,
-            success: null
+            success: null,
+            users: []
         };
     },
     methods: {
@@ -42,13 +53,52 @@ export default {
                     email: '',
                     password: ''
                 };
+                await this.getUsers(); // Refresh the users list
             } catch (error) {
                 this.error = error.response?.data?.message || 'An error occurred';
+                this.success = null;
+            }
+        },
+        async getUsers() {
+            try {
+                const response = await axios.get('http://localhost:8080/getUsers');
+                this.users = response.data;
+            } catch (error) {
+                this.error = error.response?.data?.message || 'Error fetching users';
+                console.error('Error fetching users:', error);
+            }
+        },
+        async deleteUser(username) {
+            try {
+                await axios.get(`http://localhost:8080/deleteUser/${username}`);
+                this.success = 'User deleted successfully!';
+                this.error = null;
+                await this.getUsers(); // Refresh the list after deletion
+            } catch (error) {
+                this.error = error.response?.data || 'Error deleting user';
+                this.success = null;
+            }
+        },
+        async updateUser(user) {
+            try {
+                const userData = {
+                    username: user.username,
+                    email: user.email,
+                    password: user.password
+                };
+
+                await axios.post(`http://localhost:8080/updateUser/${user.id}`, userData);
+                this.success = 'User updated successfully!';
+                this.error = null;
+                await this.getUsers(); // Refresh the list after update
+            } catch (error) {
+                this.error = error.response?.data || 'Error updating user';
                 this.success = null;
             }
         }
     },
     mounted() {
+        this.getUsers();
     }
 };
 </script>

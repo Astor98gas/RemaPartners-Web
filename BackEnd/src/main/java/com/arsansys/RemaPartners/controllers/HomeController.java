@@ -1,5 +1,6 @@
 package com.arsansys.RemaPartners.controllers;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,8 @@ import com.arsansys.RemaPartners.models.enums.ERol;
 import com.arsansys.RemaPartners.repositories.UserRepository;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -64,6 +67,44 @@ public class HomeController {
         userRepository.save(userEntity);
 
         return ResponseEntity.ok(userEntity);
+    }
+
+    @GetMapping("/getUsers")
+    public ResponseEntity<List<UserEntity>> getUsers() {
+        List<UserEntity> users = userRepository.findAll();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/deleteUser/{username}")
+    public ResponseEntity<?> deleteUser(@PathVariable String username) {
+        try {
+            UserEntity user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            userRepository.delete(user);
+            return ResponseEntity.ok().body("User deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error deleting user: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/updateUser/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody CreateUserDTO updateUserDTO) {
+        try {
+            UserEntity user = userRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            user.setUsername(updateUserDTO.getUsername());
+            user.setEmail(updateUserDTO.getEmail());
+            if (updateUserDTO.getPassword() != null && !updateUserDTO.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(updateUserDTO.getPassword()));
+            }
+
+            userRepository.save(user);
+            return ResponseEntity.ok().body("User updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating user: " + e.getMessage());
+        }
     }
 
 }
