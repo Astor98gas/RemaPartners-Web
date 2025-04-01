@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import com.arsansys.RemaPartners.repositories.UserRepository;
 
 import jakarta.validation.Valid;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class HomeController {
 
@@ -43,19 +45,20 @@ public class HomeController {
     @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
 
-        Set<RolEntity> rols = createUserDTO.getRols().stream()
-                .map(rol -> RolEntity.builder()
-                        .name(ERol.valueOf(rol))
-                        .build())
-                .collect(Collectors.toSet());
+        // Set<RolEntity> rols = createUserDTO.getRols().stream()
+        // .map(rol -> RolEntity.builder()
+        // .name(ERol.valueOf(rol))
+        // .build())
+        // .collect(Collectors.toSet());
 
         UserEntity userEntity = UserEntity.builder()
                 .username(createUserDTO.getUsername())
                 .password(passwordEncoder.encode(createUserDTO.getPassword()))
-                .nombre(createUserDTO.getNom())
-                .apellidos(createUserDTO.getCognoms())
-                .dni(createUserDTO.getDni())
-                .rols(rols)
+                .email(createUserDTO.getEmail())
+                // .nombre(createUserDTO.getNom())
+                // .apellidos(createUserDTO.getCognoms())
+                // .dni(createUserDTO.getDni())
+                // .rols(rols)
                 .build();
 
         userRepository.save(userEntity);

@@ -15,41 +15,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateUserDTO {
 
-    /**
-     * Nom de l'usuari.
-     */
-    @NotBlank
-    private String nom;
-
-    /**
-     * Cognoms de l'usuari.
-     */
-    @NotBlank
-    private String cognoms;
-
-    /**
-     * Username.
-     */
     @NotBlank
     private String username;
 
-    /**
-     * Contrasenya de l'usuari.
-     */
+    @NotBlank
+    private String email;
 
     @NotBlank
     private String password;
-
-    /**
-     * DNI de l'usuari.
-     */
-
-    @NotBlank
-    private String dni;
-
-    /**
-     * Conjunt de rols de l'usuari.
-     */
-    private Set<String> rols;
 
 }

@@ -38,56 +38,29 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    /**
-     * Nom de l'usuari.
-     */
-    @NotBlank
-    @Size(max = 50)
-    private String nombre;
-
-    /**
-     * Cognoms de l'usuari.
-     */
-    @NotBlank
-    @Size(max = 50)
-    private String apellidos;
-
-    /**
-     * Nom d'usuari per a l'autenticació.
-     */
     @NotBlank
     @Size(max = 50)
     private String username;
 
-    /**
-     * Contrasenya de l'usuari.
-     */
+    @NotBlank
+    private String email;
+
     @NotBlank
     @Size(max = 250)
     private String password;
 
-    /**
-     * DNI de l'usuari.
-     */
-    @NotBlank
-    @Size(max = 9)
-    private String dni;
+    // /**
+    // * Indica si l'usuari està actiu.
+    // */
+    // @Builder.Default
+    // private Boolean active = true;
 
-    @Builder.Default
-    private Date dataAlta = new Date(System.currentTimeMillis());
-
-    private Date dataBaixa;
-
-    /**
-     * Indica si l'usuari està actiu.
-     */
-    @Builder.Default
-    private Boolean active = true;
-
-    /**
-     * Conjunt de rols que té assignats l'usuari.
-     */
-    @ManyToMany(fetch = FetchType.EAGER, targetEntity = RolEntity.class, cascade = CascadeType.PERSIST)
-    @JoinTable(name = "users_rols", joinColumns = @JoinColumn(name = "usuari_id"), inverseJoinColumns = @JoinColumn(name = "rols_id"))
-    private Set<RolEntity> rols;
+    // /**
+    // * Conjunt de rols que té assignats l'usuari.
+    // */
+    // @ManyToMany(fetch = FetchType.EAGER, targetEntity = RolEntity.class, cascade
+    // = CascadeType.PERSIST)
+    // @JoinTable(name = "users_rols", joinColumns = @JoinColumn(name =
+    // "usuari_id"), inverseJoinColumns = @JoinColumn(name = "rols_id"))
+    // private Set<RolEntity> rols;
 }
