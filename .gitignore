@@ -56,3 +56,4 @@ npm-debug.log
 ### Docker Volumes ###
 .mongo-data/
 .mysql-data/
+.data/

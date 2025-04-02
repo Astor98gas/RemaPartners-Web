@@ -1,22 +1,44 @@
 <template>
-    <div class="my-component">
-        <h1>{{ message }}</h1>
-        <input v-model="formData.username" placeholder="Username" />
-        <input v-model="formData.email" placeholder="Email" />
-        <input v-model="formData.password" type="password" placeholder="Password" />
-        <button @click="insertUser">Submit</button>
-        <p v-if="error" class="error">{{ error }}</p>
-        <p v-if="success" class="success">{{ success }}</p>
-    </div>
-    <div v-for="user in users" :key="user.id">
-        <ul>
-            <input v-model="user.id" type="hidden">
-            <input v-model="user.username" type="text">
-            <input v-model="user.email" type="text">
-            <input v-model="user.password" type="password">
-            <button @click="updateUser(user)">Update</button>
-            <button @click="deleteUser(user.username)">Delete</button>
-        </ul>
+    <div class="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 p-8">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-xl p-6 mb-8">
+            <h1 class="text-3xl font-bold mb-6 text-gray-800">{{ message }}</h1>
+
+            <div class="space-y-4 mb-6">
+                <input v-model="formData.username" placeholder="Username"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input v-model="formData.email" placeholder="Email"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input v-model="formData.password" type="password" placeholder="Password"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <button @click="insertUser"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">Submit</button>
+            </div>
+
+            <p v-if="error" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">{{ error }}</p>
+            <p v-if="success" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">{{ success }}</p>
+        </div>
+
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-xl p-6">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">User List</h2>
+            <div v-for="user in users" :key="user.id" class="bg-gray-50 p-4 rounded-lg mb-4 shadow">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input v-model="user.id" type="hidden">
+                    <input v-model="user.username" type="text"
+                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input v-model="user.email" type="text"
+                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input v-model="user.password" type="password"
+                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                    <div class="flex space-x-2">
+                        <button @click="updateUser(user)"
+                            class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200">Update</button>
+                        <button @click="deleteUser(user.username)"
+                            class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -102,39 +124,3 @@ export default {
     }
 };
 </script>
-
-<style scoped>
-.my-component {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-input {
-    display: block;
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 8px;
-}
-
-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-.error {
-    color: red;
-}
-
-.success {
-    color: green;
-}
-</style>
