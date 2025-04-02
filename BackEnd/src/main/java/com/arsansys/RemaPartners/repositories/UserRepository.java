@@ -9,5 +9,7 @@ import com.arsansys.RemaPartners.models.entities.UserEntity;
 
 @Repository
 public interface UserRepository extends MongoRepository<UserEntity, String> {
+
     Optional<UserEntity> findByUsername(String username);
+
 }

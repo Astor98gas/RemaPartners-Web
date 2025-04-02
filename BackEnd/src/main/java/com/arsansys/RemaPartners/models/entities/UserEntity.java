@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Builder.Default;
 
 /**
  * Entidad que representa un usuari.
@@ -25,9 +24,6 @@ import lombok.Builder.Default;
 @Document(collection = "users")
 public class UserEntity {
 
-    /**
-     * Identificador únic de l'usuari.
-     */
     @Id
     private String id;
 

@@ -18,6 +18,7 @@ import com.arsansys.RemaPartners.models.entities.RolEntity;
 import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.models.enums.ERol;
 import com.arsansys.RemaPartners.repositories.UserRepository;
+import com.arsansys.RemaPartners.services.UserService;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,13 +28,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 public class HomeController {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserService userService;
 
-    public HomeController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    // public HomeController(UserRepository userRepository, PasswordEncoder
+    // passwordEncoder) {
+    // this.userRepository = userRepository;
+    // this.passwordEncoder = passwordEncoder;
+    // }
 
     @GetMapping("/")
     public String home() {
@@ -71,7 +77,7 @@ public class HomeController {
 
     @GetMapping("/getUsers")
     public ResponseEntity<List<UserEntity>> getUsers() {
-        List<UserEntity> users = userRepository.findAll();
+        List<UserEntity> users = userService.getUsers();
         return ResponseEntity.ok(users);
     }
 
@@ -96,7 +102,7 @@ public class HomeController {
 
             user.setUsername(updateUserDTO.getUsername());
             user.setEmail(updateUserDTO.getEmail());
-            if (updateUserDTO.getPassword() != null && !updateUserDTO.getPassword().isEmpty()) {
+            if (updateUserDTO.getPassword() != user.getPassword()) {
                 user.setPassword(passwordEncoder.encode(updateUserDTO.getPassword()));
             }
 
