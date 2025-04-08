@@ -6,23 +6,15 @@
             </div>
             <div>
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Sign in to your account
+                    {{ utf8.t('login.title') }}
                 </h2>
             </div>
             <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-                <div class="rounded-md shadow-sm -space-y-px">
-                    <div>
-                        <label for="email-address" class="sr-only">Email address</label>
-                        <input id="email-address" name="email" type="email" v-model="email" required
-                            class="relative block w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                            placeholder="Email address" />
-                    </div>
-                    <div>
-                        <label for="password" class="sr-only">Password</label>
-                        <input id="password" name="password" type="password" v-model="password" required
-                            class="relative block w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                            placeholder="Password" />
-                    </div>
+                <div class="space-y-4">
+                    <InputText v-model="email" type="email" :placeholder="utf8.t('login.email')"
+                        :label="utf8.t('login.email')" required />
+                    <InputText v-model="password" type="password" :placeholder="utf8.t('login.password')"
+                        :label="utf8.t('login.password')" required />
                 </div>
 
                 <div class="flex items-center justify-between">
@@ -30,13 +22,13 @@
                         <input id="remember-me" name="remember-me" type="checkbox" v-model="rememberMe"
                             class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
                         <label for="remember-me" class="ml-2 block text-sm text-gray-900">
-                            Remember me
+                            {{ utf8.t('login.remember') }}
                         </label>
                     </div>
 
                     <div class="text-sm">
                         <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
-                            Forgot your password?
+                            {{ utf8.t('login.forgot') }}
                         </a>
                     </div>
                 </div>
@@ -44,27 +36,40 @@
                 <div>
                     <button type="submit"
                         class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Sign in
+                        {{ utf8.t('login.submit') }}
                     </button>
                 </div>
             </form>
+
         </div>
     </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
+<script lang="ts">
+import InputText from '@/components/ui/InputText.vue'
+import { useutf8Store } from '@/stores/counter'
 
-const email = ref('')
-const password = ref('')
-const rememberMe = ref(false)
-
-const handleLogin = () => {
-    // Add your login logic here
-    console.log({
-        email: email.value,
-        password: password.value,
-        rememberMe: rememberMe.value
-    })
+export default {
+    name: 'LoginView',
+    components: {
+        InputText
+    },
+    data() {
+        return {
+            email: '',
+            password: '',
+            rememberMe: false,
+            utf8: useutf8Store()
+        }
+    },
+    methods: {
+        handleLogin() {
+            console.log({
+                email: this.email,
+                password: this.password,
+                rememberMe: this.rememberMe
+            })
+        }
+    }
 }
 </script>

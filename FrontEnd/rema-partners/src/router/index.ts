@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import UsersViews from '@/views/UsersViews.vue'
-import LoginViews from '@/views/LoginViews.vue'
 
 const EmptyComponent = {
     template: '<div></div>'

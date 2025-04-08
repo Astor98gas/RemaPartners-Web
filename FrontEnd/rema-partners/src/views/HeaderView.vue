@@ -13,7 +13,6 @@
                     <li><router-link to="/home"
                             class="px-4 py-2 text-gray-700 font-medium hover:text-green-600 transition-colors">Home</router-link>
                     </li>
-
                 </ul>
             </nav>
 
@@ -28,6 +27,8 @@
                         Up</button>
                 </router-link>
             </div>
+
+            <SelectorIdioma class="hidden md:block" />
 
             <button class="md:hidden focus:outline-none" @click="toggleMobileMenu">
                 <div class="w-6 h-0.5 bg-gray-700 relative transition-all duration-300"
@@ -56,32 +57,34 @@
                             Up</button>
                     </router-link>
                 </li>
+                <SelectorIdioma />
             </ul>
         </div>
     </header>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import SelectorIdioma from '@/components/ui/SelectorIdioma.vue';
+import { useutf8Store } from '@/stores/counter';
 
-export default defineComponent({
+export default {
     name: 'HeaderView',
-    setup() {
-        const mobileMenuOpen = ref(false);
-
-        const toggleMobileMenu = () => {
-            mobileMenuOpen.value = !mobileMenuOpen.value;
-        };
-
-        const closeMobileMenu = () => {
-            mobileMenuOpen.value = false;
-        };
-
+    components: {
+        SelectorIdioma
+    },
+    data() {
         return {
-            mobileMenuOpen,
-            toggleMobileMenu,
-            closeMobileMenu,
-        };
+            mobileMenuOpen: false,
+            utf8: useutf8Store()
+        }
+    },
+    methods: {
+        toggleMobileMenu() {
+            this.mobileMenuOpen = !this.mobileMenuOpen;
+        },
+        closeMobileMenu() {
+            this.mobileMenuOpen = false;
+        }
     }
-});
+}
 </script>
