@@ -13,20 +13,30 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
-import type { UserFormData } from '@/types/user'
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+import type { UserFormData } from '@/types/user';
 
-const emit = defineEmits(['submit'])
+export default defineComponent({
+    name: 'UserForm',
+    emits: ['submit'],
 
-const formData = ref<UserFormData>({
-    username: '',
-    email: '',
-    password: ''
-})
+    setup(props, { emit }) {
+        const formData = ref<UserFormData>({
+            username: '',
+            email: '',
+            password: ''
+        });
 
-const onSubmit = () => {
-    emit('submit', formData.value)
-    formData.value = { username: '', email: '', password: '' }
-}
+        const onSubmit = () => {
+            emit('submit', formData.value);
+            formData.value = { username: '', email: '', password: '' };
+        };
+
+        return {
+            formData,
+            onSubmit
+        };
+    }
+});
 </script>

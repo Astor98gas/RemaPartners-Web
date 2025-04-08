@@ -18,11 +18,15 @@
             </nav>
 
             <div class="hidden md:flex space-x-3">
-                <button
-                    class="px-4 py-2 border border-green-500 text-green-500 font-medium rounded hover:bg-green-50 transition-colors">Login</button>
-                <button
-                    class="px-4 py-2 bg-green-500 border border-green-500 text-white font-medium rounded hover:bg-green-600 transition-colors">Sign
-                    Up</button>
+                <router-link to="/login">
+                    <button
+                        class="px-4 py-2 border border-green-500 text-green-500 font-medium rounded hover:bg-green-50 transition-colors">Login</button>
+                </router-link>
+                <router-link to="/signup">
+                    <button
+                        class="px-4 py-2 bg-green-500 border border-green-500 text-white font-medium rounded hover:bg-green-600 transition-colors">Sign
+                        Up</button>
+                </router-link>
             </div>
 
             <button class="md:hidden focus:outline-none" @click="toggleMobileMenu">
@@ -42,11 +46,15 @@
                         class="block px-4 py-2 text-gray-700 font-medium hover:text-green-600 transition-colors"
                         @click="closeMobileMenu">Home</router-link></li>
                 <li class="pt-2 flex flex-col space-y-2">
-                    <button
-                        class="w-full px-4 py-2 border border-green-500 text-green-500 font-medium rounded hover:bg-green-50 transition-colors">Login</button>
-                    <button
-                        class="w-full px-4 py-2 bg-green-500 border border-green-500 text-white font-medium rounded hover:bg-green-600 transition-colors">Sign
-                        Up</button>
+                    <router-link to="/login" @click="closeMobileMenu">
+                        <button
+                            class="w-full px-4 py-2 border border-green-500 text-green-500 font-medium rounded hover:bg-green-50 transition-colors">Login</button>
+                    </router-link>
+                    <router-link to="/signup" @click="closeMobileMenu">
+                        <button
+                            class="w-full px-4 py-2 bg-green-500 border border-green-500 text-white font-medium rounded hover:bg-green-600 transition-colors">Sign
+                            Up</button>
+                    </router-link>
                 </li>
             </ul>
         </div>
