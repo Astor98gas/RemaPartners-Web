@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8 shadow-2xl rounded-3xl cst-white p-6">
+        <div class="max-w-md w-full space-y-8 shadow-2xl rounded-3xl bg-white p-6">
             <div class="flex justify-center mb-4">
                 <img src="@/assets/logo.png" alt="REMA Partners Logo" class="h-16">
             </div>

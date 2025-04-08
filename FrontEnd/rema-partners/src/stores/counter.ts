@@ -22,6 +22,9 @@ export const useutf8Store = defineStore('utf8', {
         'language.es': 'Spanish',
         'language.cat': 'Catalan',
         'language.select': 'Select your language',
+        'login.login': 'Login',
+        'login.register': 'Register',
+        'login.forgotPassword': 'Forgot Password',
       },
       es: {
         'login.title': 'Iniciar sesión',
@@ -35,6 +38,9 @@ export const useutf8Store = defineStore('utf8', {
         'language.es': 'Español',
         'language.cat': 'Catalán',
         'language.select': 'Selecciona tu idioma',
+        'login.login': 'Iniciar sesión',
+        'login.register': 'Registrar',
+        'login.forgotPassword': 'Olvidé mi contraseña',
       },
       cat: {
         'login.title': 'Iniciar sessió',
@@ -48,6 +54,9 @@ export const useutf8Store = defineStore('utf8', {
         'language.es': 'Espanyol',
         'language.cat': 'Català',
         'language.select': 'Selecciona el teu idioma',
+        'login.login': 'Iniciar sessió',
+        'login.register': 'Registrar',
+        'login.forgotPassword': 'He oblidat la meva contrasenya',
       },
     } as Translations
   }),
