@@ -1,21 +1,18 @@
-<script setup lang="ts">
-import { useRouter } from 'vue-router';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import HeaderView from '@/views/HeaderView.vue';
 
-const router = useRouter();
-
-const goHome = () => {
-  router.push('/home');
-};
-
-const goRoot = () => {
-  router.push('/');
-};
+export default defineComponent({
+  name: 'App',
+  components: {
+    HeaderView
+  }
+});
 </script>
 
 <template>
   <div>
-    <img @click="goRoot" alt="Vue logo" class="logo" src="@/assets/logo.png" width="125" height="125" />
-    <button @click="goHome" class="home-button">Ir a Home</button>
+    <HeaderView />
     <router-view></router-view>
   </div>
 </template>
