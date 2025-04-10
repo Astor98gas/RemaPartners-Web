@@ -36,5 +36,6 @@ public class RolEntity {
      * Nom del rol.
      */
     @Enumerated(EnumType.STRING)
-    private ERol name;
+    @Builder.Default
+    private ERol name = ERol.COMPRADOR;
 }

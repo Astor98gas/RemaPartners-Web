@@ -4,12 +4,13 @@ import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -25,25 +26,23 @@ public class JwtUtils {
     private String timeExpiration;
 
     // Generar token acceso
-    @SuppressWarnings("deprecation")
     public String generateAccesToken(String username) {
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + Long.parseLong(timeExpiration)))
-                .signWith(getSignatureKey(), SignatureAlgorithm.HS256)
+                .signWith(getSignatureKey())
                 .compact();
     }
 
     // Validar token acceso
-    @SuppressWarnings("deprecation")
     public boolean isTokenValid(String token) {
         try {
             Jwts.parser()
-                    .setSigningKey(getSignatureKey())
+                    .verifyWith(getSignatureKey())
                     .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+                    .parseSignedClaims(token)
+                    .getPayload();
             return true;
         } catch (Exception e) {
             log.error("Token invalido: ".concat(e.getMessage()));
@@ -63,17 +62,16 @@ public class JwtUtils {
     }
 
     // Obtener todos los claims(informacion) token
-    @SuppressWarnings("deprecation")
     public Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(getSignatureKey())
+                .verifyWith(getSignatureKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     // Obtener firma token
-    public Key getSignatureKey() {
+    public SecretKey getSignatureKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }

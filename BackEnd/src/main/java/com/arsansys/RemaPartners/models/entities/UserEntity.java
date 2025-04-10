@@ -37,7 +37,7 @@ public class UserEntity {
     private String email;
 
     @NotBlank
-    @Size(max = 250)
+    @Size(max = 500)
     private String password;
 
     @NotBlank
@@ -45,5 +45,7 @@ public class UserEntity {
     private Boolean active = true;
 
     @DBRef
-    private Set<RolEntity> rols;
+    private RolEntity rol;
+
+    private Set<String> Googletokens;
 }

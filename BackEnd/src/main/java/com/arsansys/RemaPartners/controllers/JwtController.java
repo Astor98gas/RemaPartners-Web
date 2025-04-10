@@ -12,14 +12,18 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.models.jwt.JwtRequest;
 import com.arsansys.RemaPartners.security.jwt.JwtUtils;
 import com.arsansys.RemaPartners.services.UserDetailsServiceImpl;
+import com.arsansys.RemaPartners.services.UserService;
+import com.google.cloud.storage.Acl.User;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 public class JwtController {
@@ -28,10 +32,27 @@ public class JwtController {
     UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private JwtUtils jwtUtil;
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @PostMapping("/user/createUser")
+    public String createUser(@RequestBody UserEntity userEntity) {
+        if (userEntity.getUsername() == null || userEntity.getPassword() == null) {
+            return "Username and password are required";
+        }
+        try {
+            userService.createUser(userEntity);
+            return "User created successfully";
+        } catch (Exception e) {
+            return "Error creating user: " + e.getMessage();
+        }
+
+    }
 
     @PostMapping("/token") // when trying this url,select auth type: No Auth
     public String generateToken(Model m, HttpSession session,

@@ -11,4 +11,10 @@ public interface UserService {
 
     abstract List<UserEntity> getUsers();
 
+    abstract UserEntity getUserById(String id);
+
+    abstract UserEntity getUserByUsername(String username);
+
+    abstract void createUser(UserEntity userEntity);
+
 }
