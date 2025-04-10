@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.arsansys.RemaPartners.models.entities.UserEntity;
+import com.arsansys.RemaPartners.models.jwt.JwtResponse;
 
 @Service
 public interface UserService {
@@ -15,6 +16,6 @@ public interface UserService {
 
     abstract UserEntity getUserByUsername(String username);
 
-    abstract void createUser(UserEntity userEntity);
+    abstract JwtResponse createUser(UserEntity userEntity);
 
 }

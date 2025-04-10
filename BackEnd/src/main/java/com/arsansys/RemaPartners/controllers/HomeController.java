@@ -21,9 +21,12 @@ import com.arsansys.RemaPartners.controllers.dto.CreateUserDTO;
 import com.arsansys.RemaPartners.models.entities.RolEntity;
 import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.models.enums.ERol;
+import com.arsansys.RemaPartners.models.jwt.JwtResponse;
 import com.arsansys.RemaPartners.repositories.UserRepository;
 import com.arsansys.RemaPartners.services.UserService;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,27 +59,37 @@ public class HomeController {
     }
 
     @PostMapping("/createUser")
-    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO createUserDTO, HttpServletResponse response) {
+        try {
+            // Create RolEntity from the role string
+            RolEntity rolEntity = new RolEntity();
+            rolEntity.setName(ERol.valueOf(createUserDTO.getRol()));
 
-        // Set<RolEntity> rols = createUserDTO.getRols().stream()
-        // .map(rol -> RolEntity.builder()
-        // .name(ERol.valueOf(rol))
-        // .build())
-        // .collect(Collectors.toSet());
+            UserEntity userEntity = UserEntity.builder()
+                    .username(createUserDTO.getUsername())
+                    .password(createUserDTO.getPassword()) // El servicio se encargará de codificarlo
+                    .email(createUserDTO.getEmail())
+                    // .nombre(createUserDTO.getNom())
+                    // .apellidos(createUserDTO.getCognoms())
+                    // .dni(createUserDTO.getDni())
+                    .rol(rolEntity)
+                    .build();
 
-        UserEntity userEntity = UserEntity.builder()
-                .username(createUserDTO.getUsername())
-                .password(passwordEncoder.encode(createUserDTO.getPassword()))
-                .email(createUserDTO.getEmail())
-                // .nombre(createUserDTO.getNom())
-                // .apellidos(createUserDTO.getCognoms())
-                // .dni(createUserDTO.getDni())
-                // .rols(rols)
-                .build();
+            // Usar el servicio para crear el usuario y obtener el token
+            JwtResponse jwtResponse = userService.createUser(userEntity);
 
-        userRepository.save(userEntity);
+            // Agregar el token como cookie (opcional, dependiendo de cómo quieras
+            // manejarlo)
+            Cookie cookie = new Cookie("token", jwtResponse.getToken());
+            cookie.setMaxAge(Integer.MAX_VALUE);
+            cookie.setPath("/");
+            response.addCookie(cookie);
 
-        return ResponseEntity.ok(userEntity);
+            // Devolver la respuesta con el token
+            return ResponseEntity.ok(jwtResponse);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error creating user: " + e.getMessage());
+        }
     }
 
     @GetMapping("/getUsers")

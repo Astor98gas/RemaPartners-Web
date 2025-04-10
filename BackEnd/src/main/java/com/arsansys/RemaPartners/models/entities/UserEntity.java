@@ -1,9 +1,11 @@
 package com.arsansys.RemaPartners.models.entities;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.index.Indexed;
 
@@ -44,7 +46,6 @@ public class UserEntity {
     @Builder.Default
     private Boolean active = true;
 
-    @DBRef
     private RolEntity rol;
 
     private Set<String> Googletokens;

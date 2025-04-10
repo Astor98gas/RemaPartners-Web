@@ -51,12 +51,11 @@ public class JwtController {
         } catch (Exception e) {
             return "Error creating user: " + e.getMessage();
         }
-
     }
 
     @PostMapping("/token") // when trying this url,select auth type: No Auth
     public String generateToken(Model m, HttpSession session,
-            @ModelAttribute JwtRequest jwtRequest, HttpServletResponse res) throws Exception {
+            @RequestBody JwtRequest jwtRequest, HttpServletResponse res) throws Exception {
         System.out.println(jwtRequest);
         try {
             authenticationManager.authenticate(

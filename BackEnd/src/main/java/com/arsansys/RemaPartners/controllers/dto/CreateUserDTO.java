@@ -24,4 +24,7 @@ public class CreateUserDTO {
     @NotBlank
     private String password;
 
+    private String rol;
+    private Set<String> Googletokens;
+
 }

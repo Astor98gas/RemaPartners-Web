@@ -1,6 +1,5 @@
 package com.arsansys.RemaPartners.security.jwt;
 
-import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
