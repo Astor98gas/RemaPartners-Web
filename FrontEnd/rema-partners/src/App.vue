@@ -16,19 +16,3 @@ export default defineComponent({
     <router-view></router-view>
   </div>
 </template>
-
-<style scoped>
-.home-button {
-  padding: 10px 20px;
-  background-color: #42b983;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 20px;
-}
-
-.home-button:hover {
-  background-color: #3aa876;
-}
-</style>

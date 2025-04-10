@@ -19,7 +19,7 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
     name: 'InputText',
     props: {
@@ -30,7 +30,7 @@ export default {
         type: {
             type: String,
             default: 'text',
-            validator: (value) => ['text', 'password', 'email', 'number', 'tel', 'url'].includes(value)
+            validator: (value: string) => ['text', 'password', 'email', 'number', 'tel', 'url'].includes(value)
         },
         label: {
             type: String,
@@ -59,10 +59,10 @@ export default {
     },
     emits: ['update:modelValue', 'blur'],
     methods: {
-        handleInput(event) {
-            this.$emit('update:modelValue', event.target.value)
+        handleInput(event: InputEvent) {
+            this.$emit('update:modelValue', (event.target as HTMLInputElement).value)
         },
-        handleBlur(event) {
+        handleBlur(event: FocusEvent) {
             this.$emit('blur', event)
         }
     }

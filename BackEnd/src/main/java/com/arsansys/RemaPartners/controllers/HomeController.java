@@ -52,7 +52,7 @@ public class HomeController {
 
     @GetMapping("/api")
     public String api() {
-        return "This is the API endpoint.";
+        return "Welcome to the RemaPartners API!";
     }
 
     @PostMapping("/createUser")
