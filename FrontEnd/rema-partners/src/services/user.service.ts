@@ -1,9 +1,22 @@
-import type { User, UserFormData, UserLogin } from '@/models/user'
 import axios from 'axios'
+import type { User, UserFormData, UserLogin } from '@/models/user'
 
 const API_BASE_URL = 'http://localhost:8080'
 
 export const userService = {
+    // Método nuevo para configurar el token en los headers por defecto
+    setAuthToken(token: string) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    },
+
+    // Inicializa el token si existe en localStorage
+    initializeAuth() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            this.setAuthToken(token);
+        }
+    },
+
     async createUser(user: UserFormData) {
         return axios.post(`${API_BASE_URL}/createUser`, user)
     },
@@ -44,3 +57,6 @@ export const userService = {
         return axios.get(`${API_BASE_URL}/isLoggedIn`)
     },
 }
+
+// Inicializa la autenticación al importar el servicio
+userService.initializeAuth();

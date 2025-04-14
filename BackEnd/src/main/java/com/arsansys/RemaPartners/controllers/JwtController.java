@@ -1,6 +1,7 @@
 package com.arsansys.RemaPartners.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -50,41 +51,30 @@ public class JwtController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @PostMapping("/login") // when trying this url,select auth type: No Auth
-    public String generateToken(Model m, HttpSession session,
-            @RequestBody JwtRequest jwtRequest, HttpServletResponse res) throws Exception {
-        System.out.println(jwtRequest);
+    @PostMapping("/login")
+    public ResponseEntity<?> generateToken(@RequestBody JwtRequest jwtRequest, HttpServletResponse res)
+            throws Exception {
         try {
+            // Authenticate the user
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(jwtRequest.getUsername(), jwtRequest.getPassword()));
-        } catch (UsernameNotFoundException e) {
 
-            session.setAttribute("msg", "Bad Credentials");
-            return "redirect:/login";
-
-        } catch (BadCredentialsException e) {
-            session.setAttribute("msg", "Bad Credentials");
-            return "redirect:/login";
-        }
-
-        try {
-
+            // Get user details
             final UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(jwtRequest.getUsername());
 
-            System.out.println("userDetails.getUsername: " + userDetails.getUsername());
-
+            // Generate token
             final String token = jwtUtil.generateAccesToken(userDetails.getUsername());
 
+            // Set cookie if needed
             Cookie cookie = new Cookie("token", token);
             cookie.setMaxAge(Integer.MAX_VALUE);
+            cookie.setPath("/");
             res.addCookie(cookie);
 
-            System.out.println("token: " + token);
-
-            return "redirect:/";
-        } catch (Exception e) {
-            session.setAttribute("msg", "Credentials were right But something went wrong!!");
-            return "redirect:/login";
+            // Return the token in the response body
+            return ResponseEntity.ok(new JwtResponse(token));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
 
@@ -177,48 +167,48 @@ public class JwtController {
     @GetMapping("/isLoggedIn")
     public ResponseEntity<?> isLoggedIn(HttpServletRequest request) {
         try {
-            // Buscar el token JWT en las cookies y en el encabezado de autorización
+            // Buscar el token JWT en el encabezado de autorización
             String jwtToken = null;
+            String authHeader = request.getHeader("Authorization");
 
-            // Primero intentar obtener el token de las cookies
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if ("token".equals(cookie.getName())) {
-                        jwtToken = cookie.getValue();
-                        break;
-                    }
-                }
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                jwtToken = authHeader.substring(7); // Quitar "Bearer " del inicio
             }
 
-            // Si no se encuentra en las cookies, buscar en el encabezado Authorization
+            // Si no hay token, buscar en las cookies
             if (jwtToken == null) {
-                String authHeader = request.getHeader("Authorization");
-                if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                    jwtToken = authHeader.substring(7); // Quitar "Bearer " del inicio
+                Cookie[] cookies = request.getCookies();
+                if (cookies != null) {
+                    for (Cookie cookie : cookies) {
+                        if ("token".equals(cookie.getName())) {
+                            jwtToken = cookie.getValue();
+                            break;
+                        }
+                    }
                 }
             }
 
             // Si no hay token, el usuario no está logado
             if (jwtToken == null) {
-                return ResponseEntity.ok().body("User is not logged in");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not logged in");
             }
 
             // Validar el token
             if (jwtUtil.isTokenValid(jwtToken)) {
                 String username = jwtUtil.getUsernameFromToken(jwtToken);
                 UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
-
                 UserEntity userEntity = userService.getUserByUsername(userDetails.getUsername());
 
                 return ResponseEntity.ok().body(userEntity);
-
             } else {
                 // Token inválido o expirado
-                return ResponseEntity.ok().body("Invalid or expired token");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
             }
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error checking authentication status: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error checking authentication status: " + e.getMessage());
         }
     }
 

@@ -51,6 +51,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(
             HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
+        // Agregar encabezados CORS manualmente
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
+        response.setHeader("Access-Control-Allow-Headers",
+                "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+
+        // Si es una solicitud OPTIONS, retornar 200 OK sin autenticar
+        if (request.getMethod().equals("OPTIONS")) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return null;
+        }
+
+        // Continúa con la lógica existente
         UserEntity userEntity = null;
         String username = "", password = "";
 
@@ -90,18 +104,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         User user = (User) authResult.getPrincipal();
         String token = jwtUtils.generateAccesToken(user.getUsername());
 
-        response.addHeader("Autherization", token);
+        // Corregir el encabezado para usar el estándar Bearer
+        response.addHeader("Authorization", "Bearer " + token);
+
         Map<String, Object> httpResponse = new HashMap<>();
         httpResponse.put("token", token);
-        httpResponse.put("Message", "Autenticacion Correcta");
-        httpResponse.put("Username", token);
+        httpResponse.put("message", "Autenticacion Correcta");
+        httpResponse.put("username", user.getUsername());
 
         response.getWriter().write(new ObjectMapper().writeValueAsString(httpResponse));
         response.setStatus(HttpStatus.OK.value());
-        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().flush();
-
-        super.successfulAuthentication(request, response, chain, authResult);
     }
 
 }

@@ -11,9 +11,9 @@
             </div>
             <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
                 <div class="space-y-4">
-                    <InputText v-model="email" type="email" :placeholder="utf8.t('login.email')"
+                    <InputText v-model="userLogin.username" type="text" :placeholder="utf8.t('login.username')"
                         :label="utf8.t('login.email')" required />
-                    <InputText v-model="password" type="password" :placeholder="utf8.t('login.password')"
+                    <InputText v-model="userLogin.password" type="password" :placeholder="utf8.t('login.password')"
                         :label="utf8.t('login.password')" required />
                 </div>
 
@@ -48,6 +48,8 @@
 <script lang="ts">
 import InputText from '@/components/ui/InputText.vue'
 import { useutf8Store } from '@/stores/counter'
+import { useUsers } from '@/composables/useUsers'
+import type { UserLogin } from '@/models/user'
 
 export default {
     name: 'LoginView',
@@ -56,19 +58,26 @@ export default {
     },
     data() {
         return {
-            email: '',
-            password: '',
+            userLogin: {
+                username: '',
+                password: '',
+            } as UserLogin,
             rememberMe: false,
-            utf8: useutf8Store()
+            utf8: useutf8Store(),
+            error: null
         }
     },
     methods: {
         handleLogin() {
-            console.log({
-                email: this.email,
-                password: this.password,
-                rememberMe: this.rememberMe
-            })
+            useUsers().loginUser(this.userLogin)
+                .then((response) => {
+                    console.log('Login successful:', response)
+                    this.$router.push({ name: 'root' })
+                })
+                .catch((error) => {
+                    console.error('Login error:', error.response?.data || error.message || error)
+                    this.error = error.response?.data || 'Error al iniciar sesión'
+                })
         }
     }
 }

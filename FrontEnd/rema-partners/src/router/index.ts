@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUsers } from '@/composables/useUsers'
 
 const EmptyComponent = {
     template: '<div></div>'
@@ -13,11 +14,6 @@ const router = createRouter({
             component: EmptyComponent
         },
         {
-            path: '/home',
-            name: 'home',
-            component: () => import('../views/UsersViews.vue'),
-        },
-        {
             path: '/login',
             name: 'login',
             component: () => import('../views/login/LoginViews.vue'),
@@ -28,6 +24,19 @@ const router = createRouter({
             component: () => import('../views/login/SignupViews.vue'),
         }
     ],
+})
+
+router.beforeEach((to, from, next) => {
+    // Check login status before each route navigation
+    useUsers().isLoggedIn()
+        .then(() => {
+            // Continue navigation
+            next()
+        })
+        .catch(() => {
+            // Still continue navigation, just log the error
+            next()
+        })
 })
 
 export default router

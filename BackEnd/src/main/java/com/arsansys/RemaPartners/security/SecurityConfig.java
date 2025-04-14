@@ -13,10 +13,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.arsansys.RemaPartners.security.filters.JwtAuthenticationFilter;
 import com.arsansys.RemaPartners.security.filters.JwtAutorizationFilter;
 import com.arsansys.RemaPartners.security.jwt.JwtUtils;
+
+import java.util.Arrays;
 
 /**
  * Classe de configuració de seguretat.
@@ -48,8 +53,10 @@ public class SecurityConfig {
 
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils);
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
+        jwtAuthenticationFilter.setFilterProcessesUrl("/login"); // Asegúrate que esta es la URL correcta
 
         return httpSecurity
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Añadir esta línea
                 .csrf(config -> config.disable())
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/login", "/", "/api", "/createUser").permitAll();
@@ -90,6 +97,24 @@ public class SecurityConfig {
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder)
                 .and().build();
+    }
+
+    /**
+     * Bean de configuració CORS.
+     *
+     * @return CorsConfigurationSource Configuració CORS.
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     /**
