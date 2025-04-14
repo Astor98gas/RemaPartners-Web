@@ -8,6 +8,18 @@ export const userService = {
         return axios.post(`${API_BASE_URL}/createUser`, user)
     },
 
+    async getUserByEmail(email: string) {
+        return axios.get(`${API_BASE_URL}/getUserByEmail/${email}`)
+    },
+
+    async getUserById(id: string) {
+        return axios.get(`${API_BASE_URL}/getUserById/${id}`)
+    },
+
+    async getUserByUsername(username: string) {
+        return axios.get(`${API_BASE_URL}/getUserByUsername/${username}`)
+    },
+
     async loginUser(user: UserLogin) {
         return axios.post(`${API_BASE_URL}/login`, user)
     },

@@ -20,14 +20,49 @@ export function useUsers() {
         }
     }
 
+    const checkUserIfExist = async (email: string, username: string) => {
+        try {
+            loading.value = true
+            error.value = null
+
+            try {
+                const emailResponse = await userService.getUserByEmail(email)
+                if (emailResponse.data && emailResponse.data.email) {
+                    error.value = 'Email already exists'
+                    return { exists: true, reason: 'email' }
+                }
+            } catch (emailErr: any) {
+                if (emailErr.response?.status !== 404) {
+                    throw emailErr
+                }
+            }
+
+            try {
+                const usernameResponse = await userService.getUserByUsername(username)
+                if (usernameResponse.data && usernameResponse.data.username) {
+                    error.value = 'Username already exists'
+                    return { exists: true, reason: 'username' }
+                }
+            } catch (usernameErr: any) {
+                if (usernameErr.response?.status !== 404) {
+                    throw usernameErr
+                }
+            }
+
+            return { exists: false }
+        } catch (err: any) {
+            error.value = err.response?.data?.message || 'Error checking user existence'
+            return { exists: false, error: error.value }
+        } finally {
+            loading.value = false
+        }
+    }
+
     const createUser = async (formData: UserFormData) => {
         try {
             loading.value = true
             await userService.createUser(formData)
             success.value = 'User created successfully!'
-            error.value = null
-            await userService.loginUser(formData)
-            success.value = 'User logged in successfully!'
             error.value = null
         } catch (err: any) {
             error.value = err.response?.data?.message || 'Error creating user'
@@ -75,6 +110,7 @@ export function useUsers() {
         getUsers,
         createUser,
         updateUser,
-        deleteUser
+        deleteUser,
+        checkUserIfExist,
     }
 }

@@ -59,10 +59,10 @@ export default {
     },
     emits: ['update:modelValue', 'blur'],
     methods: {
-        handleInput(event: InputEvent) {
+        handleInput(event: Event) {
             this.$emit('update:modelValue', (event.target as HTMLInputElement).value)
         },
-        handleBlur(event: FocusEvent) {
+        handleBlur(event: Event) {
             this.$emit('blur', event)
         }
     }

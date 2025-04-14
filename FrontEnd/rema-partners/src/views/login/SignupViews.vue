@@ -13,6 +13,8 @@
                 <div class="space-y-4">
                     <InputText v-model="email" type="email" :placeholder="utf8.t('signup.email')"
                         :label="utf8.t('signup.email')" required />
+                    <InputText v-model="username" type="text" :placeholder="utf8.t('signup.username')"
+                        :label="utf8.t('signup.username')" required />
                     <InputText v-model="password" type="password" :placeholder="utf8.t('signup.password')"
                         :label="utf8.t('signup.password')" required />
                     <InputText v-model="confirmPassword" type="password" :placeholder="utf8.t('signup.confirmPassword')"
@@ -65,12 +67,17 @@ export default {
             showModal: false,
             modalTitle: '',
             modalMessage: '',
+            username: ''
         }
     },
     methods: {
         handleLogin() {
             if (!this.email.includes('@')) {
                 this.openModal('signup.invalidEmail')
+                return
+            }
+            if (this.username.length < 5 || this.username.length > 20 || this.username.includes(' ') || this.username === '') {
+                this.openModal('signup.usernameError')
                 return
             }
             if (this.password !== this.confirmPassword) {
@@ -85,13 +92,36 @@ export default {
                 this.openModal('signup.emptyFields')
                 return
             }
+
+            // Verificar primero si el usuario o email ya existen
+            useUsers().checkUserIfExist(this.email, this.username)
+                .then((response) => {
+                    if (response.exists) {
+                        // Mostrar mensaje específico según lo que ya existe
+                        if (response.reason === 'email') {
+                            this.openModal('signup.emailExists')
+                        } else if (response.reason === 'username') {
+                            this.openModal('signup.usernameExists')
+                        } else {
+                            this.openModal('signup.userExists')
+                        }
+                        return
+                    }
+                    this.createNewUser()
+                })
+                .catch((error) => {
+                    this.openModal('signup.error')
+                })
+        },
+        createNewUser() {
             useUsers().createUser({
                 email: this.email,
+                username: this.username,
                 password: this.password,
                 confirmPassword: this.confirmPassword,
             })
                 .then(() => {
-                    this.$router.push({ name: 'home' })
+                    this.$router.push({ name: '/' })
                 })
                 .catch((error) => {
                     this.openModal('signup.error')

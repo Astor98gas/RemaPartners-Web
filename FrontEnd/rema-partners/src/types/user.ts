@@ -7,12 +7,13 @@ export interface User {
 }
 
 export interface UserFormData {
+    username: string
     email: string
     password: string
     confirmPassword: string
 }
 
 export interface UserLogin {
-    email: string
+    username: string
     password: string
 }

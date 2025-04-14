@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateUserDTO {
 
-    @NotBlank
     private String username;
 
     @NotBlank
@@ -25,6 +24,7 @@ public class CreateUserDTO {
     private String password;
 
     private String rol;
+
     private Set<String> Googletokens;
 
 }

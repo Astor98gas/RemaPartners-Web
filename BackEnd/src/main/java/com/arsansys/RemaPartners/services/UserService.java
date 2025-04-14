@@ -18,4 +18,6 @@ public interface UserService {
 
     abstract JwtResponse createUser(UserEntity userEntity);
 
+    abstract UserEntity getByEmail(String email);
+
 }

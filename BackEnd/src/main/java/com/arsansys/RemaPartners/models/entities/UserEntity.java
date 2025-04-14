@@ -1,12 +1,9 @@
 package com.arsansys.RemaPartners.models.entities;
 
-import java.util.Collection;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import jakarta.validation.constraints.NotBlank;
@@ -29,7 +26,6 @@ public class UserEntity {
     @Id
     private String id;
 
-    @NotBlank
     @Size(max = 50)
     @Indexed(unique = true)
     private String username;

@@ -58,44 +58,28 @@ public class HomeController {
         return "Welcome to the RemaPartners API!";
     }
 
-    @PostMapping("/createUser")
-    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO createUserDTO, HttpServletResponse response) {
-        try {
-            // Create RolEntity from the role string
-            RolEntity rolEntity = new RolEntity();
-            rolEntity.setName(ERol.valueOf(createUserDTO.getRol()));
-
-            UserEntity userEntity = UserEntity.builder()
-                    .username(createUserDTO.getUsername())
-                    .password(createUserDTO.getPassword()) // El servicio se encargará de codificarlo
-                    .email(createUserDTO.getEmail())
-                    // .nombre(createUserDTO.getNom())
-                    // .apellidos(createUserDTO.getCognoms())
-                    // .dni(createUserDTO.getDni())
-                    .rol(rolEntity)
-                    .build();
-
-            // Usar el servicio para crear el usuario y obtener el token
-            JwtResponse jwtResponse = userService.createUser(userEntity);
-
-            // Agregar el token como cookie (opcional, dependiendo de cómo quieras
-            // manejarlo)
-            Cookie cookie = new Cookie("token", jwtResponse.getToken());
-            cookie.setMaxAge(Integer.MAX_VALUE);
-            cookie.setPath("/");
-            response.addCookie(cookie);
-
-            // Devolver la respuesta con el token
-            return ResponseEntity.ok(jwtResponse);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error creating user: " + e.getMessage());
-        }
-    }
-
     @GetMapping("/getUsers")
     public ResponseEntity<List<UserEntity>> getUsers() {
         List<UserEntity> users = userService.getUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/getUserByUsername/{username}")
+    public ResponseEntity<UserEntity> getUserByUsername(@PathVariable String username) {
+        UserEntity user = userService.getUserByUsername(username);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/getUserById/{id}")
+    public ResponseEntity<UserEntity> getUserById(@PathVariable String id) {
+        UserEntity user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/getUserByEmail/{email}")
+    public ResponseEntity<UserEntity> getUserByEmail(@PathVariable String email) {
+        UserEntity user = userService.getByEmail(email);
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/deleteUser/{username}")
