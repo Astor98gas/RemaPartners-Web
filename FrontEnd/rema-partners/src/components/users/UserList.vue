@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import UserItem from './UserItem.vue'
-import type { User } from '@/types/user'
+import type { User } from '@/models/user'
 
 defineProps<{
     users: User[]

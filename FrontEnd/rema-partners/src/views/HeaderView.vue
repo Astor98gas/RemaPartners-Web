@@ -67,7 +67,9 @@
 <script lang="ts">
 import ButtonBasic from '@/components/ui/ButtonBasic.vue';
 import SelectorIdioma from '@/components/ui/SelectorIdioma.vue';
+import { useUsers } from '@/composables/useUsers';
 import { useutf8Store } from '@/stores/counter';
+import type { User, UserFormData } from '@/models/user';
 
 export default {
     name: 'HeaderView',
@@ -78,7 +80,15 @@ export default {
     data() {
         return {
             mobileMenuOpen: false,
-            utf8: useutf8Store()
+            utf8: useutf8Store(),
+            isLoged: false,
+            user: {
+                id: '',
+                username: '',
+                email: '',
+                password: '',
+                confirmPassword: ''
+            } as User,
         }
     },
     methods: {
@@ -87,7 +97,19 @@ export default {
         },
         closeMobileMenu() {
             this.mobileMenuOpen = false;
+        },
+        isLoggedIn() {
+            useUsers().isLoggedIn()
+                .then((response: User) => {
+                    this.user = response;
+                })
+                .catch((error: Error) => {
+                    console.error('Error checking login status:', error);
+                });
         }
+    },
+    mounted() {
+        this.isLoggedIn();
     }
 }
 </script>

@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { userService } from '@/services/user.service'
-import type { User, UserFormData } from '@/types/user'
+import type { User, UserFormData } from '@/models/user'
 
 export function useUsers() {
     const users = ref<User[]>([])
@@ -102,6 +102,32 @@ export function useUsers() {
         }
     }
 
+    const isLoggedIn = async () => {
+        try {
+            loading.value = true
+            const response = await userService.isLoggedIn()
+            return response.data
+        }
+        catch (err: any) {
+            error.value = err.response?.data?.message || 'Error checking login status'
+            return false
+        } finally {
+            loading.value = false
+        }
+    }
+    const getUserByToken = async (token: string) => {
+        try {
+            loading.value = true
+            const response = await userService.getUserByToken(token)
+            return response.data
+        } catch (err: any) {
+            error.value = err.response?.data?.message || 'Error fetching user by token'
+            return null
+        } finally {
+            loading.value = false
+        }
+    }
+
     return {
         users,
         error,
@@ -112,5 +138,7 @@ export function useUsers() {
         updateUser,
         deleteUser,
         checkUserIfExist,
+        isLoggedIn,
+        getUserByToken,
     }
 }

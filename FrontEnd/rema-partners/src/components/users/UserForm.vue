@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import type { UserFormData } from '@/types/user';
+import type { UserFormData } from '@/models/user';
 
 export default defineComponent({
     name: 'UserForm',

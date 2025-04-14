@@ -155,6 +155,25 @@ public class JwtController {
         return "redirect:/login";
     }
 
+    @GetMapping("/getUserByToken/{token}")
+    public ResponseEntity<?> getUserByToken(@RequestParam String token) {
+        try {
+            // Validar el token
+            if (jwtUtil.isTokenValid(token)) {
+                String username = jwtUtil.getUsernameFromToken(token);
+                UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
+
+                // Si el token es válido y el usuario existe, devolver los detalles del usuario
+                return ResponseEntity.ok(userDetails);
+            } else {
+                // Token inválido o expirado
+                return ResponseEntity.status(401).body("Invalid or expired token");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error retrieving user: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/isLoggedIn")
     public ResponseEntity<?> isLoggedIn(HttpServletRequest request) {
         try {
@@ -190,8 +209,10 @@ public class JwtController {
                 String username = jwtUtil.getUsernameFromToken(jwtToken);
                 UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
 
-                // Si el token es válido y el usuario existe, está logado
-                return ResponseEntity.ok().body("User is logged in");
+                UserEntity userEntity = userService.getUserByUsername(userDetails.getUsername());
+
+                return ResponseEntity.ok().body(userEntity);
+
             } else {
                 // Token inválido o expirado
                 return ResponseEntity.ok().body("Invalid or expired token");

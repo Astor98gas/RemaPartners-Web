@@ -1,4 +1,4 @@
-import type { User, UserFormData, UserLogin } from '@/types/user'
+import type { User, UserFormData, UserLogin } from '@/models/user'
 import axios from 'axios'
 
 const API_BASE_URL = 'http://localhost:8080'
@@ -34,5 +34,13 @@ export const userService = {
 
     async deleteUser(user: User) {
         return axios.get(`${API_BASE_URL}/deleteUser/${user}`)
-    }
+    },
+
+    async getUserByToken(token: string) {
+        return axios.get(`${API_BASE_URL}/getUserByToken/${token}`)
+    },
+
+    async isLoggedIn() {
+        return axios.get(`${API_BASE_URL}/isLoggedIn`)
+    },
 }
