@@ -1,11 +1,15 @@
-import type { User } from '@/types/user'
+import type { User, UserFormData, UserLogin } from '@/types/user'
 import axios from 'axios'
 
 const API_BASE_URL = 'http://localhost:8080'
 
 export const userService = {
-    async createUser(user: User) {
+    async createUser(user: UserFormData) {
         return axios.post(`${API_BASE_URL}/createUser`, user)
+    },
+
+    async loginUser(user: UserLogin) {
+        return axios.post(`${API_BASE_URL}/login`, user)
     },
 
     async getUsers() {

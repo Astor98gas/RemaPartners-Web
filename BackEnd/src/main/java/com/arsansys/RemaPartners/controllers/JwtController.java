@@ -53,7 +53,7 @@ public class JwtController {
         }
     }
 
-    @PostMapping("/token") // when trying this url,select auth type: No Auth
+    @PostMapping("/login") // when trying this url,select auth type: No Auth
     public String generateToken(Model m, HttpSession session,
             @RequestBody JwtRequest jwtRequest, HttpServletResponse res) throws Exception {
         System.out.println(jwtRequest);
@@ -84,7 +84,7 @@ public class JwtController {
 
             System.out.println("token: " + token);
 
-            return "redirect:/user/";
+            return "redirect:/home/";
         } catch (Exception e) {
             session.setAttribute("msg", "Credentials were right But something went wrong!!");
             return "redirect:/login";

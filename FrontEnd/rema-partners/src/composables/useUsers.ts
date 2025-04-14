@@ -20,13 +20,15 @@ export function useUsers() {
         }
     }
 
-    const createUser = async (formData: User) => {
+    const createUser = async (formData: UserFormData) => {
         try {
             loading.value = true
             await userService.createUser(formData)
             success.value = 'User created successfully!'
             error.value = null
-            await getUsers()
+            await userService.loginUser(formData)
+            success.value = 'User logged in successfully!'
+            error.value = null
         } catch (err: any) {
             error.value = err.response?.data?.message || 'Error creating user'
             success.value = null

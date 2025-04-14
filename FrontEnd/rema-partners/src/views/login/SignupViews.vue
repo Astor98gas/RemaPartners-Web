@@ -46,6 +46,7 @@ import ButtonBasic from '@/components/ui/ButtonBasic.vue'
 import InputText from '@/components/ui/InputText.vue'
 import { useutf8Store } from '@/stores/counter'
 import Modal from '@/components/ui/Modal.vue'
+import { useUsers } from '@/composables/useUsers'
 
 export default {
     name: 'LoginView',
@@ -68,6 +69,10 @@ export default {
     },
     methods: {
         handleLogin() {
+            if (!this.email.includes('@')) {
+                this.openModal('signup.invalidEmail')
+                return
+            }
             if (this.password !== this.confirmPassword) {
                 this.openModal('signup.passwordMismatch')
                 return
@@ -76,20 +81,21 @@ export default {
                 this.openModal('signup.passwordLength')
                 return
             }
-            if (!this.email.includes('@')) {
-                this.openModal('signup.invalidEmail')
-                return
-            }
             if (this.email === '' || this.password === '' || this.confirmPassword === '') {
                 this.openModal('signup.emptyFields')
                 return
             }
-            console.log({
+            useUsers().createUser({
                 email: this.email,
                 password: this.password,
                 confirmPassword: this.confirmPassword,
-                rememberMe: this.rememberMe
             })
+                .then(() => {
+                    this.$router.push({ name: 'home' })
+                })
+                .catch((error) => {
+                    this.openModal('signup.error')
+                })
         },
         handleClose() {
             this.showModal = false
