@@ -128,6 +128,25 @@ export function useUsers() {
         }
     }
 
+    const checkUserIfExist = async (email: string, username: string) => {
+        try {
+            const response = await userService.getUserByEmail(email);
+            if (response.data) {
+                return { exists: true, reason: 'email' };
+            }
+
+            const usernameResponse = await userService.getUserByUsername(username);
+            if (usernameResponse.data) {
+                return { exists: true, reason: 'username' };
+            }
+
+            return { exists: false };
+        } catch (err: any) {
+            console.error('Error checking user existence:', err);
+            throw err;
+        }
+    };
+
     return {
         users,
         error,
@@ -138,6 +157,7 @@ export function useUsers() {
         createUser,
         loginUser,
         isLoggedIn,
-        logout
+        logout,
+        checkUserIfExist
     }
 }
