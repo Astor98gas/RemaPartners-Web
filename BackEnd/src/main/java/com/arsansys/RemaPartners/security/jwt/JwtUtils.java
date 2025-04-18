@@ -5,8 +5,13 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.arsansys.RemaPartners.models.entities.JwtEntity;
+import com.arsansys.RemaPartners.services.JwtService;
+import com.google.api.client.util.DateTime;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -23,6 +28,9 @@ public class JwtUtils {
 
     @Value("${jwt.time.expiration}")
     private String timeExpiration;
+
+    @Autowired
+    private JwtService jwtService;
 
     // Generar token acceso
     public String generateAccesToken(String username) {
@@ -42,6 +50,10 @@ public class JwtUtils {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+            if (jwtService.findByToken(token) != null && !jwtService.findByToken(token).getIsValid()) {
+                log.error("Token invalido: ".concat(token));
+                return false;
+            }
             return true;
         } catch (Exception e) {
             log.error("Token invalido: ".concat(e.getMessage()));
@@ -73,6 +85,35 @@ public class JwtUtils {
     public SecretKey getSignatureKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public void invalidateToken(String jwtTokenString) {
+        JwtEntity jwtToken = null;
+        try {
+            jwtToken.setToken(jwtTokenString);
+            jwtToken.setIsValid(false);
+            jwtToken.setExpirationDate(getExpirationDateFromToken(jwtTokenString));
+            jwtToken.setUsername(getUsernameFromToken(jwtTokenString));
+        } catch (Exception e) {
+            log.error("Error al invalidar el token: " + e.getMessage());
+            return;
+        }
+
+        jwtService.save(jwtToken, false);
+    }
+
+    private Date getExpirationDateFromToken(String jwtTokenString) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSignatureKey())
+                    .build()
+                    .parseSignedClaims(jwtTokenString)
+                    .getPayload();
+            return claims.getExpiration();
+        } catch (Exception e) {
+            log.error("Error al obtener la fecha de expiración del token: " + e.getMessage());
+            return null;
+        }
     }
 
 }

@@ -7,6 +7,7 @@ export function useUsers() {
     const error = ref<string | null>(null)
     const success = ref<string | null>(null)
     const loading = ref<boolean>(false)
+    const currentUser = ref<User | null>(null) // Añade esta línea
 
     const getUsers = async () => {
         try {
@@ -35,8 +36,12 @@ export function useUsers() {
                 // También configurar el token para futuras solicitudes
                 userService.setAuthToken(response.data.token);
 
+                // Actualizar el estado del usuario actual
+                await isLoggedIn();
+
                 success.value = 'Login successful!'
                 error.value = null
+
                 return response.data;
             } else {
                 error.value = 'Login failed: No token received'
@@ -148,26 +153,23 @@ export function useUsers() {
             // Verificar primero si hay token guardado
             const token = localStorage.getItem('token');
             if (!token) {
+                currentUser.value = null; // Resetea el usuario actual
                 return false;
             }
-
             loading.value = true;
-
-            // Asegúrate de que el token está configurado en los headers
             userService.setAuthToken(token);
-
             const response = await userService.isLoggedIn();
+            // Guarda el usuario devuelto por el backend
+            currentUser.value = response.data;
             return response.data;
         }
         catch (err: any) {
             console.error('Error checking login status:', err);
             error.value = err.response?.data?.message || 'Error checking login status';
-
-            // Si hay un error 401 o 403, remover el token porque no es válido
             if (err.response && (err.response.status === 401 || err.response.status === 403)) {
                 localStorage.removeItem('token');
+                currentUser.value = null; // Resetea el usuario si hay error
             }
-
             return false;
         } finally {
             loading.value = false;
@@ -187,11 +189,33 @@ export function useUsers() {
         }
     }
 
+    // Método para cerrar sesión
+    const logout = async () => {
+        try {
+            loading.value = true;
+            await userService.logout(); // Llama al backend para invalidar el token
+            localStorage.removeItem('token'); // Elimina el token del almacenamiento local
+            currentUser.value = null; // Resetea el usuario actual
+            success.value = 'Logout successful!';
+            error.value = null;
+
+            // Redirige al usuario a la página de login
+            window.location.href = '/#/login';
+        } catch (err: any) {
+            console.error('Logout error:', err);
+            error.value = err.response?.data?.message || 'Error logging out';
+            success.value = null;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     return {
         users,
         error,
         success,
         loading,
+        currentUser, // Añade esta línea
         getUsers,
         createUser,
         updateUser,
@@ -200,5 +224,6 @@ export function useUsers() {
         isLoggedIn,
         getUserByToken,
         loginUser,
+        logout,
     }
 }

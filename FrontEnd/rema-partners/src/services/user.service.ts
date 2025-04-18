@@ -56,6 +56,20 @@ export const userService = {
     async isLoggedIn() {
         return axios.get(`${API_BASE_URL}/isLoggedIn`)
     },
+
+    async logout() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('No token found');
+        }
+
+        return axios.get(`${API_BASE_URL}/logout`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true, // Asegúrate de enviar las cookies si es necesario
+        });
+    },
 }
 
 // Inicializa la autenticación al importar el servicio

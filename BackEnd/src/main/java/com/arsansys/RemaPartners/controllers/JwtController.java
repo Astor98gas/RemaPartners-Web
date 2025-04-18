@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +23,6 @@ import com.arsansys.RemaPartners.models.jwt.JwtResponse;
 import com.arsansys.RemaPartners.security.jwt.JwtUtils;
 import com.arsansys.RemaPartners.services.UserDetailsServiceImpl;
 import com.arsansys.RemaPartners.services.UserService;
-import com.google.cloud.storage.Acl.User;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -125,24 +123,30 @@ public class JwtController {
         }
     }
 
-    @GetMapping("/log_out")
-    public String logout(HttpServletRequest request, HttpServletResponse res, Model m, HttpSession session) {
+    @GetMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse res, Model m, HttpSession session) {
 
-        String msg = null;
-
-        Cookie[] cookies2 = request.getCookies();
-        for (int i = 0; i < cookies2.length; i++) {
-            if (cookies2[i].getName().equals("token")) {
-                cookies2[i].setMaxAge(0);
-                res.addCookie(cookies2[i]);
-                msg = "Logout successfully";
-
+        String authHeader = request.getHeader("Authorization");
+        String jwtToken = null;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwtToken = authHeader.substring(7); // Quitar "Bearer " del inicio
+        } else {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("token".equals(cookie.getName())) {
+                        jwtToken = cookie.getValue();
+                        break;
+                    }
+                }
             }
+        }
+
+        // Invalidar el token
+        if (jwtToken != null) {
+            jwtUtil.invalidateToken(jwtToken);
 
         }
-        session.setAttribute("msg", msg);
-
-        return "redirect:/login";
     }
 
     @GetMapping("/getUserByToken/{token}")

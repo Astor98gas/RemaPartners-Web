@@ -1,5 +1,7 @@
 package com.arsansys.RemaPartners.models.entities;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.arsansys.RemaPartners.models.enums.ERol;
 
 import jakarta.persistence.Entity;
@@ -8,7 +10,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "rols")
+@Document(collection = "rols")
 public class RolEntity {
 
     /**

@@ -22,21 +22,26 @@ const router = createRouter({
             path: '/signup',
             name: 'signup',
             component: () => import('../views/login/SignupViews.vue'),
+        },
+        {
+            path: '/profile',
+            name: 'profile',
+            component: () => import('../views/login/ProfileViews.vue'),
         }
     ],
 })
 
-router.beforeEach((to, from, next) => {
-    // Check login status before each route navigation
-    useUsers().isLoggedIn()
-        .then(() => {
-            // Continue navigation
-            next()
-        })
-        .catch(() => {
-            // Still continue navigation, just log the error
-            next()
-        })
+router.beforeEach(async (to, from, next) => {
+    const usersComposable = useUsers();
+    try {
+        const userData = await usersComposable.isLoggedIn();
+        if (userData) {
+            console.log('Usuario autenticado:', userData);
+        }
+    } catch (error) {
+        console.error('Error verificando autenticación:', error);
+    }
+    next();
 })
 
 export default router

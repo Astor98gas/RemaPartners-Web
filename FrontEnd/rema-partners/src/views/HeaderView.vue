@@ -16,20 +16,29 @@
                 </ul>
             </nav>
 
-            <div class="hidden md:flex space-x-3">
-                <router-link to="/login">
-                    <ButtonBasic variant="secondary" size="sm" class="text-lg">
-                        {{ utf8.t('login.login') }}
-                    </ButtonBasic>
-                </router-link>
-                <router-link to="/signup">
-                    <ButtonBasic variant="primary" size="base" class="text-base">
-                        {{ utf8.t('login.register') }}
-                    </ButtonBasic>
-                </router-link>
-                <SelectorIdioma class="md:flex" />
+            <div class="profile" v-if="isLoggedIn">
+                <div class="hidden md:flex space-x-3">
+                    <span class="text-gray-700 mt-2.5">{{ welcomeMessage }}</span>
+                    <router-link to="/profile">
+                        <img src="@/assets/icons/profile.png" alt="Profile" class="h-10 w-10 rounded-full">
+                    </router-link>
+                </div>
             </div>
-
+            <div v-else>
+                <div class="hidden md:flex space-x-3">
+                    <router-link to="/login">
+                        <ButtonBasic variant="secondary" size="sm" class="text-lg">
+                            {{ utf8.t('login.login') }}
+                        </ButtonBasic>
+                    </router-link>
+                    <router-link to="/signup">
+                        <ButtonBasic variant="primary" size="base" class="text-base">
+                            {{ utf8.t('login.register') }}
+                        </ButtonBasic>
+                    </router-link>
+                    <SelectorIdioma class="md:flex" />
+                </div>
+            </div>
 
             <button class="md:hidden focus:outline-none" @click="toggleMobileMenu">
                 <div class="w-6 h-0.5 bg-gray-700 relative transition-all duration-300"
@@ -64,12 +73,11 @@
     </header>
 </template>
 
-<script lang="ts">
+<script>
 import ButtonBasic from '@/components/ui/ButtonBasic.vue';
 import SelectorIdioma from '@/components/ui/SelectorIdioma.vue';
 import { useUsers } from '@/composables/useUsers';
 import { useutf8Store } from '@/stores/counter';
-import type { User, UserFormData } from '@/models/user';
 
 export default {
     name: 'HeaderView',
@@ -81,35 +89,43 @@ export default {
         return {
             mobileMenuOpen: false,
             utf8: useutf8Store(),
-            isLoged: false,
-            user: {
-                id: '',
-                username: '',
-                email: '',
-                password: '',
-                confirmPassword: ''
-            } as User,
+            usersComposable: useUsers(),
+            currentUser: null
+        };
+    },
+    computed: {
+        isLoggedIn() {
+            return !!this.currentUser;
+        },
+        welcomeMessage() {
+            return this.currentUser ? `Hola, ${this.currentUser.username}` : '';
         }
     },
+    watch: {
+        'usersComposable.currentUser': {
+            handler(newVal) {
+                this.currentUser = newVal;
+            },
+            immediate: true
+        }
+    },
+    mounted() {
+        this.checkLoginStatus();
+    },
     methods: {
+        async checkLoginStatus() {
+            try {
+                await this.usersComposable.isLoggedIn();
+            } catch (error) {
+                console.error('Error checking login status:', error);
+            }
+        },
         toggleMobileMenu() {
             this.mobileMenuOpen = !this.mobileMenuOpen;
         },
         closeMobileMenu() {
             this.mobileMenuOpen = false;
-        },
-        isLoggedIn() {
-            useUsers().isLoggedIn()
-                .then((response: User) => {
-                    this.user = response;
-                })
-                .catch((error: Error) => {
-                    console.error('Error checking login status:', error);
-                });
         }
-    },
-    mounted() {
-        this.isLoggedIn();
     }
 }
 </script>
