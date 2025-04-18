@@ -51,12 +51,12 @@ public class JwtUtils {
                     .parseSignedClaims(token)
                     .getPayload();
             if (jwtService.findByToken(token) != null && !jwtService.findByToken(token).getIsValid()) {
-                log.error("Token invalido: ".concat(token));
+                log.error("Token invalido1: ".concat(token));
                 return false;
             }
             return true;
         } catch (Exception e) {
-            log.error("Token invalido: ".concat(e.getMessage()));
+            log.error("Token invalido2: ".concat(e.getMessage()));
             return false;
         }
     }
@@ -74,11 +74,16 @@ public class JwtUtils {
 
     // Obtener todos los claims(informacion) token
     public Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSignatureKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSignatureKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (Exception e) {
+            log.error("Error extracting claims from token: " + e.getMessage());
+            throw new RuntimeException("Invalid token", e);
+        }
     }
 
     // Obtener firma token
@@ -88,27 +93,25 @@ public class JwtUtils {
     }
 
     public void invalidateToken(String jwtTokenString) {
-        JwtEntity jwtToken = null;
         try {
+            JwtEntity jwtToken = new JwtEntity(); // Create a new instance instead of null
             jwtToken.setToken(jwtTokenString);
             jwtToken.setIsValid(false);
-            jwtToken.setExpirationDate(getExpirationDateFromToken(jwtTokenString));
+            Date expirationDate = getExpirationDateFromToken(jwtTokenString);
+            jwtToken.setExpirationDate(expirationDate);
             jwtToken.setUsername(getUsernameFromToken(jwtTokenString));
+
+            jwtService.save(jwtToken);
         } catch (Exception e) {
             log.error("Error al invalidar el token: " + e.getMessage());
-            return;
         }
-
-        jwtService.save(jwtToken, false);
     }
 
     private Date getExpirationDateFromToken(String jwtTokenString) {
+        System.out.println("Token: " + jwtTokenString);
+        Claims claims = extractAllClaims(jwtTokenString);
+        System.out.println("Expiration date: " + claims.getExpiration());
         try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(getSignatureKey())
-                    .build()
-                    .parseSignedClaims(jwtTokenString)
-                    .getPayload();
             return claims.getExpiration();
         } catch (Exception e) {
             log.error("Error al obtener la fecha de expiración del token: " + e.getMessage());

@@ -123,29 +123,35 @@ public class JwtController {
         }
     }
 
-    @GetMapping("/logout")
-    public void logout(HttpServletRequest request, HttpServletResponse res, Model m, HttpSession session) {
-
-        String authHeader = request.getHeader("Authorization");
-        String jwtToken = null;
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwtToken = authHeader.substring(7); // Quitar "Bearer " del inicio
-        } else {
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if ("token".equals(cookie.getName())) {
-                        jwtToken = cookie.getValue();
-                        break;
+    @GetMapping("/log_out")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        try {
+            String authHeader = request.getHeader("Authorization");
+            String jwtToken = null;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                jwtToken = authHeader.substring(7); // Quitar "Bearer " del inicio
+                System.out.println("Token from header: " + jwtToken);
+            } else {
+                Cookie[] cookies = request.getCookies();
+                if (cookies != null) {
+                    for (Cookie cookie : cookies) {
+                        if ("token".equals(cookie.getName())) {
+                            jwtToken = cookie.getValue();
+                            break;
+                        }
                     }
                 }
             }
-        }
 
-        // Invalidar el token
-        if (jwtToken != null) {
-            jwtUtil.invalidateToken(jwtToken);
+            // Invalidar el token
+            if (jwtToken != null) {
+                jwtUtil.invalidateToken(jwtToken);
+            }
 
+            return ResponseEntity.ok("Logout successful");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error during logout: " + e.getMessage());
         }
     }
 

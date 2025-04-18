@@ -53,13 +53,18 @@ public class SecurityConfig {
 
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils);
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
-        jwtAuthenticationFilter.setFilterProcessesUrl("/login"); // Asegúrate que esta es la URL correcta
+        jwtAuthenticationFilter.setFilterProcessesUrl("/login");
+
+        jwtAuthenticationFilter.setRequiresAuthenticationRequestMatcher(request -> {
+            String path = request.getServletPath();
+            return "/login".equals(path) && !"/logout".equals(path);
+        });
 
         return httpSecurity
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Añadir esta línea
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(config -> config.disable())
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/login", "/", "/api", "/createUser").permitAll();
+                    auth.requestMatchers("/login", "/logout", "/", "/api", "/createUser").permitAll();
                     // auth.anyRequest().authenticated();
                     auth.anyRequest().permitAll();
                 })

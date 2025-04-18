@@ -11,6 +11,6 @@ public interface JwtService {
 
     JwtEntity findByToken(String token);
 
-    void save(JwtEntity jwtToken, boolean b);
+    void save(JwtEntity jwtToken);
 
 }

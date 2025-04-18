@@ -25,7 +25,7 @@ export default {
             mobileMenuOpen: false,
             utf8: useutf8Store(),
             usersComposable: useUsers(),
-            currentUser: null
+            currentUser: null as null | { username: string }
         };
     },
     computed: {

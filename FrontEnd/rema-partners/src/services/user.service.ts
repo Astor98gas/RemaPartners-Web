@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { User, UserFormData, UserLogin } from '@/models/user'
+import Cookies from 'js-cookie'
 
 const API_BASE_URL = 'http://localhost:8080'
 
@@ -11,7 +12,7 @@ export const userService = {
 
     // Inicializa el token si existe en localStorage
     initializeAuth() {
-        const token = localStorage.getItem('token');
+        const token = Cookies.get('token');;
         if (token) {
             this.setAuthToken(token);
         }
@@ -56,14 +57,14 @@ export const userService = {
     async isLoggedIn() {
         return axios.get(`${API_BASE_URL}/isLoggedIn`)
     },
-
     async logout() {
-        const token = localStorage.getItem('token');
+
+        const token = Cookies.get('token');
         if (!token) {
             throw new Error('No token found');
         }
 
-        return axios.get(`${API_BASE_URL}/logout`, {
+        return axios.get(`${API_BASE_URL}/log_out`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

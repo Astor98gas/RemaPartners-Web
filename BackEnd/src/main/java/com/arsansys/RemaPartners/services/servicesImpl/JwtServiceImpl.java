@@ -24,8 +24,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public void save(JwtEntity jwtToken, boolean b) {
-        jwtToken.setIsValid(b);
+    public void save(JwtEntity jwtToken) {
         jwtRepository.save(jwtToken);
     }
 }
