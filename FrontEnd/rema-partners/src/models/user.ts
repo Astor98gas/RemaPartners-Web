@@ -3,6 +3,10 @@ export interface User {
     username: string
     email: string
     password: string
+    rol: {
+        id: number;
+        name: string;
+    };
     confirmPassword: string
 }
 

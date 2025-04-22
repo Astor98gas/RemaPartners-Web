@@ -13,6 +13,9 @@
                     <li><router-link to="/home"
                             class="px-4 py-2 text-gray-700 font-medium hover:text-orange-600 transition-colors">Home</router-link>
                     </li>
+                    <li><router-link to="/categorias"
+                            class="px-4 py-2 text-gray-700 font-medium hover:text-orange-600 transition-colors">Categorias</router-link>
+                    </li>
                 </ul>
             </nav>
 
