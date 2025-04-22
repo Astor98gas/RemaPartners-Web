@@ -108,9 +108,7 @@ public class JwtUtils {
     }
 
     private Date getExpirationDateFromToken(String jwtTokenString) {
-        System.out.println("Token: " + jwtTokenString);
         Claims claims = extractAllClaims(jwtTokenString);
-        System.out.println("Expiration date: " + claims.getExpiration());
         try {
             return claims.getExpiration();
         } catch (Exception e) {

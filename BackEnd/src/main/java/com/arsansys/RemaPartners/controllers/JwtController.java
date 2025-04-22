@@ -130,7 +130,6 @@ public class JwtController {
             String jwtToken = null;
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 jwtToken = authHeader.substring(7); // Quitar "Bearer " del inicio
-                System.out.println("Token from header: " + jwtToken);
             } else {
                 Cookie[] cookies = request.getCookies();
                 if (cookies != null) {

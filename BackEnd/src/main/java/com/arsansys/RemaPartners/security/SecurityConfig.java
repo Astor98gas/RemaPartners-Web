@@ -121,14 +121,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-    /**
-     * Mètode principal per a proves. Genera una contrasenya encriptada.
-     *
-     * @param args Arguments de la línia d'ordres.
-     */
-    // public static void main(String[] args) {
-    // System.out.println(new BCryptPasswordEncoder().encode("1234"));
-    // }
-
 }
