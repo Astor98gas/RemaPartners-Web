@@ -42,12 +42,6 @@ public class HomeController {
     @Autowired
     private UserService userService;
 
-    // public HomeController(UserRepository userRepository, PasswordEncoder
-    // passwordEncoder) {
-    // this.userRepository = userRepository;
-    // this.passwordEncoder = passwordEncoder;
-    // }
-
     @GetMapping("/")
     public String home() {
         return "Welcome to the RemaPartners API!";
