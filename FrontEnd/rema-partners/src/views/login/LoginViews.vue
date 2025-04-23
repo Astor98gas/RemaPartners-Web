@@ -12,20 +12,12 @@
             <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
                 <div class="space-y-4">
                     <InputText v-model="userLogin.username" type="text" :placeholder="utf8.t('login.username')"
-                        :label="utf8.t('login.email')" required />
+                        :label="utf8.t('login.username')" required />
                     <InputText v-model="userLogin.password" type="password" :placeholder="utf8.t('login.password')"
                         :label="utf8.t('login.password')" required />
                 </div>
 
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input id="remember-me" name="remember-me" type="checkbox" v-model="rememberMe"
-                            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
-                        <label for="remember-me" class="ml-2 block text-sm text-gray-900">
-                            {{ utf8.t('login.remember') }}
-                        </label>
-                    </div>
-
                     <div class="text-sm">
                         <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
                             {{ utf8.t('login.forgot') }}
@@ -40,13 +32,18 @@
                     </button>
                 </div>
             </form>
-
         </div>
+
+        <!-- Modal para mostrar errores -->
+        <Modal v-model="showErrorModal" :title="utf8.t('modal.error')">
+            <p>{{ error }}</p>
+        </Modal>
     </div>
 </template>
 
 <script lang="ts">
 import InputText from '@/components/ui/InputText.vue'
+import Modal from '@/components/ui/Modal.vue'
 import { useutf8Store } from '@/stores/counter'
 import { useUsers } from '@/composables/useUsers'
 import type { UserLogin } from '@/models/user'
@@ -54,7 +51,8 @@ import type { UserLogin } from '@/models/user'
 export default {
     name: 'LoginView',
     components: {
-        InputText
+        InputText,
+        Modal
     },
     data() {
         return {
@@ -64,11 +62,18 @@ export default {
             } as UserLogin,
             rememberMe: false,
             utf8: useutf8Store(),
-            error: null
+            error: null as string | null,
+            showErrorModal: false // Controla la visibilidad de la modal
         }
     },
     methods: {
         handleLogin() {
+            this.error = null
+            if (!this.userLogin.username || !this.userLogin.password) {
+                this.error = this.utf8.t('login.allInputs')
+                this.showErrorModal = true // Mostrar modal
+                return
+            }
             useUsers().loginUser(this.userLogin)
                 .then((response) => {
                     console.log('Login successful:', response)
@@ -76,7 +81,8 @@ export default {
                 })
                 .catch((error) => {
                     console.error('Login error:', error.response?.data || error.message || error)
-                    this.error = error.response?.data || 'Error al iniciar sesión'
+                    this.error = this.utf8.t('login.usernamePassword')
+                    this.showErrorModal = true // Mostrar modal
                 })
         }
     }
