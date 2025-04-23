@@ -19,6 +19,6 @@ public interface CategoriaService {
 
     abstract CategoriaEntity updateCategoria(CategoriaEntity categoriaEntity);
 
-    abstract void deleteCategoria(CategoriaEntity categoriaEntity);
+    abstract void deleteCategoriaById(String id);
 
 }

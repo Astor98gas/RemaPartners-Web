@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.arsansys.RemaPartners.models.entities.CategoriaEntity;
 import com.arsansys.RemaPartners.services.CategoriaService;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 public class CategoriaController {
@@ -36,11 +38,11 @@ public class CategoriaController {
         }
     }
 
-    @PostMapping("admin/categoria/delete")
-    public String deleteCategoria(@RequestBody CategoriaEntity categoriaEntity) {
+    @DeleteMapping("admin/categoria/delete/{id}")
+    public String deleteCategoria(@PathVariable String id) {
         try {
-            categoriaService.deleteCategoria(categoriaEntity);
-            return "Categoria deleted successfully with ID: " + categoriaEntity.getId();
+            categoriaService.deleteCategoriaById(id);
+            return "Categoria deleted successfully with ID: " + id;
         } catch (Exception e) {
             return "Error deleting categoria: " + e.getMessage();
         }
