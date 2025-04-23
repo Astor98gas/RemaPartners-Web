@@ -73,13 +73,13 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public void deleteCategoria(String id) {
+    public void deleteCategoria(CategoriaEntity categoriaEntity) {
         try {
             // Check if the category exists
-            if (!categoriaRepository.existsById(id)) {
+            if (!categoriaRepository.existsById(categoriaEntity.getId())) {
                 throw new RuntimeException("Category not found");
             }
-            categoriaRepository.deleteById(id);
+            categoriaRepository.deleteById(categoriaEntity.getId());
         } catch (Exception e) {
             throw new RuntimeException("Error deleting category: " + e.getMessage());
         }
