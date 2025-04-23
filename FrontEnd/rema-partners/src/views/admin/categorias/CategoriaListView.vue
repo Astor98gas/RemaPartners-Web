@@ -1,5 +1,5 @@
 <template>
-    <div class="categoria-list-view max-w-4xl mx-auto mt-6">
+    <div class="categoria-list-view max-w-[80%] mx-auto mt-6">
         <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Lista de Categorías</h1>
         <div class="mb-4 flex justify-end">
             <button @click="addCategoria"
@@ -29,7 +29,7 @@ export default {
                     id: '1',
                     titulo: 'Categoria 1 Lorem ipsum dolor sit amet consectetur adipiscing elit',
                     descripcion: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                    campos: ['Campo 1A', 'Campo 1B', 'Campo 1C', 'Campo 1D', 'Campo 1E', 'Campo 1F', 'Campo 1G', 'Campo 1H', 'Campo 1I', 'Campo 1J']
+                    campos: ['Campo 1sdffsdsdafsadfsadfsad fsafsfsadfsdafasdfsfsfsadffsdfA', 'Campo 1B', 'Campo 1C', 'Campo 1D', 'Campo 1E', 'Campo 1F', 'Campo 1G', 'Campo 1H', 'Campo 1I', 'Campo 1J']
                 },
                 {
                     id: '2',

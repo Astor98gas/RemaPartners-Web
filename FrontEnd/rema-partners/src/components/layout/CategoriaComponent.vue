@@ -1,6 +1,6 @@
 <template>
     <div
-        class="categoria-component max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 flex flex-col md:flex-row">
+        class="categoria-component max-w-[90%] mx-auto bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 flex flex-col m-10">
         <div class="flex-1 px-6 py-4">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ categoriaTitulo }}</h2>
             <p class="text-gray-500 text-xs mb-2"><strong>Id:</strong> {{ categoriaId }}</p>
@@ -16,18 +16,24 @@
                 </div>
             </div>
         </div>
-        <div class="flex items-center justify-center p-4 bg-gray-100">
-            <button @click="$emit('delete', categoriaId)"
-                class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none">
-                Eliminar
-            </button>
+        <!-- Contenedor de botones en la parte inferior -->
+        <div class="flex items-center justify-evenly p-4 bg-gray-100">
+            <DeleteButton @click="$emit('delete', categoriaId)" class="ml-4" />
+            <EditButton @click="$emit('edit', categoriaId)" class="ml-4" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
+import DeleteButton from '../ui/DeleteButton.vue';
+import EditButton from '../ui/EditButton.vue';
+
 export default {
     name: 'CategoriaComponent',
+    components: {
+        DeleteButton,
+        EditButton
+    },
     props: {
         categoriaId: {
             type: String,

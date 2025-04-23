@@ -52,7 +52,7 @@ export const useutf8Store = defineStore('utf8', {
         'modal.cancel': 'Cancel',
         'modal.save': 'Save',
         'modal.delete': 'Delete',
-        'modal.edit': 'Edit'
+        'modal.edit': 'Edit',
       },
       es: {
         'login.title': 'Iniciar sesión',
