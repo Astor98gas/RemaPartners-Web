@@ -56,7 +56,7 @@ export default {
 
 .edit-button:hover {
     width: 140px;
-    border-radius: 5%;
+    border-radius: 10px;
     transition-duration: .3s;
     background-color: rgb(127, 179, 213);
     align-items: center;

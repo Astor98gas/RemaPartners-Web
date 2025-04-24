@@ -51,7 +51,7 @@ export default {
 
 .delete-button:hover {
     width: 140px;
-    border-radius: 5%;
+    border-radius: 10px;
     transition-duration: .3s;
     background-color: rgb(255, 69, 69);
     align-items: center;
