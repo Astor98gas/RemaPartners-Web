@@ -1,6 +1,8 @@
 package com.arsansys.RemaPartners.controllers.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.arsansys.RemaPartners.models.entities.CategoriaEntity;
@@ -19,42 +21,50 @@ public class CategoriaController {
     private CategoriaService categoriaService;
 
     @PostMapping("admin/categoria/create")
-    public String createCategoria(@RequestBody CategoriaEntity categoriaEntity) {
+    public ResponseEntity<?> createCategoria(@RequestBody CategoriaEntity categoriaEntity) {
         try {
+            if (categoriaEntity.getId() != null) {
+                categoriaEntity.setId(null);
+            }
             CategoriaEntity entity = categoriaService.createCategoria(categoriaEntity);
-            return "Categoria added successfully with ID: " + entity.getId();
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("Categoria added successfully with ID: " + entity.getId());
         } catch (Exception e) {
-            return "Error adding categoria: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error adding categoria: " + e.getMessage());
         }
     }
 
     @PostMapping("admin/categoria/update")
-    public String updateCategoria(@RequestBody CategoriaEntity categoriaEntity) {
+    public ResponseEntity<?> updateCategoria(@RequestBody CategoriaEntity categoriaEntity) {
         try {
             CategoriaEntity entity = categoriaService.updateCategoria(categoriaEntity);
-            return "Categoria updated successfully with ID: " + entity.getId();
+            return ResponseEntity.ok("Categoria updated successfully with ID: " + entity.getId());
         } catch (Exception e) {
-            return "Error updating categoria: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error updating categoria: " + e.getMessage());
         }
     }
 
     @DeleteMapping("admin/categoria/delete/{id}")
-    public String deleteCategoria(@PathVariable String id) {
+    public ResponseEntity<?> deleteCategoria(@PathVariable String id) {
         try {
             categoriaService.deleteCategoriaById(id);
-            return "Categoria deleted successfully with ID: " + id;
+            return ResponseEntity.ok("Categoria deleted successfully with ID: " + id);
         } catch (Exception e) {
-            return "Error deleting categoria: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error deleting categoria: " + e.getMessage());
         }
     }
 
     @GetMapping("admin/categoria/getAll")
-    public Iterable<CategoriaEntity> getCategorias() {
+    public ResponseEntity<?> getCategorias() {
         try {
-            return categoriaService.getCategorias();
+            Iterable<CategoriaEntity> categorias = categoriaService.getCategorias();
+            return ResponseEntity.ok(categorias);
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching categorias: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching categorias: " + e.getMessage());
         }
     }
-
 }

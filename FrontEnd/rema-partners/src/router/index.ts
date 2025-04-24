@@ -48,6 +48,12 @@ const router = createRouter({
             component: () => import('../views/admin/categorias/CategoriaAddView.vue'),
             meta: { requiresAuth: true, roles: ['ADMIN'] }
         },
+        {
+            path: '/admin/categoria/edit/:id',
+            name: 'categoria-edit',
+            component: () => import('../views/admin/categorias/CategoriaAddView.vue'),
+            meta: { requiresAuth: true, roles: ['ADMIN'] }
+        }
     ],
 })
 

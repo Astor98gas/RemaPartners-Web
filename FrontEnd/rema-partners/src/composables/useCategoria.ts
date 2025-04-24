@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import { categoriaService } from "@/services/categoria.service";
-import type { Categoria } from "@/models/categoria";
+import type { Categoria, CategoriaModify } from "@/models/categoria";
 import Cookies from "js-cookie";
 
 export function useCategoria() {
@@ -21,7 +21,7 @@ export function useCategoria() {
             loading.value = false;
         }
     };
-    const createCategoria = async (categoria: Categoria) => {
+    const createCategoria = async (categoria: CategoriaModify) => {
         try {
             loading.value = true;
             error.value = null;
@@ -54,7 +54,7 @@ export function useCategoria() {
             loading.value = false;
         }
     }
-    const updateCategoria = async (id: string, categoria: Categoria) => {
+    const updateCategoria = async (id: string, categoria: CategoriaModify) => {
         try {
             loading.value = true;
             error.value = null;

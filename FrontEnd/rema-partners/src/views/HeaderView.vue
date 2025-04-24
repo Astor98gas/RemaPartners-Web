@@ -25,6 +25,7 @@
                     <router-link to="/profile">
                         <img src="@/assets/icons/profile.png" alt="Profile" class="h-10 w-10 rounded-full">
                     </router-link>
+                    <SelectorIdioma class="md:flex" />
                 </div>
             </div>
             <div v-else>
@@ -39,8 +40,8 @@
                             {{ utf8.t('login.register') }}
                         </ButtonBasic>
                     </router-link>
-                    <SelectorIdioma class="md:flex" />
                 </div>
+                <SelectorIdioma class="md:flex" />
             </div>
 
             <button class="md:hidden focus:outline-none" @click="toggleMobileMenu">
