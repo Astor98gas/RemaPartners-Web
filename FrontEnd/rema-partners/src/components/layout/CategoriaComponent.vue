@@ -8,7 +8,7 @@
             <div class="mt-4">
                 <h3 class="text-gray-700 font-semibold mb-2">Campos:</h3>
                 <!-- Diseño de cuadrícula para las cartas -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     <div v-for="(campo, index) in campos" :key="index"
                         class="campo-card bg-gray-100 p-4 rounded-lg shadow-md text-center">
                         <p class="text-gray-700 font-medium">{{ campo }}</p>

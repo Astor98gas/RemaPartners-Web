@@ -40,8 +40,8 @@
                             {{ utf8.t('login.register') }}
                         </ButtonBasic>
                     </router-link>
+                    <SelectorIdioma class="md:flex" />
                 </div>
-                <SelectorIdioma class="md:flex" />
             </div>
 
             <button class="md:hidden focus:outline-none" @click="toggleMobileMenu">

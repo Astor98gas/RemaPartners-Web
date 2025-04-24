@@ -35,9 +35,10 @@ public class CategoriaController {
         }
     }
 
-    @PostMapping("admin/categoria/update")
-    public ResponseEntity<?> updateCategoria(@RequestBody CategoriaEntity categoriaEntity) {
+    @PostMapping("admin/categoria/update/{id}")
+    public ResponseEntity<?> updateCategoria(@PathVariable String id, @RequestBody CategoriaEntity categoriaEntity) {
         try {
+            categoriaEntity.setId(id);
             CategoriaEntity entity = categoriaService.updateCategoria(categoriaEntity);
             return ResponseEntity.ok("Categoria updated successfully with ID: " + entity.getId());
         } catch (Exception e) {
@@ -65,6 +66,17 @@ public class CategoriaController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error fetching categorias: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("admin/categoria/getById/{id}")
+    public ResponseEntity<?> getCategoriaById(@PathVariable String id) {
+        try {
+            CategoriaEntity categoria = categoriaService.getCategoriaById(id);
+            return ResponseEntity.ok(categoria);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Error fetching categoria: " + e.getMessage());
         }
     }
 }
