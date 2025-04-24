@@ -23,9 +23,6 @@ public class CategoriaController {
     @PostMapping("admin/categoria/create")
     public ResponseEntity<?> createCategoria(@RequestBody CategoriaEntity categoriaEntity) {
         try {
-            if (categoriaEntity.getId() != null) {
-                categoriaEntity.setId(null);
-            }
             CategoriaEntity entity = categoriaService.createCategoria(categoriaEntity);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body("Categoria added successfully with ID: " + entity.getId());

@@ -1,4 +1,4 @@
-package com.arsansys.RemaPartners.services;
+package com.arsansys.RemaPartners.services.servicesImpl;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

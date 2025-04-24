@@ -13,7 +13,6 @@ import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.models.jwt.JwtResponse;
 import com.arsansys.RemaPartners.repositories.UserRepository;
 import com.arsansys.RemaPartners.security.jwt.JwtUtils;
-import com.arsansys.RemaPartners.services.UserDetailsServiceImpl;
 import com.arsansys.RemaPartners.services.UserService;
 
 @Service

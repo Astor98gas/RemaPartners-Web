@@ -21,8 +21,8 @@ import com.arsansys.RemaPartners.models.enums.ERol;
 import com.arsansys.RemaPartners.models.jwt.JwtRequest;
 import com.arsansys.RemaPartners.models.jwt.JwtResponse;
 import com.arsansys.RemaPartners.security.jwt.JwtUtils;
-import com.arsansys.RemaPartners.services.UserDetailsServiceImpl;
 import com.arsansys.RemaPartners.services.UserService;
+import com.arsansys.RemaPartners.services.servicesImpl.UserDetailsServiceImpl;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
