@@ -11,6 +11,8 @@ export const useutf8Store = defineStore('utf8', {
     currentLanguage: 'es',
     translations: {
       en: {
+        'links.categoria.add': 'Add category',
+        'links.categoria.list': 'Category list',
         'links.dashboard': 'Dashboard',
         'links.settings': 'Settings',
         'links.profile': 'Profile',
@@ -60,6 +62,8 @@ export const useutf8Store = defineStore('utf8', {
         'modal.edit': 'Edit',
       },
       es: {
+        'links.categoria.add': 'Añadir categoría',
+        'links.categoria.list': 'Lista de categorías',
         'links.dashboard': 'Panel de control',
         'links.settings': 'Configuración',
         'links.profile': 'Perfil',
@@ -109,6 +113,8 @@ export const useutf8Store = defineStore('utf8', {
         'modal.edit': 'Editar'
       },
       cat: {
+        'links.categoria.add': 'Afegir categoria',
+        'links.categoria.list': 'Llista de categories',
         'links.dashboard': 'Tauler de control',
         'links.settings': 'Configuració',
         'links.profile': 'Perfil',

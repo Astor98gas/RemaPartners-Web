@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-full sticky top-0">
         <!-- Sidebar -->
-        <aside class="bg-gray-800 text-white w-64 flex flex-col h-full">
+        <aside class="bg-gray-700 text-white w-64 flex flex-col h-full">
             <header class="p-4">
                 <h1 class="text-2xl font-bold">Lateral Header</h1>
             </header>
