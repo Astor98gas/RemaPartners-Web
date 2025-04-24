@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
+import { useToast } from 'vue-toastification';
+
 
 const EmptyComponent = {
     template: '<div></div>'
@@ -32,12 +34,18 @@ const router = createRouter({
             path: '/profile',
             name: 'profile',
             component: () => import('../views/login/ProfileViews.vue'),
-            meta: { requiresAuth: true, roles: ['USER', 'ADMIN'] }
+            meta: { requiresAuth: true, roles: ['COMPRADOR', 'ADMIN', 'VENDEDOR', 'TRABAJADOR'] }
         },
         {
-            path: '/categorias',
+            path: '/admin/categoria/list',
             name: 'categorias',
             component: () => import('../views/admin/categorias/CategoriaListView.vue'),
+            meta: { requiresAuth: true, roles: ['ADMIN'] }
+        },
+        {
+            path: '/admin/categoria/create',
+            name: 'categoria-create',
+            component: () => import('../views/admin/categorias/CategoriaAddView.vue'),
             meta: { requiresAuth: true, roles: ['ADMIN'] }
         },
     ],
@@ -45,24 +53,32 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     const usersComposable = useUsers();
+    const toast = useToast();
     try {
-        const userData = await usersComposable.isLoggedIn();
-
         if (to.meta.requiresAuth) {
-            if (Array.isArray(to.meta.roles) && !to.meta.roles.includes(userData.rol.name)) {
-                return next({ name: 'login' });
-            }
+            try {
+                const userData = await usersComposable.isLoggedIn();
 
-            // Modificación clave: Acceder al nombre del rol correctamente
-            if (Array.isArray(to.meta.roles) && !to.meta.roles.includes(userData.rol.name)) {
-                console.error(`Acceso denegado: El rol ${userData.rol.name} no tiene permisos`);
+                if (Array.isArray(to.meta.roles) && !to.meta.roles.includes(userData.rol.name)) {
+                    toast.error(`Acceso denegado: El rol ${userData.rol.name} no tiene permisos para acceder a esta página.`);
+                    console.error(`Acceso denegado: El rol ${userData.rol.name} no tiene permisos`);
+                    return next({ name: 'root' });
+                }
+
+                return next();
+            } catch (error) {
+                toast.warning('Inicia sesión para continuar.', {
+                    showCloseButtonOnHover: true,
+                });
+                console.error('Error verificando autenticación:', error);
                 return next({ name: 'root' });
             }
         }
-        next();
+
+        return next();
     } catch (error) {
-        console.error('Error verificando autenticación:', error);
-        next({ name: 'login' });
+        console.error('Error inesperado:', error);
+        return next({ name: 'root' });
     }
 });
 
