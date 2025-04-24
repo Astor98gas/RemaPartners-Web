@@ -73,9 +73,7 @@ router.beforeEach(async (to, from, next) => {
 
                 return next();
             } catch (error) {
-                toast.warning('Inicia sesión para continuar.', {
-                    showCloseButtonOnHover: true,
-                });
+                toast.warning('Inicia sesión para continuar.');
                 console.error('Error verificando autenticación:', error);
                 return next({ name: 'root' });
             }

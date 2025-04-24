@@ -34,6 +34,6 @@ public class CategoriaEntity {
 
     @NotBlank
     @Size(max = 20)
-    private List<@NotBlank @Size(max = 500) String> campos;
+    private List<@NotBlank @Size(max = 20) String> campos;
 
 }

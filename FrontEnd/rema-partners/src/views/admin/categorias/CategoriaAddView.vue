@@ -1,58 +1,97 @@
 <template>
-    <div class="max-w-3xl mx-auto py-8 px-4">
-        <h1 class="text-3xl font-bold text-center mb-8">
-            {{ isEdit ? t('categoria.edit') : t('categoria.title') }}
-        </h1>
+    <div class="max-w-[80%] mx-auto py-8 px-4">
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">
+                {{ isEdit ? t('categoria.edit') : t('categoria.title') }}
+            </h1>
+            <button type="button" @click="$router.go(-1)"
+                class="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-2xl rounded-2xl transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                {{ t('categoria.form.back') }}
+            </button>
+        </div>
 
-        <form @submit.prevent="saveCategoria" class="bg-white shadow-md rounded-lg p-6">
+        <form @submit.prevent="saveCategoria" class="bg-white shadow-lg rounded-xl p-8 border border-gray-100">
             <!-- Título -->
-            <div class="mb-6">
-                <label for="titulo" class="block text-gray-700 font-semibold mb-2">
+            <div class="mb-8">
+                <label for="titulo" class="block text-gray-700 font-semibold mb-2 text-lg">
                     {{ t('categoria.form.title') }}
                 </label>
                 <input type="text" id="titulo" v-model="newCategoria.titulo"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200"
                     required />
             </div>
 
             <!-- Descripción -->
-            <div class="mb-6">
-                <label for="descripcion" class="block text-gray-700 font-semibold mb-2">
+            <div class="mb-8">
+                <label for="descripcion" class="block text-gray-700 font-semibold mb-2 text-lg">
                     {{ t('categoria.form.description') }}
                 </label>
                 <textarea id="descripcion" v-model="newCategoria.descripcion" rows="3"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200"
                     required></textarea>
             </div>
 
             <!-- Campos -->
-            <div class="mb-6">
-                <label class="block text-gray-700 font-semibold mb-2">
-                    {{ t('categoria.form.fields') }}
-                </label>
-                <div v-for="(campo, index) in newCategoria.campos" :key="index" class="flex items-center mb-2">
-                    <input type="text" v-model="newCategoria.campos[index]"
-                        class="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        :placeholder="t('categoria.form.fieldPlaceholder')" />
-                    <button type="button" @click="removeCampo(index)"
-                        class="px-4 py-2 bg-red-500 text-white rounded-r-md hover:bg-red-600">
-                        <span class="font-bold">-</span>
-                    </button>
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <label class="block text-gray-700 font-semibold text-lg">
+                        {{ t('categoria.form.fields') }}
+                    </label>
+                    <span class="text-sm text-gray-500">{{ newCategoria.campos.length }} {{ newCategoria.campos.length
+                        === 1 ? t('categoria.form.field') : t('categoria.form.fieldsPlural') }}</span>
+                </div>
+
+                <div class="space-y-3">
+                    <div v-for="(campo, index) in newCategoria.campos" :key="index"
+                        class="flex items-center group bg-gray-50 rounded-lg transition-all hover:bg-gray-100"
+                        :class="{ 'border-l-4 border-blue-500': focusedIndex === index }">
+                        <textarea v-model="newCategoria.campos[index]"
+                            class="flex-grow px-4 py-3 bg-transparent border-0 focus:outline-none focus:ring-0 resize-none overflow-hidden"
+                            :placeholder="t('categoria.form.fieldPlaceholder')" @focus="focusedIndex = index"
+                            @blur="focusedIndex = -1" @input="autoResize($event)" rows="1" ref="textareas"></textarea>
+                        <button type="button" @click="removeCampo(index)"
+                            class="p-2 mr-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <button type="button" @click="addCampo"
-                    class="w-full mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                    class="flex items-center justify-center w-full mt-4 px-4 py-3 border-2 border-dashed border-gray-300 text-blue-600 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
                     {{ t('categoria.form.addField') }}
                 </button>
             </div>
 
             <!-- Botones -->
-            <div class="flex justify-end space-x-4">
+            <div class="flex justify-end space-x-4 pt-4 border-t border-gray-100">
                 <button type="button" @click="$router.go(-1)"
-                    class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+                    class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
                     {{ t('categoria.form.cancel') }}
                 </button>
-                <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                <button type="submit"
+                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                    <svg v-if="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
                     {{ isEdit ? t('categoria.form.update') : t('categoria.form.save') }}
                 </button>
             </div>
@@ -80,7 +119,8 @@ export default defineComponent({
                 campos: ['']
             } as CategoriaModify,
             loading: false,
-            error: null
+            error: null,
+            focusedIndex: -1
         };
     },
 
@@ -96,7 +136,6 @@ export default defineComponent({
     },
 
     async mounted() {
-        // Cargar datos si estamos en modo edición
         if (this.isEdit) {
             try {
                 const categoriaService = useCategoria();
@@ -112,6 +151,15 @@ export default defineComponent({
                 this.$router.push('/admin/categoria/list');
             }
         }
+    },
+
+    updated() {
+        this.$nextTick(() => {
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            });
+        });
     },
 
     methods: {
@@ -162,6 +210,17 @@ export default defineComponent({
                     console.error('Error completo:', err);
                 }
             }
+        },
+
+        autoResize(event: Event): void {
+            const textarea = event.target as HTMLTextAreaElement;
+
+            // Reset height to calculate proper scrollHeight
+            textarea.style.height = 'auto';
+
+            // Set new height based on content
+            const newHeight = textarea.scrollHeight;
+            textarea.style.height = newHeight + 'px';
         }
     }
 });
