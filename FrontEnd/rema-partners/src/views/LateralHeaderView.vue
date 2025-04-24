@@ -7,26 +7,45 @@
             </header>
             <nav class="flex-1 p-4 overflow-y-auto">
                 <ul>
-                    <li class="mb-2">
-                        <a href="#" class="text-white hover:underline">Link 1</a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="#" class="text-white hover:underline">Link 2</a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="#" class="text-white hover:underline">Link 3</a>
+                    <li v-for="link in filteredLinks" :key="link.text" class="mb-2">
+                        <a :href="link.href" class="text-white hover:underline">{{ link.text }}</a>
                     </li>
                 </ul>
             </nav>
             <footer class="p-4">
-                <p>&copy; 2023 Your Company</p>
+                <p>&copy; 2025 Arsansys</p>
             </footer>
         </aside>
     </div>
 </template>
 
 <script lang="ts">
-export default {
-    name: 'LateralHeaderView'
-};
+import { defineComponent } from 'vue';
+import { useRoute } from 'vue-router';
+import { useutf8Store } from '@/stores/counter';
+
+export default defineComponent({
+    name: 'LateralHeaderView',
+    data() {
+        return {
+            links: [] as Array<{ text: string; href: string; visibleOn?: string[] }>
+        };
+    },
+    computed: {
+        filteredLinks() {
+            const route = useRoute();
+            const currentPath = String(route.name || '');
+            return this.links.filter(link => !link.visibleOn || link.visibleOn.includes(currentPath));
+        }
+    },
+    created() {
+        const utf8 = useutf8Store();
+        this.links = [
+            { text: utf8.t('links.dashboard'), href: '/dashboard', visibleOn: ['dashboard', 'home'] },
+            { text: utf8.t('links.settings'), href: '/settings', visibleOn: ['settings'] },
+            { text: utf8.t('links.profile'), href: '/profile' },
+            { text: utf8.t('links.help'), href: '/help' },
+        ];
+    }
+});
 </script>

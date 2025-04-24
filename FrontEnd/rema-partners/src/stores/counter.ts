@@ -11,6 +11,11 @@ export const useutf8Store = defineStore('utf8', {
     currentLanguage: 'es',
     translations: {
       en: {
+        'links.dashboard': 'Dashboard',
+        'links.settings': 'Settings',
+        'links.profile': 'Profile',
+        'links.help': 'Help',
+        'links.logout': 'Logout',
         'login.title': 'Sign in to your account',
         'login.email': 'Email address',
         'login.username': 'Username',
@@ -55,6 +60,11 @@ export const useutf8Store = defineStore('utf8', {
         'modal.edit': 'Edit',
       },
       es: {
+        'links.dashboard': 'Panel de control',
+        'links.settings': 'Configuración',
+        'links.profile': 'Perfil',
+        'links.help': 'Ayuda',
+        'links.logout': 'Cerrar sesión',
         'login.title': 'Iniciar sesión',
         'login.email': 'Correo electrónico',
         'login.username': 'Nombre de usuario',
@@ -99,6 +109,11 @@ export const useutf8Store = defineStore('utf8', {
         'modal.edit': 'Editar'
       },
       cat: {
+        'links.dashboard': 'Tauler de control',
+        'links.settings': 'Configuració',
+        'links.profile': 'Perfil',
+        'links.help': 'Ajuda',
+        'links.logout': 'Tancar sessió',
         'login.title': 'Iniciar sessió',
         'login.email': 'Correu electrònic',
         'login.username': 'Nom d\'usuari',
