@@ -91,6 +91,8 @@ export const useutf8Store = defineStore('utf8', {
         'categoria.list.delete.cancel': 'Cancel',
         'categoria.list.delete.success': 'Category successfully deleted',
         'categoria.list.delete.error': 'Error deleting category',
+        'navigation.static': 'Static Links',
+        'navigation.dynamic': 'Context Menu',
       },
       es: {
         'links.categoria.add': 'Añadir categoría',
@@ -173,6 +175,8 @@ export const useutf8Store = defineStore('utf8', {
         'categoria.list.delete.cancel': 'Cancelar',
         'categoria.list.delete.success': 'Categoría eliminada exitosamente',
         'categoria.list.delete.error': 'Error al eliminar la categoría',
+        'navigation.static': 'Enlaces Estáticos',
+        'navigation.dynamic': 'Menú Contextual',
       },
       cat: {
         'links.categoria.add': 'Afegir categoria',
@@ -255,6 +259,8 @@ export const useutf8Store = defineStore('utf8', {
         'categoria.list.delete.cancel': 'Cancel·lar',
         'categoria.list.delete.success': 'Categoria eliminada amb èxit',
         'categoria.list.delete.error': 'Error en eliminar la categoria',
+        'navigation.static': 'Enllaços Estàtics',
+        'navigation.dynamic': 'Menú Contextual',
       },
     } as Translations
   }),
