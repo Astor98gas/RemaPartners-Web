@@ -3,6 +3,7 @@ package com.arsansys.RemaPartners.services.servicesImpl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.arsansys.RemaPartners.models.entities.ProductoEntity;
 import com.arsansys.RemaPartners.models.enums.EEstado;
@@ -10,6 +11,7 @@ import com.arsansys.RemaPartners.models.enums.EMoneda;
 import com.arsansys.RemaPartners.repositories.ProductoRepository;
 import com.arsansys.RemaPartners.services.ProductoService;
 
+@Service
 public class ProductoServiceImpl implements ProductoService {
 
     @Autowired

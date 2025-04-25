@@ -47,6 +47,8 @@ import Modal from '@/components/ui/Modal.vue'
 import { useutf8Store } from '@/stores/counter'
 import { useUsers } from '@/composables/useUsers'
 import type { UserLogin } from '@/models/user'
+import { useRoute } from 'vue-router';
+import { useToast } from 'vue-toastification';
 
 export default {
     name: 'LoginView',
@@ -63,7 +65,9 @@ export default {
             rememberMe: false,
             utf8: useutf8Store(),
             error: null as string | null,
-            showErrorModal: false // Controla la visibilidad de la modal
+            showErrorModal: false,
+            toast: useToast(),
+            route: useRoute(),
         }
     },
     methods: {
@@ -84,6 +88,11 @@ export default {
                     this.error = this.utf8.t('login.usernamePassword')
                     this.showErrorModal = true // Mostrar modal
                 })
+        }
+    },
+    mounted() {
+        if (this.route.query.error === 'session_expired') {
+            this.toast.error(this.utf8.t('login.session_expired'));
         }
     }
 }

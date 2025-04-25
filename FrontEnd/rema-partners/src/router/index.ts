@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useToast } from 'vue-toastification';
+import { useutf8Store } from '@/stores/counter';
 
 
 const EmptyComponent = {
@@ -60,28 +61,31 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
     const usersComposable = useUsers();
     const toast = useToast();
+    const utf8 = useutf8Store();
+
     try {
         if (to.meta.requiresAuth) {
             try {
                 const userData = await usersComposable.isLoggedIn();
 
                 if (Array.isArray(to.meta.roles) && !to.meta.roles.includes(userData.rol.name)) {
-                    toast.error(`Acceso denegado: El rol ${userData.rol.name} no tiene permisos para acceder a esta página.`);
-                    console.error(`Acceso denegado: El rol ${userData.rol.name} no tiene permisos`);
+                    const message = utf8.t('auth.access_denied').replace('{role}', utf8.t(`roles.${userData.rol.name}`));
+                    toast.error(message);
+                    console.error(message);
                     return next({ name: 'root' });
                 }
 
                 return next();
             } catch (error) {
-                toast.warning('Inicia sesión para continuar.');
-                console.error('Error verificando autenticación:', error);
+                toast.warning(utf8.t('auth.login_required'));
+                console.error(utf8.t('auth.unexpected_error'), error);
                 return next({ name: 'root' });
             }
         }
 
         return next();
     } catch (error) {
-        console.error('Error inesperado:', error);
+        console.error(utf8.t('auth.unexpected_error'), error);
         return next({ name: 'root' });
     }
 });
