@@ -26,6 +26,9 @@ public class ProductoEntity {
     private String id;
 
     @NotBlank
+    private String idUsuario;
+
+    @NotBlank
     private String idCategoria;
 
     @NotBlank
@@ -68,5 +71,8 @@ public class ProductoEntity {
 
     @NotBlank
     private String fechaActualizacion;
+
+    @NotBlank
+    private String fechaPublicacion;
 
 }
