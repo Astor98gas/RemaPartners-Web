@@ -1,22 +1,15 @@
 <template>
     <header class="sticky top-0 w-full bg-gray-100 shadow-md z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <router-link to="/">
+            <div @click="reload" class="flex items-center cursor-pointer">
                 <div class="flex items-center">
                     <img src="@/assets/logo.png" alt="REMA Partners Logo" class="h-10 mr-3">
                     <h1 class="text-2xl font-bold text-gray-800">REMA Partners</h1>
                 </div>
-            </router-link>
+            </div>
 
             <nav class="hidden md:block">
-                <ul class="flex space-x-2">
-                    <li><router-link to="/home"
-                            class="px-4 py-2 text-gray-700 font-medium hover:text-orange-600 transition-colors">Home</router-link>
-                    </li>
-                    <li><router-link to="/admin/categoria/list"
-                            class="px-4 py-2 text-gray-700 font-medium hover:text-orange-600 transition-colors">Categorias</router-link>
-                    </li>
-                </ul>
+
             </nav>
 
             <div class="profile" v-if="isLoggedIn">
@@ -57,7 +50,7 @@
 
         <div class="md:hidden bg-white shadow-lg" :class="mobileMenuOpen ? 'block' : 'hidden'">
             <ul class="p-4 space-y-4">
-                <li><router-link to="/home"
+                <li><router-link to="/"
                         class="block px-4 py-2 text-gray-700 font-medium hover:text-orange-600 transition-colors"
                         @click="closeMobileMenu">Home</router-link></li>
                 <li class="pt-2 flex flex-col space-y-2">
@@ -129,6 +122,9 @@ export default {
         },
         closeMobileMenu() {
             this.mobileMenuOpen = false;
+        },
+        reload() {
+            window.location.href = '/';
         }
     }
 }

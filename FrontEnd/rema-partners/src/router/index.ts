@@ -55,6 +55,12 @@ const router = createRouter({
             name: 'categoria-edit',
             component: () => import('../views/admin/categorias/CategoriaAddView.vue'),
             meta: { requiresAuth: true, roles: ['ADMIN'] }
+        },
+        {
+            path: '/producto/create',
+            name: 'producto-create',
+            component: () => import('../views/productos/ProductosAddView.vue'),
+            meta: { requiresAuth: true, roles: ['VENDEDOR', 'ADMIN'] }
         }
     ],
 })

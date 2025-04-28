@@ -9,13 +9,17 @@ export interface Producto {
     marca: string;
     titulo: string;
     descripcion: string;
-    estado: EEstado; // Cambiado a enum
+    estado: EEstado;
     precioCentimos: number;
-    moneda: EMoneda; // Cambiado a enum
+    moneda: EMoneda;
     stock: number;
     fechaCreacion: string;
     fechaModificacion: string;
     fechaPublicacion: string;
+    fechaBaja: string;
+    direccion: string;
+    activo: boolean;
+    destacado: boolean;
 }
 
 export interface ProductoModify {
@@ -26,11 +30,15 @@ export interface ProductoModify {
     marca: string;
     titulo: string;
     descripcion: string;
-    estado: EEstado; // Cambiado a enum
+    estado: EEstado;
     precioCentimos: number;
-    moneda: EMoneda; // Cambiado a enum
+    moneda: EMoneda;
     stock: number;
     fechaCreacion: string;
     fechaModificacion: string;
     fechaPublicacion: string;
+    fechaBaja: string;
+    direccion: string;
+    activo: boolean;
+    destacado: boolean;
 }

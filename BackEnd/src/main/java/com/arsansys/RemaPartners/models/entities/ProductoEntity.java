@@ -75,4 +75,15 @@ public class ProductoEntity {
     @NotBlank
     private String fechaPublicacion;
 
+    private String fechaBaja;
+
+    @NotBlank
+    private String direccion;
+
+    @NotBlank
+    private Boolean activo;
+
+    @NotBlank
+    private Boolean destacado;
+
 }

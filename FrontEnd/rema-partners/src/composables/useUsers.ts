@@ -44,7 +44,7 @@ export function useUsers() {
 
                 success.value = 'Login successful!'
                 error.value = null
-                window.location.href = '/home'
+                window.location.href = '/'
                 return response.data
             } else {
                 error.value = 'Login failed: No token received'
@@ -98,7 +98,7 @@ export function useUsers() {
                 Cookies.set('token', response.data.token, { expires: 7, path: '/' })
                 success.value = 'Login successful!'
                 error.value = null
-                window.location.href = '/home'
+                window.location.href = '/'
             } else {
                 error.value = 'Login failed'
                 success.value = null
