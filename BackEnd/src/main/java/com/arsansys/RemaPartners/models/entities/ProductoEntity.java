@@ -86,4 +86,6 @@ public class ProductoEntity {
     @NotBlank
     private Boolean destacado;
 
+    @NotBlank
+    private CampoCategoriaEntity[] camposCategoria;
 }

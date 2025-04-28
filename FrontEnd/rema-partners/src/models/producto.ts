@@ -1,5 +1,6 @@
 import { EEstado } from './enums/EEstado';
 import { EMoneda } from './enums/EMoneda';
+import type { CamposCategoria } from './camposCategoria';
 
 export interface Producto {
     readonly id: string;
@@ -20,6 +21,7 @@ export interface Producto {
     direccion: string;
     activo: boolean;
     destacado: boolean;
+    camposCategoria: CamposCategoria[];
 }
 
 export interface ProductoModify {
@@ -41,4 +43,5 @@ export interface ProductoModify {
     direccion: string;
     activo: boolean;
     destacado: boolean;
+    camposCategoria: CamposCategoria[];
 }
