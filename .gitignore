@@ -60,4 +60,4 @@ npm-debug.log
 
 .BackEnd/src/main/resources/secret
 
-.uploads/
+/uploads/
