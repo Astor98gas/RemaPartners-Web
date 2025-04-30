@@ -200,6 +200,24 @@
                             <p class="text-gray-900 font-semibold">{{ t(`producto.estados.${product.estado}`) }}</p>
                         </div>
 
+                        <!-- Fechas -->
+                        <div
+                            class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
+                            <p class="text-gray-500 text-sm mb-1">{{ t('common.dates') }}</p>
+                            <p class="text-gray-700 text-sm">
+                                <span class="font-medium">{{ t('common.createdOn') }}:</span>
+                                {{ formatDate(product.fechaCreacion) }}
+                            </p>
+                            <p class="text-gray-700 text-sm" v-if="product.fechaModificacion">
+                                <span class="font-medium">{{ t('common.modifiedOn') }}:</span>
+                                {{ formatDate(product.fechaModificacion) }}
+                            </p>
+                            <p class="text-gray-700 text-sm" v-if="product.fechaPublicacion">
+                                <span class="font-medium">{{ t('common.publishedOn') }}:</span>
+                                {{ formatDate(product.fechaPublicacion) }}
+                            </p>
+                        </div>
+
                         <!-- Ubicación -->
                         <div
                             class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow col-span-1 md:col-span-2 lg:col-span-3">
@@ -235,23 +253,6 @@
                             </p>
                         </div>
 
-                        <!-- Fechas -->
-                        <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow"
-                            v-if="isAdmin">
-                            <p class="text-gray-500 text-sm mb-1">{{ t('common.dates') }}</p>
-                            <p class="text-gray-700 text-sm">
-                                <span class="font-medium">{{ t('common.createdOn') }}:</span>
-                                {{ formatDate(product.fechaCreacion) }}
-                            </p>
-                            <p class="text-gray-700 text-sm" v-if="product.fechaModificacion">
-                                <span class="font-medium">{{ t('common.modifiedOn') }}:</span>
-                                {{ formatDate(product.fechaModificacion) }}
-                            </p>
-                            <p class="text-gray-700 text-sm" v-if="product.fechaPublicacion">
-                                <span class="font-medium">{{ t('common.publishedOn') }}:</span>
-                                {{ formatDate(product.fechaPublicacion) }}
-                            </p>
-                        </div>
                     </div>
                 </div>
 
@@ -336,6 +337,14 @@ export default defineComponent({
             if (this.product && this.product.imagenes && this.product.imagenes.length > 0) {
                 this.currentImage = this.product.imagenes[0];
                 this.currentImageIndex = 0;
+            }
+
+            if (!this.isAdmin) {
+                if (userData?.id == this.product?.idUsuario) {
+                    this.isAdmin = true;
+                } else {
+                    this.isAdmin = false;
+                }
             }
 
             this.error = null;

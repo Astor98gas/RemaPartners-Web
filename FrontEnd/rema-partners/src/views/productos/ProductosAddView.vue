@@ -179,11 +179,10 @@ import type { Categoria } from '@/models/categoria';
 import type { CamposCategoria } from '@/models/camposCategoria';
 import { useProducto } from '@/composables/useProducto';
 import Swal from 'sweetalert2';
-
-// Importar componentes
 import ImageSelector from '@/components/productos/ImageSelector.vue';
 import LocationSelector from '@/components/productos/LocationSelector.vue';
 import CategoryFields from '@/components/productos/CategoryFields.vue';
+import { useUsers } from '@/composables/useUsers';
 
 export default defineComponent({
     name: 'ProductosAddView',
@@ -216,7 +215,7 @@ export default defineComponent({
                 stock: 0,
                 fechaCreacion: new Date().toISOString(),
                 fechaModificacion: new Date().toISOString(),
-                fechaPublicacion: '',
+                fechaPublicacion: new Date().toISOString(),
                 fechaBaja: '',
                 direccion: '',
                 activo: true,
@@ -325,7 +324,10 @@ export default defineComponent({
             try {
                 this.loading = true;
 
-                this.producto.idUsuario = localStorage.getItem('userId') || '';
+                const usersComposable = useUsers();
+                const userData = await usersComposable.isLoggedIn();
+
+                this.producto.idUsuario = userData.id;
 
                 await this.productoService.createProducto(this.producto);
 

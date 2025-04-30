@@ -30,15 +30,14 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
+<script>
 import { useutf8Store } from '@/stores/counter';
 
-export default defineComponent({
+export default {
     name: 'ImageSelector',
     props: {
         images: {
-            type: Array as () => string[],
+            type: Array,
             required: true
         },
         maxImages: {
@@ -47,63 +46,83 @@ export default defineComponent({
         }
     },
     emits: ['update:images'],
-    setup(props, { emit }) {
-        const fileInput = ref<HTMLInputElement | null>(null);
-        const currentImageIndex = ref(0);
-        const imagePreview = ref<string[]>([...props.images]);
-
-        const t = (key: string): string => {
+    data() {
+        return {
+            currentImageIndex: 0,
+            imagePreview: [...this.images]
+        };
+    },
+    methods: {
+        t(key) {
             const store = useutf8Store();
             return store.t(key);
-        };
-
-        const triggerFileInput = (index: number) => {
-            currentImageIndex.value = index;
-            fileInput.value?.click();
-        };
-
-        const onFileSelected = (event: Event) => {
-            const file = (event.target as HTMLInputElement).files?.[0];
+        },
+        triggerFileInput(index) {
+            this.currentImageIndex = index;
+            this.$refs.fileInput.click();
+        },
+        async onFileSelected(event) {
+            const file = event.target.files?.[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    if (e.target?.result) {
-                        const result = e.target.result as string;
-                        imagePreview.value[currentImageIndex.value] = result;
+                try {
+                    // Mostrar preview temporal usando FileReader
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        if (e.target?.result) {
+                            this.imagePreview[this.currentImageIndex] = e.target.result;
+                        }
+                    };
+                    reader.readAsDataURL(file);
 
-                        // Create a new array to trigger the update
-                        const updatedImages = [...props.images];
-                        updatedImages[currentImageIndex.value] = result;
-                        emit('update:images', updatedImages);
+                    // Crear FormData
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    // Enviar al backend
+                    const response = await fetch('http://localhost:8080/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error uploading image');
                     }
-                };
-                reader.readAsDataURL(file);
-            }
-        };
 
-        const removeImage = (index: number) => {
+                    const data = await response.json();
+                    const imageUrl = "http://localhost:8080" + data.url;
+
+                    // Actualizar array de imágenes con la URL
+                    const updatedImages = [...this.images];
+                    updatedImages[this.currentImageIndex] = imageUrl;
+                    this.$emit('update:images', updatedImages);
+
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    // Mostrar error al usuario
+                }
+            }
+        },
+        removeImage(index) {
             // Create copies of arrays to avoid reactivity issues
-            const newPreview = [...imagePreview.value];
-            const newImages = [...props.images];
+            const newPreview = [...this.imagePreview];
+            const newImages = [...this.images];
 
             // Remove at the specified index
             newPreview.splice(index, 1);
             newPreview.push(''); // Add an empty slot at the end
-            imagePreview.value = newPreview;
+            this.imagePreview = newPreview;
 
             newImages.splice(index, 1);
-            emit('update:images', newImages);
-        };
-
-        return {
-            fileInput,
-            currentImageIndex,
-            imagePreview,
-            t,
-            triggerFileInput,
-            onFileSelected,
-            removeImage
-        };
+            this.$emit('update:images', newImages);
+        }
+    },
+    watch: {
+        images: {
+            handler(newImages) {
+                this.imagePreview = [...newImages];
+            },
+            deep: true
+        }
     }
-});
+};
 </script>
