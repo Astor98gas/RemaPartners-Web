@@ -60,36 +60,8 @@
             </div>
 
             <!-- Paso 3: Imágenes -->
-            <div v-if="currentStep === 3" class="space-y-4">
-                <label class="block text-gray-700 font-semibold mb-4 text-lg">
-                    {{ t('producto.images') }}
-                </label>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    <div v-for="index in 8" :key="index"
-                        class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 transition-colors aspect-square flex flex-col justify-center items-center"
-                        @click="triggerFileInput(index - 1)">
-                        <div v-if="imagePreview[index - 1]" class="relative w-full h-full">
-                            <img :src="imagePreview[index - 1]" class="w-full h-full object-cover rounded" />
-                            <button @click.stop="removeImage(index - 1)"
-                                class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 shadow-md transition-colors">
-                                <span class="sr-only">Remove</span>
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        <div v-else class="flex flex-col items-center justify-center h-full">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span class="mt-2 block text-sm text-gray-600">{{ t('producto.addImage') }}</span>
-                        </div>
-                    </div>
-                </div>
-                <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="onFileSelected" />
+            <div v-if="currentStep === 3">
+                <ImageSelector v-model:images="producto.imagenes" />
             </div>
 
             <!-- Paso 4: Detalles finales -->
@@ -143,58 +115,10 @@
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200" />
                     </div>
 
-                    <!-- Dirección con mapa -->
-                    <div class="col-span-2 mb-6">
-                        <label for="direccion" class="block text-gray-700 font-semibold mb-2">
-                            {{ t('producto.direccion') }}
-                        </label>
-
-                        <!-- Campo de búsqueda y botón de ubicación actual -->
-                        <div class="mb-3">
-                            <div class="relative w-full">
-                                <input type="text" id="direccion" v-model="direccionBusqueda" ref="direccionInput"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200"
-                                    :placeholder="t('producto.direccionPlaceholder')" @blur="buscarDireccion" />
-                            </div>
-                        </div>
-
-                        <!-- Contenedor del mapa -->
-                        <div id="map-container" ref="mapContainer"
-                            class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden shadow-sm relative"
-                            style="height: 300px; min-height: 300px; position: relative; z-index: 0;">
-                            <div v-if="!map" class="absolute inset-0 flex items-center justify-center bg-gray-50">
-                                <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                        stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                    </path>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <!-- Dirección seleccionada (valor oculto) -->
-                        <input type="hidden" v-model="producto.direccion" />
-
-                        <!-- Mostrar la dirección seleccionada -->
-
-                        <div v-if="producto.direccion"
-                            class="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100 text-blue-800">
-                            <div class="flex items-start">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5 mr-2 mt-0.5 text-blue-600 flex-shrink-0" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <span>{{ producto.direccion }}</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
+
+                <!-- Dirección con mapa -->
+                <LocationSelector v-model="producto.direccion" />
 
                 <!-- Descripción -->
                 <div class="mb-4">
@@ -206,26 +130,8 @@
                 </div>
 
                 <!-- Campos dinámicos de la categoría -->
-                <div v-if="producto.camposCategoria.length > 0"
-                    class="mt-6 p-6 bg-gray-50 rounded-xl border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                        {{ getCategoriaSeleccionada()?.titulo }} - {{ t('producto.category.fields') }}
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div v-for="(campo, index) in producto.camposCategoria" :key="index" class="mb-4">
-                            <label :for="`campo-${index}`" class="block text-gray-700 font-medium mb-2">
-                                {{ campo.nombreCampo }}
-                            </label>
-                            <input type="text" :id="`campo-${index}`" v-model="campo.datos"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200" />
-                        </div>
-                    </div>
-                </div>
+                <CategoryFields v-model:fields="producto.camposCategoria"
+                    :category-title="getCategoriaSeleccionada()?.titulo || ''" />
             </div>
 
             <!-- Botones de navegación -->
@@ -263,7 +169,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onBeforeUnmount, ref } from 'vue';
+import { defineComponent } from 'vue';
 import { EEstado } from '@/models/enums/EEstado';
 import { EMoneda } from '@/models/enums/EMoneda';
 import type { ProductoModify } from '@/models/producto';
@@ -273,17 +179,22 @@ import type { Categoria } from '@/models/categoria';
 import type { CamposCategoria } from '@/models/camposCategoria';
 import { useProducto } from '@/composables/useProducto';
 import Swal from 'sweetalert2';
-import 'leaflet/dist/leaflet.css';
-import * as L from 'leaflet';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// Importar componentes
+import ImageSelector from '@/components/productos/ImageSelector.vue';
+import LocationSelector from '@/components/productos/LocationSelector.vue';
+import CategoryFields from '@/components/productos/CategoryFields.vue';
 
 export default defineComponent({
     name: 'ProductosAddView',
+    components: {
+        ImageSelector,
+        LocationSelector,
+        CategoryFields
+    },
     setup() {
         const categoriaService = useCategoria();
-        const productoService = useProducto(); // Añadir el servicio de producto
+        const productoService = useProducto();
         return {
             categoriaService,
             productoService
@@ -312,33 +223,11 @@ export default defineComponent({
                 destacado: false,
                 camposCategoria: [] as CamposCategoria[],
             } as ProductoModify,
-            imagePreview: [] as string[],
             categorias: [] as Categoria[],
-            currentImageIndex: 0,
             EEstado,
             EMoneda,
             loading: false,
-            map: null as L.Map | null,
-            marker: null as L.Marker | null,
-            direccionBusqueda: '',
-            coordenadas: {
-                lat: 40.416775, // Coordenadas por defecto (Madrid)
-                lng: -3.703790
-            },
-            mapInitialized: false,
         };
-    },
-    watch: {
-        // Añadir este watcher para inicializar el mapa cuando llegamos al paso 4
-        currentStep(newValue) {
-            if (newValue === 4) {
-                this.$nextTick(() => {
-                    setTimeout(() => {
-                        this.initMap();
-                    }, 500);
-                });
-            }
-        }
     },
     methods: {
         t(key: string): string {
@@ -432,27 +321,6 @@ export default defineComponent({
                     return false;
             }
         },
-        triggerFileInput(index: number) {
-            this.currentImageIndex = index;
-            (this.$refs.fileInput as HTMLInputElement).click();
-        },
-        async onFileSelected(event: Event) {
-            const file = (event.target as HTMLInputElement).files?.[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    if (e.target?.result) {
-                        this.imagePreview[this.currentImageIndex] = e.target.result as string;
-                        this.producto.imagenes[this.currentImageIndex] = e.target.result as string;
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        },
-        removeImage(index: number) {
-            this.imagePreview.splice(index, 1);
-            this.producto.imagenes.splice(index, 1);
-        },
         async saveProduct() {
             try {
                 this.loading = true;
@@ -494,129 +362,11 @@ export default defineComponent({
                     datos: ''
                 }));
             }
-        },
-        initMap() {
-            const container = document.getElementById('map-container');
-            if (!container) return;
-
-            // Fix para los iconos de marcador en Vite
-            delete (L.Icon.Default.prototype as any)._getIconUrl;
-            L.Icon.Default.mergeOptions({
-                iconRetinaUrl: markerIcon2x,
-                iconUrl: markerIcon,
-                shadowUrl: markerShadow,
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-
-            if (this.map) {
-                this.map.remove();
-                this.map = null;
-            }
-
-            this.map = L.map('map-container', {
-                center: [this.coordenadas.lat, this.coordenadas.lng],
-                zoom: 10,
-                zoomControl: true
-            });
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(this.map as L.Map);
-
-            // Crear el marcador si hay coordenadas válidas
-            this.addOrMoveMarker(this.coordenadas.lat, this.coordenadas.lng, this.producto.direccion);
-
-            this.map.on('click', this.handleMapClick);
-
-            setTimeout(() => {
-                if (this.map) {
-                    this.map.invalidateSize();
-                }
-            }, 300);
-        },
-
-        addOrMoveMarker(lat: number, lng: number, popupText?: string) {
-            if (this.marker) {
-                this.marker.setLatLng([lat, lng]);
-            } else {
-                this.marker = L.marker([lat, lng]).addTo(this.map as L.Map);
-            }
-            if (popupText) {
-                this.marker.bindPopup(popupText).openPopup();
-            }
-        },
-
-        handleMapClick(e: L.LeafletMouseEvent) {
-            const { lat, lng } = e.latlng;
-            this.addOrMoveMarker(lat, lng);
-            this.obtenerDireccionDesdeLatLng(lat, lng);
-        },
-
-        async buscarDireccion() {
-            if (!this.direccionBusqueda.trim()) return;
-
-            try {
-                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(this.direccionBusqueda)}&limit=1`);
-                const data = await response.json();
-
-                if (data && data.length > 0) {
-                    const { lat, lon, display_name } = data[0];
-                    const latitude = parseFloat(lat);
-                    const longitude = parseFloat(lon);
-
-                    this.addOrMoveMarker(latitude, longitude);
-                    this.map?.setView([latitude, longitude], 13);
-
-                    // Obtenemos la ciudad a partir de las coordenadas
-                    await this.obtenerDireccionDesdeLatLng(latitude, longitude);
-                }
-            } catch (error) {
-                console.error('Error al buscar dirección:', error);
-            }
-        },
-
-        async obtenerDireccionDesdeLatLng(lat: number, lng: number) {
-            try {
-                const response = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`
-                );
-                const data = await response.json();
-
-                if (data && data.address) {
-                    // Extraemos solo la ciudad
-                    const address = data.address;
-                    let ciudad = '';
-
-                    // Intentamos obtener la ciudad en este orden de prioridad
-                    if (address.city) ciudad = address.city;
-                    else if (address.town) ciudad = address.town;
-                    else if (address.village) ciudad = address.village;
-                    else if (address.municipality) ciudad = address.municipality;
-                    else if (address.county) ciudad = address.county;
-
-                    // Si no hay ciudad, usamos la primera parte del nombre completo
-                    if (!ciudad && data.display_name) {
-                        ciudad = data.display_name.split(',')[0];
-                    }
-
-                    this.producto.direccion = ciudad;
-                    this.direccionBusqueda = ciudad;
-
-                    if (this.marker) {
-                        this.marker.bindPopup(ciudad).openPopup();
-                    }
-                }
-            } catch (error) {
-                console.error('Error al obtener dirección:', error);
-            }
-        },
+        }
     },
-    async mounted() {
+    mounted() {
         try {
-            // Cargar categorías como ya hacías
+            // Cargar categorías
             this.categoriaService.getCategorias().then(() => {
                 this.categorias = this.categoriaService.categorias.value;
             }).catch(error => {
@@ -625,26 +375,6 @@ export default defineComponent({
         } catch (error) {
             console.error('Error en mounted:', error);
         }
-    },
-    beforeUnmount() {
-        if (this.map) {
-            this.map.off();
-            this.map.remove();
-            this.map = null;
-        }
     }
 });
 </script>
-
-<style>
-/* Añade estos estilos específicos para garantizar que los iconos del marcador se muestren correctamente */
-.leaflet-marker-icon {
-    width: 25px !important;
-    height: 41px !important;
-}
-
-.leaflet-marker-shadow {
-    width: 41px !important;
-    height: 41px !important;
-}
-</style>
