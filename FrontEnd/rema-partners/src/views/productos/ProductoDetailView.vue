@@ -1,13 +1,14 @@
 <template>
-    <div class="max-w-[90%] mx-auto py-8 px-4">
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <!-- Header con botón de regreso -->
         <div class="flex items-center justify-between mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 relative">
+            <h1 class="text-3xl font-bold text-gray-900 relative inline-block">
                 {{ product ? product.titulo : t('producto.details.loading') }}
-                <span class="absolute bottom-0 left-0 w-24 h-1 bg-blue-500 rounded-full"></span>
+                <span
+                    class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-300 rounded-full"></span>
             </h1>
             <router-link to="/"
-                class="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 hover:shadow-md rounded-lg transition-colors">
+                class="flex items-center px-4 py-2 text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-3xl transition-all duration-200 hover:shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -18,77 +19,123 @@
         </div>
 
         <!-- Spinner de carga mientras se carga la información -->
-        <div v-if="loading" class="flex justify-center items-center py-20">
+        <div v-if="loading" class="flex flex-col justify-center items-center py-20">
             <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-            <p class="text-gray-500 ml-4 text-lg">{{ t('producto.loading') }}</p>
+            <p class="text-gray-500 mt-4 text-lg">{{ t('producto.loading') }}</p>
         </div>
 
         <!-- Error message -->
-        <div v-else-if="error" class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-xl mb-8">
-            <p class="font-semibold text-lg">{{ t('common.error') }}</p>
-            <p>{{ error }}</p>
+        <div v-else-if="error" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-6 rounded-lg mb-8">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="font-semibold text-lg">{{ t('common.error') }}</p>
+            </div>
+            <p class="mt-2">{{ error }}</p>
         </div>
 
         <!-- Contenido del Producto -->
-        <div v-else-if="product" class="bg-white shadow-lg rounded-xl overflow-hidden">
+        <div v-else-if="product" class="bg-white shadow-xl rounded-xl overflow-hidden">
             <!-- Galería de imágenes -->
             <div class="relative">
-                <div class="h-96 overflow-hidden bg-gray-100">
-                    <img :src="currentImage" :alt="product.titulo" class="w-full h-full object-contain"
+                <!-- Imagen principal con zoom al hover -->
+                <div class="h-96 overflow-hidden bg-gray-50 flex items-center justify-center relative group">
+                    <img :src="currentImage" :alt="product.titulo"
+                        class="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
                         @error="onImageError" />
+
+                    <!-- Botones de navegación para móviles -->
+                    <button v-if="product.imagenes.length > 1" @click="prevImage"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-md md:hidden z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button v-if="product.imagenes.length > 1" @click="nextImage"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-md md:hidden z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Miniaturas de imágenes -->
-                <div class="p-4 bg-gray-50 flex gap-2 overflow-x-auto" v-if="product.imagenes.length > 1">
+                <div class="p-4 bg-gray-50 flex gap-3 overflow-x-auto scrollbar-hide"
+                    v-if="product.imagenes.length > 1">
                     <button v-for="(imagen, index) in product.imagenes" :key="index" @click="selectImage(imagen)"
-                        class="w-20 h-20 rounded-md overflow-hidden border-2 transition-all duration-300"
-                        :class="currentImage === imagen ? 'border-blue-500 shadow-md scale-105' : 'border-transparent'">
+                        class="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:shadow-md"
+                        :class="currentImage === imagen ? 'border-blue-500 shadow-md' : 'border-transparent hover:border-gray-300'">
                         <img :src="imagen" :alt="`${product.titulo} - ${index + 1}`"
-                            class="w-full h-full object-cover" />
+                            class="w-full h-full object-cover hover:opacity-90" />
                     </button>
                 </div>
 
                 <!-- Badge de stock -->
-                <div class="absolute top-3 right-3">
-                    <span v-if="product.stock > 5" class="bg-green-500 text-white px-3 py-1 rounded-full font-medium">
+                <div class="absolute top-3 right-3 flex flex-col gap-2">
+                    <span v-if="product.stock > 5"
+                        class="bg-green-500 text-white px-3 py-1 rounded-full font-medium shadow-md flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
                         {{ t('producto.inStock') }}
                     </span>
                     <span v-else-if="product.stock > 0"
-                        class="bg-amber-500 text-white px-3 py-1 rounded-full font-medium">
+                        class="bg-amber-500 text-white px-3 py-1 rounded-full font-medium shadow-md flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
                         {{ t('producto.lowStock') }}
                     </span>
-                    <span v-else class="bg-red-500 text-white px-3 py-1 rounded-full font-medium">
+                    <span v-else
+                        class="bg-red-500 text-white px-3 py-1 rounded-full font-medium shadow-md flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                         {{ t('producto.outOfStock') }}
                     </span>
                 </div>
 
                 <!-- Estado del producto -->
                 <div class="absolute top-3 left-3">
-                    <span class="bg-blue-600 text-white px-3 py-1 rounded-full font-medium">
+                    <span class="bg-blue-600 text-white px-3 py-1 rounded-full font-medium shadow-md flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
                         {{ t(`producto.estados.${product.estado}`) }}
                     </span>
                 </div>
             </div>
 
             <!-- Información detallada -->
-            <div class="p-8">
-                <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">{{ product.titulo }}</h1>
-                    <div class="text-3xl font-bold text-blue-600">
+            <div class="p-6 sm:p-8">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+                    <h1 class="text-3xl font-bold text-gray-900">{{ product.titulo }}</h1>
+                    <div class="text-3xl font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-lg">
                         {{ (product.precioCentimos / 100).toFixed(2) }}
                         <span class="text-gray-600 text-lg ml-1">{{ product.moneda }}</span>
                     </div>
                 </div>
 
                 <!-- Marca y acciones -->
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-                    <div class="mb-4 md:mb-0">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div class="bg-gray-50 px-4 py-2 rounded-lg">
                         <span class="text-gray-500">{{ t('producto.brand') }}:</span>
                         <span class="ml-2 text-gray-900 font-semibold">{{ product.marca }}</span>
                     </div>
-                    <div class="flex gap-3">
+                    <div class="flex gap-3 flex-wrap">
                         <button v-if="isAdmin" @click="toggleProductStatus"
-                            class="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-amber-300">
+                            class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -97,9 +144,9 @@
                             {{ product.activo ? t('producto.action.disable') : t('producto.action.enable') }}
                         </button>
                         <button
-                            class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 flex items-center shadow-md"
+                            class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 flex items-center shadow-md hover:shadow-lg"
                             :disabled="product.stock <= 0"
-                            :class="{ 'opacity-50 cursor-not-allowed': product.stock <= 0 }">
+                            :class="{ 'opacity-50 cursor-not-allowed grayscale': product.stock <= 0 }">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -111,8 +158,8 @@
                 </div>
 
                 <!-- Descripción -->
-                <div class="mb-8">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+                <div class="mb-8 bg-gray-50 p-6 rounded-xl">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-900 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -125,7 +172,7 @@
 
                 <!-- Información del producto -->
                 <div class="mb-8">
-                    <h2 class="text-xl font-semibold mb-6 text-gray-800 flex items-center">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-900 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -136,7 +183,8 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <!-- Stock -->
-                        <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100">
+                        <div
+                            class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.stock') }}</p>
                             <p class="text-gray-900 font-semibold">
                                 {{ product.stock > 0
@@ -146,26 +194,28 @@
                         </div>
 
                         <!-- Estado -->
-                        <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100">
+                        <div
+                            class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.estado') }}</p>
                             <p class="text-gray-900 font-semibold">{{ t(`producto.estados.${product.estado}`) }}</p>
                         </div>
 
                         <!-- Ubicación -->
                         <div
-                            class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 col-span-1 md:col-span-2 lg:col-span-3">
+                            class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow col-span-1 md:col-span-2 lg:col-span-3">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.direccion') }}</p>
                             <p class="text-gray-900 font-semibold mb-2">{{ product.direccion || t('common.notAvailable')
-                            }}</p>
+                                }}</p>
 
                             <div v-if="product.direccion"
-                                class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden shadow-sm mt-2"
+                                class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden shadow-sm mt-2 hover:shadow-md transition-shadow"
                                 ref="mapContainer">
                             </div>
                         </div>
 
                         <!-- Activo -->
-                        <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100" v-if="isAdmin">
+                        <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow"
+                            v-if="isAdmin">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.activo') }}</p>
                             <p class="text-gray-900 font-semibold">
                                 <span :class="product.activo ? 'text-green-600' : 'text-red-600'">
@@ -175,7 +225,8 @@
                         </div>
 
                         <!-- Destacado -->
-                        <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100" v-if="isAdmin">
+                        <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow"
+                            v-if="isAdmin">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.destacado') }}</p>
                             <p class="text-gray-900 font-semibold">
                                 <span :class="product.destacado ? 'text-green-600' : 'text-red-600'">
@@ -185,7 +236,8 @@
                         </div>
 
                         <!-- Fechas -->
-                        <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100" v-if="isAdmin">
+                        <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow"
+                            v-if="isAdmin">
                             <p class="text-gray-500 text-sm mb-1">{{ t('common.dates') }}</p>
                             <p class="text-gray-700 text-sm">
                                 <span class="font-medium">{{ t('common.createdOn') }}:</span>
@@ -205,7 +257,7 @@
 
                 <!-- Campos específicos de la categoría -->
                 <div class="mb-8" v-if="product.camposCategoria && product.camposCategoria.length > 0">
-                    <h2 class="text-xl font-semibold mb-6 text-gray-800 flex items-center">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-900 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -216,7 +268,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div v-for="(campo, index) in product.camposCategoria" :key="index"
-                            class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100">
+                            class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
                             <p class="text-gray-500 text-sm mb-1">{{ campo.nombreCampo }}</p>
                             <p class="text-gray-900 font-semibold">{{ campo.datos || t('common.notAvailable') }}</p>
                         </div>
@@ -259,6 +311,7 @@ export default defineComponent({
             error: null as string | null,
             isAdmin: false,
             currentImage: '',
+            currentImageIndex: 0,
         };
     },
     async mounted() {
@@ -282,6 +335,7 @@ export default defineComponent({
 
             if (this.product && this.product.imagenes && this.product.imagenes.length > 0) {
                 this.currentImage = this.product.imagenes[0];
+                this.currentImageIndex = 0;
             }
 
             this.error = null;
@@ -322,6 +376,19 @@ export default defineComponent({
         },
         selectImage(image: string) {
             this.currentImage = image;
+            this.currentImageIndex = this.product.imagenes.indexOf(image);
+        },
+        nextImage() {
+            if (this.product.imagenes.length > 0) {
+                this.currentImageIndex = (this.currentImageIndex + 1) % this.product.imagenes.length;
+                this.currentImage = this.product.imagenes[this.currentImageIndex];
+            }
+        },
+        prevImage() {
+            if (this.product.imagenes.length > 0) {
+                this.currentImageIndex = (this.currentImageIndex - 1 + this.product.imagenes.length) % this.product.imagenes.length;
+                this.currentImage = this.product.imagenes[this.currentImageIndex];
+            }
         },
         formatDate(dateStr: string): string {
             if (!dateStr) return this.t('common.notAvailable');
@@ -431,3 +498,22 @@ export default defineComponent({
     }
 });
 </script>
+
+<style scoped>
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.group:hover .group-hover\:scale-105 {
+    transform: scale(1.05);
+}
+
+.hover\:shadow-lg:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+</style>
