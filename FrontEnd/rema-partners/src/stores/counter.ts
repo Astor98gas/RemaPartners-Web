@@ -382,14 +382,13 @@ export const useutf8Store = defineStore('utf8', {
           'producto.destacado': 'Destacado',
           'producto.category.fields': 'Campos Específicos de la Categoría',
           'common.ok': 'Aceptar',
-          // Traducciones en inglés (en)
-          'producto.direccionPlaceholder': 'Search city or location...',
-          'producto.usarUbicacionActual': 'Use my location',
-          'producto.ubicacion.obteniendo': 'Getting location',
-          'producto.ubicacion.espere': 'Please wait...',
-          'producto.ubicacion.errorTitle': 'Location Error',
-          'producto.ubicacion.errorMessage': 'Could not get your current location. Please check your device permissions.',
-          'producto.ubicacion.noSupported': 'Geolocation is not supported by your browser.'
+          'producto.direccionPlaceholder': 'Buscar ciudad o ubicación...',
+          'producto.usarUbicacionActual': 'Usar mi ubicación',
+          'producto.ubicacion.obteniendo': 'Obteniendo ubicación',
+          'producto.ubicacion.espere': 'Por favor espere...',
+          'producto.ubicacion.errorTitle': 'Error de ubicación',
+          'producto.ubicacion.errorMessage': 'No se pudo obtener su ubicación actual. Por favor, compruebe los permisos de su dispositivo.',
+          'producto.ubicacion.noSupported': 'La geolocalización no es compatible con su navegador.'
         },
         cat: {
           'producto.add.title': 'Afegir Nou Producte',
@@ -570,14 +569,13 @@ export const useutf8Store = defineStore('utf8', {
           'producto.destacado': 'Destacat',
           'producto.category.fields': 'Camps Específics de la Categoria',
           'common.ok': 'Acceptar',
-          // Traducciones en inglés (en)
-          'producto.direccionPlaceholder': 'Search city or location...',
-          'producto.usarUbicacionActual': 'Use my location',
-          'producto.ubicacion.obteniendo': 'Getting location',
-          'producto.ubicacion.espere': 'Please wait...',
-          'producto.ubicacion.errorTitle': 'Location Error',
-          'producto.ubicacion.errorMessage': 'Could not get your current location. Please check your device permissions.',
-          'producto.ubicacion.noSupported': 'Geolocation is not supported by your browser.'
+          'producto.direccionPlaceholder': 'Cerca ciutat o ubicació...',
+          'producto.usarUbicacionActual': 'Utilitza la meva ubicació',
+          'producto.ubicacion.obteniendo': 'Obtenint ubicació',
+          'producto.ubicacion.espere': 'Si us plau, espera...',
+          'producto.ubicacion.errorTitle': 'Error d\'ubicació',
+          'producto.ubicacion.errorMessage': 'No s\'ha pogut obtenir la teva ubicació actual. Si us plau, comprova els permisos del dispositiu.',
+          'producto.ubicacion.noSupported': 'La geolocalització no és compatible amb el teu navegador.'
         }
       } as Translations
     };
