@@ -61,7 +61,13 @@ const router = createRouter({
             name: 'producto-create',
             component: () => import('../views/productos/ProductosAddView.vue'),
             meta: { requiresAuth: true, roles: ['VENDEDOR', 'ADMIN'] }
-        }
+        },
+        {
+            path: '/producto/:id',
+            name: 'producto-detail',
+            component: () => import('../views/productos/ProductoDetailView.vue'),
+            meta: { requiresAuth: false }
+        },
     ],
 })
 

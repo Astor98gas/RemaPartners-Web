@@ -75,7 +75,7 @@
 
         <!-- Botones con mejor estilo y animaciones -->
         <div class="flex justify-between p-4 bg-gray-50 border-t border-gray-200">
-            <button
+            <router-link :to="`/producto/${producto.id}`"
                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -85,7 +85,7 @@
                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
                 {{ t('producto.action.details') }}
-            </button>
+            </router-link>
             <button
                 class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-green-300 shadow-sm"
                 :disabled="producto.stock <= 0" :class="{ 'opacity-50 cursor-not-allowed': producto.stock <= 0 }">

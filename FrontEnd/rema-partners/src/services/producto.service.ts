@@ -16,7 +16,7 @@ export const productoService = {
         return axios.get(`${CATEGORIA_API_URL}/getAll`);
     },
     async getProductoById(id: string) {
-        return axios.get(`${CATEGORIA_API_URL}getById/${id}`);
+        return axios.get(`${CATEGORIA_API_URL}/getById/${id}`);
     },
     async updateProducto(id: string, producto: ProductoModify) {
         return axios.post(`${CATEGORIA_API_URL}/update/${id}`, producto);
