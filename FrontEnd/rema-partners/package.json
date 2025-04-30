@@ -16,8 +16,11 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.0",
+    "@types/leaflet": "^1.9.17",
     "axios": "^1.8.4",
     "js-cookies": "^1.0.4",
+    "leaflet": "^1.9.4",
+    "leaflet-geosearch": "^4.2.0",
     "pinia": "^3.0.1",
     "sweetalert2": "^11.6.13",
     "tailwindcss": "^4.1.0",
