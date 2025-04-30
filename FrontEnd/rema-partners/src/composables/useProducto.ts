@@ -10,6 +10,25 @@ export function useProducto() {
     const loading = ref<boolean>(false);
     const currentProducto = ref<Producto | null>(null);
 
+    const toggleStatus = async (id: string) => {
+        try {
+            loading.value = true;
+            error.value = null;
+            const response = await productoService.toggleStatus(id);
+            success.value = "Producto status toggled successfully!";
+            error.value = null;
+            await getProductos();
+            return response.data;
+        } catch (err: any) {
+            console.error("Error toggling producto status:", err);
+            error.value = err.response?.data?.message || "Error toggling producto status";
+            success.value = null;
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     const getProductos = async () => {
         try {
             loading.value = true;
@@ -21,6 +40,21 @@ export function useProducto() {
             loading.value = false;
         }
     };
+    const getProductosActivos = async () => {
+        try {
+            loading.value = true;
+            error.value = null;
+            const response = await productoService.getProductos();
+            productos.value = response.data.filter((producto: Producto) => producto.activo);
+        } catch (err: any) {
+            console.error("Error fetching active productos:", err);
+            error.value = err.response?.data?.message || "Error fetching active productos";
+            success.value = null;
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    }
     const createProducto = async (producto: ProductoModify) => {
         try {
             loading.value = true;
@@ -113,7 +147,9 @@ export function useProducto() {
         getProductoById,
         updateProducto,
         deleteProducto,
-        getProductosByUsuario
+        getProductosByUsuario,
+        toggleStatus,
+        getProductosActivos
     }
 
 }

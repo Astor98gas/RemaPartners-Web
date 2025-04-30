@@ -74,4 +74,15 @@ public class ProductoController {
         }
     }
 
+    @PostMapping("vendedor/producto/toggleStatus/{id}")
+    public ResponseEntity<?> toggleStatus(@PathVariable String id) {
+        try {
+            productoService.toggleStatus(id);
+            return ResponseEntity.ok("Producto status toggled successfully with ID: " + id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error toggling producto status: " + e.getMessage());
+        }
+    }
+
 }

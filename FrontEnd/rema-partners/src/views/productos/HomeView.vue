@@ -65,6 +65,8 @@ import type { Producto } from '@/models/producto';
 import { useProducto } from '@/composables/useProducto';
 import Swal from 'sweetalert2';
 import { useutf8Store } from '@/stores/counter';
+import { useUsers } from '@/composables/useUsers';
+
 
 export default defineComponent({
     name: 'HomeView',
@@ -78,11 +80,23 @@ export default defineComponent({
             error: null as string | null,
             // Para paginación (opcional)
             currentPage: 1,
-            totalPages: 1
+            totalPages: 1,
+            isAdmin: false
         };
     },
     async mounted() {
-        await this.fetchProductos();
+        try {
+            const usersComposable = useUsers();
+            const userData = await usersComposable.isLoggedIn();
+            this.isAdmin = userData?.rol?.name === 'ADMIN';
+        } catch (error) {
+            this.isAdmin = false;
+        }
+        if (this.isAdmin) {
+            await this.fetchProductos();
+        } else {
+            await this.fetchProductosActivos();
+        }
     },
     methods: {
         t(key: string): string {
@@ -110,6 +124,27 @@ export default defineComponent({
                 this.loading = false;
             }
         },
+
+        async fetchProductosActivos() {
+            try {
+                this.loading = true;
+                const productoService = useProducto();
+                await productoService.getProductosActivos();
+                this.productos = productoService.productos.value;
+                this.error = null;
+            } catch (err: any) {
+                console.error('Error al cargar productos activos:', err);
+                this.error = err.response?.data?.message || 'Error al cargar los productos activos';
+                Swal.fire({
+                    icon: 'error',
+                    title: this.t('producto.list.error'),
+                    text: this.error || '',
+                    confirmButtonText: this.t('common.ok')
+                });
+            } finally {
+                this.loading = false;
+            }
+        }
     }
 });
 </script>

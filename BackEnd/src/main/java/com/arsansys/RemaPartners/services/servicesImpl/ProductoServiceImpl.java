@@ -138,4 +138,18 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    @Override
+    public void toggleStatus(String id) {
+        try {
+            // Check if the product exists
+            ProductoEntity producto = productoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            // Toggle the status
+            producto.setActivo(!producto.getActivo());
+            productoRepository.save(producto);
+        } catch (Exception e) {
+            throw new RuntimeException("Error toggling product status: " + e.getMessage());
+        }
+    }
+
 }

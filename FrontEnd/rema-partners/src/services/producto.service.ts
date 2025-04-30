@@ -6,6 +6,9 @@ const API_BASE_URL = "http://localhost:8080";
 const CATEGORIA_API_URL = `${API_BASE_URL}/vendedor/producto`;
 
 export const productoService = {
+    async toggleStatus(id: string) {
+        return axios.post(`${CATEGORIA_API_URL}/toggleStatus/${id}`);
+    },
     async createProducto(producto: ProductoModify) {
         return axios.post(`${CATEGORIA_API_URL}/create`, producto);
     },

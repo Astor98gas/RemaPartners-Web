@@ -97,6 +97,19 @@
                 {{ t('producto.action.buy') }}
             </button>
         </div>
+
+        <!-- Admin actions button -->
+        <div v-if="isAdmin" class="flex justify-center p-3 bg-gray-100 border-t border-gray-200">
+            <button @click="toggleProductStatus"
+                class="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transform hover:scale-105 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-amber-300 shadow-sm w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                {{ producto.activo ? t('producto.action.disable') : t('producto.action.enable') }}
+            </button>
+        </div>
     </div>
 </template>
 
@@ -104,6 +117,8 @@
 import { defineComponent } from 'vue';
 import type { Producto } from '@/models/producto';
 import { useutf8Store } from '@/stores/counter';
+import { useUsers } from '@/composables/useUsers';
+import { useProducto } from '@/composables/useProducto';
 
 export default defineComponent({
     name: 'ProductoCard',
@@ -113,6 +128,20 @@ export default defineComponent({
             required: true
         }
     },
+    data() {
+        return {
+            isAdmin: false
+        };
+    },
+    async mounted() {
+        try {
+            const usersComposable = useUsers();
+            const userData = await usersComposable.isLoggedIn();
+            this.isAdmin = userData?.rol?.name === 'ADMIN';
+        } catch (error) {
+            this.isAdmin = false;
+        }
+    },
     methods: {
         t(key: string): string {
             const store = useutf8Store();
@@ -120,6 +149,18 @@ export default defineComponent({
         },
         onImageError(event: Event) {
             (event.target as HTMLImageElement).src = new URL('@/assets/logoCuadrado.jpeg', import.meta.url).href;
+        },
+        toggleProductStatus() {
+            const productoService = useProducto();
+            productoService.toggleStatus(this.producto.id)
+                .then(() => {
+                    this.producto.activo = !this.producto.activo;
+                    this.$emit('status-changed', this.producto);
+                })
+                .catch((error) => {
+                    console.error('Error toggling product status:', error);
+                });
+            this.$emit('toggle-status', this.producto.id);
         }
     }
 });
