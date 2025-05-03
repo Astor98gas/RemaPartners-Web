@@ -82,8 +82,10 @@
                             {{ t('producto.price') }}
                         </label>
                         <div class="flex">
-                            <input type="number" id="precio" v-model="producto.precioCentimos" required min="0" step="1"
-                                class="w-3/4 px-4 py-3 border border-gray-300 rounded-l-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200" />
+                            <input type="text" id="precio" v-model="precioDecimal" required
+                                pattern="^\d+([.,]\d{1,2})?$"
+                                class="w-3/4 px-4 py-3 border border-gray-300 rounded-l-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200"
+                                placeholder="0.00" />
                             <select v-model="producto.moneda"
                                 class="w-1/4 px-4 py-3 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200">
                                 <option v-for="moneda in Object.values(EMoneda)" :key="moneda" :value="moneda">
@@ -91,6 +93,9 @@
                                 </option>
                             </select>
                         </div>
+                        <small class="text-gray-500 mt-1 block">
+                            {{ t('producto.price.hint') }}
+                        </small>
                     </div>
 
                     <!-- Estado -->
@@ -235,6 +240,22 @@ export default defineComponent({
             return this.isEdit
                 ? this.t('producto.edit.title')
                 : this.t('producto.add.title');
+        },
+        // Propiedad computada para manejar el precio con decimales
+        precioDecimal: {
+            get(): string {
+                return (this.producto.precioCentimos / 100).toFixed(2);
+            },
+            set(value: string) {
+                // Reemplazar coma por punto si el usuario usa coma como separador decimal
+                const sanitizedValue = value.replace(',', '.');
+                // Convertir a número y multiplicar por 100 para obtener céntimos
+                const priceInCents = Math.round(parseFloat(sanitizedValue) * 100);
+                // Solo actualizar si es un número válido
+                if (!isNaN(priceInCents)) {
+                    this.producto.precioCentimos = priceInCents;
+                }
+            }
         }
     },
     watch: {
@@ -313,6 +334,8 @@ export default defineComponent({
                         errorMessage = this.t('producto.validation.descriptionRequired');
                     } else if (this.producto.precioCentimos <= 0) {
                         errorMessage = this.t('producto.validation.priceRequired');
+                    } else if (this.producto.precioCentimos < 1) { // Verificar que sea al menos 0.01
+                        errorMessage = this.t('producto.validation.priceInvalid');
                     } else if (this.producto.stock < 0) {
                         errorMessage = this.t('producto.validation.stockInvalid');
                     } else if (this.producto.camposCategoria &&
