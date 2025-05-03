@@ -134,7 +134,7 @@
                         <span class="ml-2 text-gray-900 font-semibold">{{ product.marca }}</span>
                     </div>
                     <div class="flex gap-3 flex-wrap">
-                        <!-- Edit button (new) -->
+                        <!-- Edit button -->
                         <router-link v-if="isAdmin" :to="`/producto/edit/${product.id}`"
                             class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
@@ -145,7 +145,18 @@
                             {{ t('producto.action.edit') }}
                         </router-link>
 
-                        <!-- Toggle status button (existing) -->
+                        <!-- Delete button -->
+                        <button v-if="isAdmin" @click="confirmDeleteProduct"
+                            class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            {{ t('producto.action.delete') }}
+                        </button>
+
+                        <!-- Toggle status button -->
                         <button v-if="isAdmin" @click="toggleProductStatus"
                             class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
@@ -156,7 +167,7 @@
                             {{ product.activo ? t('producto.action.disable') : t('producto.action.enable') }}
                         </button>
 
-                        <!-- Buy button (existing) -->
+                        <!-- Buy button -->
                         <button
                             class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 flex items-center shadow-md hover:shadow-lg"
                             :disabled="product.stock <= 0"
@@ -451,6 +462,55 @@ export default defineComponent({
                     icon: 'error',
                     title: this.t('common.error'),
                     text: this.t('producto.status.toggleError'),
+                    confirmButtonText: this.t('common.ok')
+                });
+            }
+        },
+        async confirmDeleteProduct() {
+            if (!this.product) return;
+
+            try {
+                const result = await Swal.fire({
+                    title: this.t('producto.delete.confirmTitle'),
+                    text: this.t('producto.delete.confirmText'),
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: this.t('producto.delete.confirmButton'),
+                    cancelButtonText: this.t('common.cancel')
+                });
+
+                if (result.isConfirmed) {
+                    await this.deleteProduct();
+                }
+            } catch (error) {
+                console.error('Error in delete confirmation:', error);
+            }
+        },
+
+        async deleteProduct() {
+            if (!this.product) return;
+
+            try {
+                const productoService = useProducto();
+                await productoService.deleteProducto(this.product.id);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: this.t('producto.delete.success'),
+                    text: this.t('producto.delete.successMessage'),
+                    confirmButtonText: this.t('common.ok')
+                }).then(() => {
+                    // Navigate to home page after successful deletion
+                    this.$router.push('/');
+                });
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: this.t('common.error'),
+                    text: this.t('producto.delete.errorMessage'),
                     confirmButtonText: this.t('common.ok')
                 });
             }
