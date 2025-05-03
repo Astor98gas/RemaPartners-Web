@@ -1,0 +1,182 @@
+<template>
+    <div
+        class="producto-card bg-white rounded-xl overflow-hidden shadow-md border border-gray-200 flex flex-col transition-all duration-300 hover:shadow-xl hover:border-blue-100 h-full">
+        <!-- Contenedor de imagen con posición relativa -->
+        <div class="relative h-56 overflow-hidden">
+            <!-- Imagen del producto con efecto de zoom suave -->
+            <img class="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                :src="producto.imagenes[0]" :alt="producto.titulo" @error="onImageError" />
+
+            <!-- Badge de stock movido dentro del contenedor de imagen -->
+            <div class="absolute top-3 right-3">
+                <span v-if="producto.stock > 5"
+                    class="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                    {{ t('producto.inStock') }}
+                </span>
+                <span v-else-if="producto.stock > 0"
+                    class="bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                    {{ t('producto.lowStock') }}
+                </span>
+                <span v-else class="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                    {{ t('producto.outOfStock') }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Resto del contenido de la tarjeta -->
+        <div class="flex-1 p-5">
+            <h2 class="text-xl font-bold text-gray-800 mb-2 truncate hover:text-blue-600 transition-colors">{{
+                producto.titulo }}</h2>
+
+            <!-- Precio con estilo destacado -->
+            <div class="mb-3">
+                <span class="text-2xl font-bold text-blue-600">
+                    {{ (producto.precioCentimos / 100).toFixed(2) }}
+                </span>
+                <span class="text-gray-600 text-sm ml-1">{{ producto.moneda }}</span>
+            </div>
+
+            <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ producto.descripcion }}</p>
+
+            <!-- Detalles del producto con iconos -->
+            <div class="mt-4 space-y-4">
+                <h3 class="text-gray-700 font-semibold flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ t('producto.details.title') }}
+                </h3>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div
+                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors">
+                        <p class="text-gray-700 font-medium text-sm">{{ t('producto.brand') }}</p>
+                        <p class="text-gray-900 font-semibold">{{ producto.marca }}</p>
+                    </div>
+                    <div
+                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors">
+                        <p class="text-gray-700 font-medium text-sm">{{ t('producto.state') }}</p>
+                        <p class="text-gray-900 font-semibold">{{ producto.estado }}</p>
+                    </div>
+                    <div
+                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors col-span-2">
+                        <p class="text-gray-700 font-medium text-sm">{{ t('producto.stock') }}</p>
+                        <p class="text-gray-900 font-semibold">
+                            {{ producto.stock > 0
+                                ? t('producto.stock.available').replace('{count}', producto.stock.toString())
+                                : t('producto.stock.unavailable') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones con mejor estilo y animaciones -->
+        <div class="flex justify-between p-4 bg-gray-50 border-t border-gray-200">
+            <router-link :to="`/producto/${producto.id}`"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                {{ t('producto.action.details') }}
+            </router-link>
+            <button
+                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-green-300 shadow-sm"
+                :disabled="producto.stock <= 0" :class="{ 'opacity-50 cursor-not-allowed': producto.stock <= 0 }">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {{ t('producto.action.buy') }}
+            </button>
+        </div>
+
+        <!-- Admin actions button -->
+        <div v-if="isAdmin" class="flex justify-center p-3 bg-gray-100 border-t border-gray-200">
+            <button @click="toggleProductStatus"
+                class="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transform hover:scale-105 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-amber-300 shadow-sm w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                {{ producto.activo ? t('producto.action.disable') : t('producto.action.enable') }}
+            </button>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import type { Producto } from '@/models/producto';
+import { useutf8Store } from '@/stores/counter';
+import { useUsers } from '@/composables/useUsers';
+import { useProducto } from '@/composables/useProducto';
+
+export default defineComponent({
+    name: 'ProductoCard',
+    props: {
+        producto: {
+            type: Object as () => Producto,
+            required: true
+        }
+    },
+    data() {
+        return {
+            isAdmin: false
+        };
+    },
+    async mounted() {
+        try {
+            const usersComposable = useUsers();
+            const userData = await usersComposable.isLoggedIn();
+            this.isAdmin = userData?.rol?.name === 'ADMIN';
+        } catch (error) {
+            this.isAdmin = false;
+        }
+    },
+    methods: {
+        t(key: string): string {
+            const store = useutf8Store();
+            return store.t(key);
+        },
+        onImageError(event: Event) {
+            (event.target as HTMLImageElement).src = new URL('@/assets/logoCuadrado.jpeg', import.meta.url).href;
+        },
+        toggleProductStatus() {
+            const productoService = useProducto();
+            productoService.toggleStatus(this.producto.id)
+                .then(() => {
+                    this.producto.activo = !this.producto.activo;
+                    this.$emit('status-changed', this.producto);
+                })
+                .catch((error) => {
+                    console.error('Error toggling product status:', error);
+                });
+            this.$emit('toggle-status', this.producto.id);
+        }
+    }
+});
+</script>
+
+<style scoped>
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.producto-card {
+    max-width: 100%;
+    position: relative;
+}
+</style>

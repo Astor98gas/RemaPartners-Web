@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Builder.Default;
 
 @Data
 @AllArgsConstructor
@@ -24,6 +25,9 @@ public class ProductoEntity {
 
     @Id
     private String id;
+
+    @NotBlank
+    private String idUsuario;
 
     @NotBlank
     private String idCategoria;
@@ -69,4 +73,21 @@ public class ProductoEntity {
     @NotBlank
     private String fechaActualizacion;
 
+    @NotBlank
+    private String fechaPublicacion;
+
+    private String fechaBaja;
+
+    @NotBlank
+    private String direccion;
+
+    @NotBlank
+    @Default
+    private Boolean activo = true;
+
+    @NotBlank
+    private Boolean destacado;
+
+    @NotBlank
+    private CampoCategoriaEntity[] camposCategoria;
 }

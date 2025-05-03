@@ -3,6 +3,7 @@ package com.arsansys.RemaPartners.services.servicesImpl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.arsansys.RemaPartners.models.entities.ProductoEntity;
 import com.arsansys.RemaPartners.models.enums.EEstado;
@@ -10,6 +11,7 @@ import com.arsansys.RemaPartners.models.enums.EMoneda;
 import com.arsansys.RemaPartners.repositories.ProductoRepository;
 import com.arsansys.RemaPartners.services.ProductoService;
 
+@Service
 public class ProductoServiceImpl implements ProductoService {
 
     @Autowired
@@ -133,6 +135,20 @@ public class ProductoServiceImpl implements ProductoService {
             productoRepository.deleteById(id);
         } catch (Exception e) {
             throw new RuntimeException("Error deleting product: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void toggleStatus(String id) {
+        try {
+            // Check if the product exists
+            ProductoEntity producto = productoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            // Toggle the status
+            producto.setActivo(!producto.getActivo());
+            productoRepository.save(producto);
+        } catch (Exception e) {
+            throw new RuntimeException("Error toggling product status: " + e.getMessage());
         }
     }
 

@@ -35,4 +35,6 @@ public interface ProductoService {
 
     abstract void deleteProductoById(String id);
 
+    abstract void toggleStatus(String id);
+
 }

@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { userService } from '@/services/user.service'
 import type { User, UserFormData, UserLogin } from '@/models/user'
 import Cookies from 'js-cookie'
+import { useToast } from 'vue-toastification';
 
 export function useUsers() {
     const users = ref<User[]>([])
@@ -9,6 +10,7 @@ export function useUsers() {
     const success = ref<string | null>(null)
     const loading = ref<boolean>(false)
     const currentUser = ref<User | null>(null)
+    const toast = useToast()
 
     const getUsers = async () => {
         try {
@@ -42,7 +44,7 @@ export function useUsers() {
 
                 success.value = 'Login successful!'
                 error.value = null
-                window.location.href = '/home'
+                window.location.href = '/'
                 return response.data
             } else {
                 error.value = 'Login failed: No token received'
@@ -78,6 +80,7 @@ export function useUsers() {
             if (err.response && (err.response.status === 401 || err.response.status === 403)) {
                 Cookies.remove('token') // Eliminar el token si no es válido
                 currentUser.value = null
+                window.location.href = '/login?error=session_expired';
             }
             return false
         } finally {
@@ -95,7 +98,7 @@ export function useUsers() {
                 Cookies.set('token', response.data.token, { expires: 7, path: '/' })
                 success.value = 'Login successful!'
                 error.value = null
-                window.location.href = '/home'
+                window.location.href = '/'
             } else {
                 error.value = 'Login failed'
                 success.value = null

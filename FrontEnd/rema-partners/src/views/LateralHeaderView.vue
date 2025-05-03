@@ -152,7 +152,7 @@ export default defineComponent({
         loadLinks() {
             const utf8 = useutf8Store();
             this.links = [
-                { text: utf8.t('links.dashboard'), href: '/dashboard', visibleOn: ['/dashboard', '/home'] },
+                { text: utf8.t('links.producto.add'), href: '/producto/create', visibleOn: ['/producto/*', '/'] },
                 { text: utf8.t('links.settings'), href: '/settings', visibleOn: ['/settings'] },
                 { text: utf8.t('links.categoria.add'), href: '/admin/categoria/create', visibleOn: ['/admin/categoria/*'] },
                 { text: utf8.t('links.categoria.list'), href: '/admin/categoria/list' },
