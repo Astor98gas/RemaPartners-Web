@@ -3,7 +3,7 @@
         <!-- Header con paso actual -->
         <div class="flex items-center justify-between mb-8">
             <h1 class="text-3xl font-bold text-gray-800">
-                {{ t('producto.add.title') }} - {{ t(`producto.add.step${currentStep}`) }}
+                {{ pageTitle }} - {{ t(`producto.add.step${currentStep}`) }}
                 <span class="absolute bottom-0 left-0 w-24 h-1 bg-blue-500 rounded-full"></span>
             </h1>
             <router-link to="/"
@@ -153,11 +153,11 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
                         </circle>
                         <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                         </path>
                     </svg>
                     <span v-if="currentStep < 4">{{ t('common.next') }}</span>
-                    <span v-else>{{ t('common.save') }}</span>
+                    <span v-else>{{ isEdit ? t('common.update') : t('common.save') }}</span>
                     <svg v-if="currentStep < 4" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -201,6 +201,8 @@ export default defineComponent({
     },
     data() {
         return {
+            isEdit: false,
+            productId: '',
             currentStep: 1,
             producto: {
                 idUsuario: '',
@@ -227,6 +229,20 @@ export default defineComponent({
             EMoneda,
             loading: false,
         };
+    },
+    computed: {
+        pageTitle(): string {
+            return this.isEdit
+                ? this.t('producto.edit.title')
+                : this.t('producto.add.title');
+        }
+    },
+    watch: {
+        'producto.idCategoria': function (newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.initCamposCategoria();
+            }
+        }
     },
     methods: {
         t(key: string): string {
@@ -320,33 +336,138 @@ export default defineComponent({
                     return false;
             }
         },
+        async loadProductData() {
+            if (!this.isEdit || !this.productId) return;
+
+            try {
+                this.loading = true;
+                await this.productoService.getProductoById(this.productId);
+                const productData = this.productoService.currentProducto.value;
+
+                if (productData) {
+                    // Ensure we load the categorias first if not already loaded
+                    if (this.categorias.length === 0) {
+                        await this.categoriaService.getCategorias();
+                        this.categorias = this.categoriaService.categorias.value;
+                    }
+
+                    // Populate the form with existing data
+                    this.producto = {
+                        id: productData.id,
+                        idUsuario: productData.idUsuario,
+                        idCategoria: productData.idCategoria,
+                        imagenes: [...productData.imagenes],
+                        marca: productData.marca,
+                        titulo: productData.titulo,
+                        descripcion: productData.descripcion,
+                        estado: productData.estado,
+                        precioCentimos: productData.precioCentimos,
+                        moneda: productData.moneda,
+                        stock: productData.stock,
+                        fechaCreacion: productData.fechaCreacion,
+                        fechaModificacion: new Date().toISOString(),
+                        fechaPublicacion: productData.fechaPublicacion,
+                        fechaBaja: productData.fechaBaja,
+                        direccion: productData.direccion,
+                        activo: productData.activo,
+                        destacado: productData.destacado,
+                        // Make sure we deeply clone the camposCategoria array
+                        camposCategoria: productData.camposCategoria && productData.camposCategoria.length > 0
+                            ? JSON.parse(JSON.stringify(productData.camposCategoria))
+                            : []
+                    };
+
+                    // If we have a category but no category fields, initialize them
+                    if (this.producto.idCategoria && (!this.producto.camposCategoria || this.producto.camposCategoria.length === 0)) {
+                        this.initCamposCategoria();
+                    }
+
+                    // If we have category fields but they don't match the current category structure, reinitialize
+                    const selectedCategoria = this.getCategoriaSeleccionada();
+                    if (selectedCategoria && this.producto.camposCategoria.length > 0) {
+                        const categoriaFieldNames = selectedCategoria.campos.map(c => c);
+                        const productoFieldNames = this.producto.camposCategoria.map(c => c.nombreCampo);
+
+                        // Check if field arrays have different lengths or different field names
+                        const needsReinitialize = categoriaFieldNames.length !== productoFieldNames.length ||
+                            !categoriaFieldNames.every(field => productoFieldNames.includes(field));
+
+                        if (needsReinitialize) {
+                            // Preserve existing field values where possible
+                            const oldFieldValues = {
+                                ...this.producto.camposCategoria.reduce((acc, curr) => {
+                                    acc[curr.nombreCampo] = curr.datos;
+                                    return acc;
+                                }, {} as Record<string, string>)
+                            };
+
+                            // Initialize with structure from selected category
+                            this.producto.camposCategoria = selectedCategoria.campos.map(campo => ({
+                                nombreCampo: campo,
+                                datos: oldFieldValues[campo] || '' // Use old value if exists
+                            }));
+                        }
+                    }
+                }
+            } catch (error: any) {
+                console.error('Error loading product for editing:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: this.t('producto.edit.loadError'),
+                    text: error.response?.data?.message || this.t('producto.edit.loadErrorMessage'),
+                    confirmButtonText: this.t('common.ok')
+                });
+            } finally {
+                this.loading = false;
+            }
+        },
         async saveProduct() {
             try {
                 this.loading = true;
 
-                const usersComposable = useUsers();
-                const userData = await usersComposable.isLoggedIn();
+                if (this.isEdit) {
+                    // Update existing product
+                    await this.productoService.updateProducto(this.productId, this.producto);
+                    Swal.fire({
+                        icon: 'success',
+                        title: this.t('producto.edit.success'),
+                        text: this.t('producto.edit.successMessage'),
+                        confirmButtonText: this.t('common.ok')
+                    }).then(() => {
+                        this.$router.push(`/producto/${this.productId}`);
+                    });
+                } else {
+                    // Create new product - existing code
+                    const usersComposable = useUsers();
+                    const userData = await usersComposable.isLoggedIn();
+                    this.producto.idUsuario = userData.id;
 
-                this.producto.idUsuario = userData.id;
+                    await this.productoService.createProducto(this.producto);
 
-                await this.productoService.createProducto(this.producto);
-
-                Swal.fire({
-                    icon: 'success',
-                    title: this.t('producto.add.success'),
-                    text: this.t('producto.add.successMessage'),
-                    confirmButtonText: this.t('common.ok')
-                }).then(() => {
-                    this.$router.push('/');
-                });
-
+                    Swal.fire({
+                        icon: 'success',
+                        title: this.t('producto.add.success'),
+                        text: this.t('producto.add.successMessage'),
+                        confirmButtonText: this.t('common.ok')
+                    }).then(() => {
+                        this.$router.push('/');
+                    });
+                }
             } catch (error: any) {
-                console.error('Error al guardar el producto:', error);
+                console.error('Error saving product:', error);
+
+                const errorTitle = this.isEdit
+                    ? this.t('producto.edit.error')
+                    : this.t('producto.add.error');
+
+                const errorMessage = this.isEdit
+                    ? error.response?.data?.message || this.t('producto.edit.errorMessage')
+                    : error.response?.data?.message || this.t('producto.add.errorMessage');
 
                 Swal.fire({
                     icon: 'error',
-                    title: this.t('producto.add.error'),
-                    text: error.response?.data?.message || this.t('producto.add.errorMessage'),
+                    title: errorTitle,
+                    text: errorMessage,
                     confirmButtonText: this.t('common.ok')
                 });
             } finally {
@@ -359,23 +480,41 @@ export default defineComponent({
         initCamposCategoria() {
             const categoriaSeleccionada = this.getCategoriaSeleccionada();
             if (categoriaSeleccionada) {
+                // Save existing values if any
+                const existingValues = {};
+                if (this.producto.camposCategoria && this.producto.camposCategoria.length > 0) {
+                    this.producto.camposCategoria.forEach(campo => {
+                        existingValues[campo.nombreCampo] = campo.datos;
+                    });
+                }
+
+                // Create new campos array based on the selected category
                 this.producto.camposCategoria = categoriaSeleccionada.campos.map(campo => ({
                     nombreCampo: campo,
-                    datos: ''
+                    datos: existingValues[campo] || '' // Use existing value if available
                 }));
             }
         }
     },
-    mounted() {
+    async mounted() {
         try {
-            // Cargar categorías
-            this.categoriaService.getCategorias().then(() => {
-                this.categorias = this.categoriaService.categorias.value;
-            }).catch(error => {
-                console.error('Error al cargar categorías:', error);
-            });
+            // Check if we're in edit mode by looking at the route parameters
+            const route = this.$route;
+            if (route.params.id && route.path.includes('/edit')) {
+                this.isEdit = true;
+                this.productId = route.params.id as string;
+            }
+
+            // Load categories first, always
+            await this.categoriaService.getCategorias();
+            this.categorias = this.categoriaService.categorias.value;
+
+            // If in edit mode, load the product data after categories are loaded
+            if (this.isEdit) {
+                await this.loadProductData();
+            }
         } catch (error) {
-            console.error('Error en mounted:', error);
+            console.error('Error in mounted:', error);
         }
     }
 });
