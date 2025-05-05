@@ -155,8 +155,8 @@
                             {{ product.activo ? t('producto.action.disable') : t('producto.action.enable') }}
                         </button>
 
-                        <!-- Buy button - keep unchanged -->
-                        <button
+                        <!-- Buy button - modified to open chat -->
+                        <button @click="startChat"
                             class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 flex items-center shadow-md hover:shadow-lg"
                             :disabled="product.stock <= 0"
                             :class="{ 'opacity-50 cursor-not-allowed grayscale': product.stock <= 0 }">
@@ -290,6 +290,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- Chat Modal -->
+        <div v-if="showChat && product"
+            class="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl">
+                <div class="relative">
+                    <!-- Close button -->
+                    <button @click="showChat = false" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    <!-- Login required message -->
+                    <div v-if="!currentUser" class="p-8 text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-blue-500 mb-4" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2">{{ t('chat.loginRequired') }}</h3>
+                        <p class="text-gray-600 mb-6">{{ t('auth.login_required') }}</p>
+                        <div class="flex justify-center">
+                            <router-link to="/login"
+                                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                {{ t('login.login') }}
+                            </router-link>
+                        </div>
+                    </div>
+
+                    <!-- Chat component -->
+                    <div v-else class="p-4">
+                        <ChatBox :product-id="product.id" :seller-id="product.idUsuario" :user-id="currentUser.id"
+                            @close="showChat = false" />
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -300,6 +340,7 @@ import { useUsers } from '@/composables/useUsers';
 import { useutf8Store } from '@/stores/counter';
 import EditButton from '@/components/ui/EditButton.vue'; // Add import for EditButton
 import DeleteButton from '@/components/ui/DeleteButton.vue'; // Add import for DeleteButton
+import ChatBox from '@/components/chat/ChatBox.vue'; // Add import for ChatBox
 import Swal from 'sweetalert2';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
@@ -313,7 +354,8 @@ export default defineComponent({
     name: 'ProductoDetailView',
     components: {
         EditButton,   // Register the EditButton component
-        DeleteButton  // Register the DeleteButton component
+        DeleteButton,  // Register the DeleteButton component
+        ChatBox      // Register the ChatBox component
     },
     setup() {
         const mapContainer = ref(null);
@@ -332,6 +374,10 @@ export default defineComponent({
             isAdmin: false,
             currentImage: '',
             currentImageIndex: 0,
+            // Chat-related data
+            showChat: false,
+            currentUser: null,
+            isLoggedIn: false
         };
     },
     async mounted() {
@@ -343,10 +389,12 @@ export default defineComponent({
         }
 
         try {
-            // Check if user is admin
+            // Check if user is admin and get current user
             const usersComposable = useUsers();
             const userData = await usersComposable.isLoggedIn();
             this.isAdmin = userData?.rol?.name === 'ADMIN';
+            this.currentUser = userData;
+            this.isLoggedIn = !!userData;
 
             // Get product details
             const productoService = useProducto();
@@ -571,6 +619,9 @@ export default defineComponent({
             } catch (error) {
                 console.error('Error geocoding address:', error);
             }
+        },
+        startChat() {
+            this.showChat = true;
         }
     }
 });

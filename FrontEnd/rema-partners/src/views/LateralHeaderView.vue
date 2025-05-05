@@ -13,7 +13,7 @@
             <!-- Navigation -->
             <nav class="flex-1 px-4 py-6 overflow-y-auto">
                 <h3 class="text-xs uppercase text-gray-500 font-semibold mb-3 px-4">{{ utf8.t('navigation.dynamic')
-                    }}</h3>
+                }}</h3>
                 <ul class="space-y-1">
                     <li v-for="link in filteredLinks" :key="link.text">
                         <router-link :to="link.href"
@@ -157,6 +157,7 @@ export default defineComponent({
                 { text: utf8.t('links.categoria.add'), href: '/admin/categoria/create', visibleOn: ['/admin/categoria/*'] },
                 { text: utf8.t('links.categoria.list'), href: '/admin/categoria/list' },
                 { text: utf8.t('links.profile'), href: '/profile' },
+                { text: utf8.t('links.chat'), href: '/chats' },
                 { text: utf8.t('links.help'), href: '/help' },
             ];
         },
