@@ -161,6 +161,7 @@ export const useutf8Store = defineStore('utf8', {
           'producto.action.enable': 'Enable Product',
           'producto.action.disable': 'Disable Product',
           'producto.action.delete': 'Delete',
+          'producto.action.ownProduct': 'Your Own Product',
           'producto.delete.confirmTitle': 'Delete Product',
           'producto.delete.confirmText': 'Are you sure you want to delete this product? This action cannot be undone.',
           'producto.delete.confirmButton': 'Yes, delete',
@@ -232,8 +233,6 @@ export const useutf8Store = defineStore('utf8', {
           'producto.edit.loadErrorMessage': 'There was an error loading the product data. Please try again.',
           'common.update': 'Update',
           'producto.action.edit': 'Edit Product',
-
-          // Chat translations
           'chat.title': 'Chat with Seller',
           'chat.noMessages': 'No messages yet. Start the conversation!',
           'chat.typePlaceholder': 'Type a message...',
@@ -398,6 +397,7 @@ export const useutf8Store = defineStore('utf8', {
           'producto.action.enable': 'Activar Producto',
           'producto.action.disable': 'Desactivar Producto',
           'producto.action.delete': 'Eliminar',
+          'producto.action.ownProduct': 'Tu Propio Producto',
           'producto.delete.confirmTitle': 'Eliminar Producto',
           'producto.delete.confirmText': '¿Está seguro de que desea eliminar este producto? Esta acción no se puede deshacer.',
           'producto.delete.confirmButton': 'Sí, eliminar',
@@ -469,8 +469,6 @@ export const useutf8Store = defineStore('utf8', {
           'producto.edit.loadErrorMessage': 'Hubo un error al cargar los datos del producto. Por favor, intenta nuevamente.',
           'common.update': 'Actualizar',
           'producto.action.edit': 'Editar Producto',
-
-          // Chat translations
           'chat.title': 'Chat con el Vendedor',
           'chat.noMessages': 'No hay mensajes aún. ¡Inicia la conversación!',
           'chat.typePlaceholder': 'Escribe un mensaje...',
@@ -635,6 +633,7 @@ export const useutf8Store = defineStore('utf8', {
           'producto.action.enable': 'Activar Producte',
           'producto.action.disable': 'Desactivar Producte',
           'producto.action.delete': 'Eliminar',
+          'producto.action.ownProduct': 'El Teu Producte',
           'producto.delete.confirmTitle': 'Eliminar Producte',
           'producto.delete.confirmText': 'Estàs segur que vols eliminar aquest producte? Aquesta acció no es pot desfer.',
           'producto.delete.confirmButton': 'Sí, eliminar',
@@ -706,8 +705,6 @@ export const useutf8Store = defineStore('utf8', {
           'producto.edit.loadErrorMessage': 'Hi ha hagut un error en carregar les dades del producte. Si us plau, torna-ho a provar.',
           'common.update': 'Actualitzar',
           'producto.action.edit': 'Editar Producte',
-
-          // Chat translations
           'chat.title': 'Xat amb el Venedor',
           'chat.noMessages': 'Encara no hi ha missatges. Inicia la conversa!',
           'chat.typePlaceholder': 'Escriu un missatge...',

@@ -155,17 +155,17 @@
                             {{ product.activo ? t('producto.action.disable') : t('producto.action.enable') }}
                         </button>
 
-                        <!-- Buy button - modified to open chat -->
+                        <!-- Buy button - modified to check for product ownership -->
                         <button @click="startChat"
                             class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 flex items-center shadow-md hover:shadow-lg"
-                            :disabled="product.stock <= 0"
-                            :class="{ 'opacity-50 cursor-not-allowed grayscale': product.stock <= 0 }">
+                            :disabled="product.stock <= 0 || isOwner"
+                            :class="{ 'opacity-50 cursor-not-allowed grayscale': product.stock <= 0 || isOwner }">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            {{ t('producto.action.buy') }}
+                            {{ isOwner ? t('producto.action.ownProduct') : t('producto.action.buy') }}
                         </button>
                     </div>
                 </div>
@@ -293,20 +293,21 @@
 
         <!-- Chat Modal -->
         <div v-if="showChat && product"
-            class="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-4">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl">
-                <div class="relative">
-                    <!-- Close button -->
-                    <button @click="showChat = false" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+            class="fixed inset-0 bg-purple-800/10 flex items-center justify-center z-50 p-4">
 
-                    <!-- Login required message -->
-                    <div v-if="!currentUser" class="p-8 text-center">
+            <!-- Login required message -->
+            <div v-if="!currentUser" class="p-8 text-center">
+                <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl">
+                    <div class="relative">
+                        <!-- Close button -->
+                        <button @click="showChat = false"
+                            class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-blue-500 mb-4" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -322,12 +323,12 @@
                         </div>
                     </div>
 
-                    <!-- Chat component -->
-                    <div v-else class="p-4">
-                        <ChatBox :product-id="product.id" :seller-id="product.idUsuario" :user-id="currentUser.id"
-                            @close="showChat = false" />
-                    </div>
                 </div>
+            </div>
+            <!-- Chat component -->
+            <div v-else class="p-4 w-full">
+                <ChatBox :product-id="product.id" :seller-id="product.idUsuario" :user-id="currentUser.id"
+                    @close="showChat = false" />
             </div>
         </div>
     </div>
@@ -377,8 +378,14 @@ export default defineComponent({
             // Chat-related data
             showChat: false,
             currentUser: null,
-            isLoggedIn: false
+            isLoggedIn: false,
+            isOwner: false
         };
+    },
+    computed: {
+        isOwner(): boolean {
+            return !!this.currentUser && !!this.product && this.currentUser.id === this.product.idUsuario;
+        }
     },
     async mounted() {
         const productoId = this.$route.params.id as string;
@@ -413,6 +420,8 @@ export default defineComponent({
                     this.isAdmin = false;
                 }
             }
+
+            this.isOwner = userData?.id === this.product?.idUsuario;
 
             this.error = null;
 

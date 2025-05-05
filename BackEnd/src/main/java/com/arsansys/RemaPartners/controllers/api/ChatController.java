@@ -32,6 +32,9 @@ public class ChatController {
     @PostMapping("/create")
     public ResponseEntity<ChatEntity> createChat(@RequestBody ChatEntity chatEntity) {
         try {
+            if (chatEntity.getIdComprador() == chatEntity.getIdVendedor()) {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
             ChatEntity newChat = chatService.createChat(chatEntity);
             return new ResponseEntity<>(newChat, HttpStatus.CREATED);
         } catch (Exception e) {
