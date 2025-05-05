@@ -150,6 +150,45 @@ export function useUsers() {
         }
     };
 
+    const updateProfile = async (userId: string, userData: Partial<User>) => {
+        try {
+            loading.value = true;
+            error.value = null;
+
+            // Si el usuario actual existe y también tenemos su ID
+            if (currentUser.value && userId) {
+                // Crear un objeto con los datos actualizados
+                const updatedUser: User = {
+                    ...currentUser.value,
+                    ...userData,
+                    id: userId  // Aseguramos que el ID esté incluido
+                };
+
+                // Llamar al servicio para actualizar el usuario
+                const response = await userService.updateUser(userId, updatedUser);
+
+                // Actualizar el estado local del usuario
+                currentUser.value = {
+                    ...currentUser.value,
+                    ...userData
+                };
+
+                success.value = 'Profile updated successfully!';
+                toast.success('Profile updated successfully!');
+                return response.data;
+            } else {
+                throw new Error('User not found or no ID provided');
+            }
+        } catch (err: any) {
+            console.error('Error updating profile:', err);
+            error.value = err.response?.data?.message || 'Error updating profile';
+            toast.error(error.value);
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     return {
         users,
         error,
@@ -161,6 +200,7 @@ export function useUsers() {
         loginUser,
         isLoggedIn,
         logout,
-        checkUserIfExist
+        checkUserIfExist,
+        updateProfile
     }
 }
