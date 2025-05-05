@@ -73,24 +73,38 @@
 import { defineComponent, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useutf8Store } from '@/stores/counter';
+import { useUsers } from '@/composables/useUsers';
 
 export default defineComponent({
     name: 'LateralHeaderView',
     data() {
         return {
-            links: [] as Array<{ text: string; href: string; visibleOn?: string[] }>,
+            links: [] as Array<{ text: string; href: string; visibleOn?: string[]; requiresAuth?: boolean; roles?: string[] }>,
             currentPath: '',
             currentLanguage: '',
             currentDate: new Date().toLocaleDateString('es-ES', {
                 year: 'numeric'
             }),
             utf8: useutf8Store(),
+            currentUser: null,
+            isLoggedIn: false,
+            userRole: null
         };
     },
     computed: {
         filteredLinks() {
             return this.links.filter(link => {
-                // Solo mostrar en la sección dinámica los enlaces con visibleOn
+                // First check authentication requirements
+                if (link.requiresAuth && !this.isLoggedIn) {
+                    return false;
+                }
+
+                // Then check role requirements
+                if (link.roles && this.isLoggedIn && !link.roles.includes(this.userRole)) {
+                    return false;
+                }
+
+                // Apply existing filtering logic for dynamic sections
                 if (!link.visibleOn) {
                     return false; // No mostrar en navegación dinámica
                 }
@@ -107,8 +121,21 @@ export default defineComponent({
         },
 
         staticLinks() {
-            // Mostrar solo enlaces sin propiedad visibleOn en la navegación estática
-            return this.links.filter(link => !link.visibleOn);
+            // Filter static links by authentication and role requirements
+            return this.links.filter(link => {
+                // First check authentication requirements
+                if (link.requiresAuth && !this.isLoggedIn) {
+                    return false;
+                }
+
+                // Then check role requirements
+                if (link.roles && this.isLoggedIn && !link.roles.includes(this.userRole)) {
+                    return false;
+                }
+
+                // Original static link filtering
+                return !link.visibleOn;
+            });
         },
 
         t(key: string): string {
@@ -117,16 +144,14 @@ export default defineComponent({
         }
     },
     created() {
-        // Cargar los enlaces inicialmente
-        this.loadLinks();
-
-        // Configurar el path actual
+        // Set current path and language
         const route = useRoute();
         this.currentPath = route.path;
-
-        // Configurar el idioma actual
         const utf8Store = useutf8Store();
         this.currentLanguage = utf8Store.currentLanguage;
+
+        // Check login status
+        this.checkLoginStatus();
     },
     mounted() {
         // Observar cambios en la ruta
@@ -134,7 +159,6 @@ export default defineComponent({
             () => this.$route.path,
             (newPath) => {
                 this.currentPath = newPath;
-                this.loadLinks();
             }
         );
 
@@ -147,18 +171,77 @@ export default defineComponent({
                 this.loadLinks();
             }
         );
+
+        // Watch for auth changes
+        const usersComposable = useUsers();
+        watch(
+            () => usersComposable.currentUser.value,
+            () => {
+                this.checkLoginStatus();
+            }
+        );
     },
     methods: {
+        async checkLoginStatus() {
+            try {
+                const usersComposable = useUsers();
+                const userData = await usersComposable.isLoggedIn();
+                this.currentUser = userData;
+                this.isLoggedIn = !!userData;
+                this.userRole = userData?.rol?.name || null;
+            } catch (error) {
+                this.isLoggedIn = false;
+                this.currentUser = null;
+                this.userRole = null;
+            } finally {
+                this.loadLinks(); // Reload links after checking login status
+            }
+        },
+
         loadLinks() {
             const utf8 = useutf8Store();
             this.links = [
-                { text: utf8.t('links.producto.add'), href: '/producto/create', visibleOn: ['/producto/*', '/'] },
-                { text: utf8.t('links.settings'), href: '/settings', visibleOn: ['/settings'] },
-                { text: utf8.t('links.categoria.add'), href: '/admin/categoria/create', visibleOn: ['/admin/categoria/*'] },
-                { text: utf8.t('links.categoria.list'), href: '/admin/categoria/list' },
-                { text: utf8.t('links.profile'), href: '/profile' },
-                { text: utf8.t('links.chat'), href: '/chats' },
-                { text: utf8.t('links.help'), href: '/help' },
+                {
+                    text: utf8.t('links.producto.add'),
+                    href: '/producto/create',
+                    visibleOn: ['/producto/*', '/'],
+                    requiresAuth: true,
+                    roles: ['VENDEDOR', 'ADMIN']
+                },
+                {
+                    text: utf8.t('links.settings'),
+                    href: '/settings',
+                    visibleOn: ['/settings'],
+                    requiresAuth: true
+                },
+                {
+                    text: utf8.t('links.categoria.add'),
+                    href: '/admin/categoria/create',
+                    visibleOn: ['/admin/categoria/*'],
+                    requiresAuth: true,
+                    roles: ['ADMIN']
+                },
+                {
+                    text: utf8.t('links.categoria.list'),
+                    href: '/admin/categoria/list',
+                    requiresAuth: true,
+                    roles: ['ADMIN']
+                },
+                {
+                    text: utf8.t('links.profile'),
+                    href: '/profile',
+                    requiresAuth: true
+                },
+                {
+                    text: utf8.t('links.chat'),
+                    href: '/chats',
+                    requiresAuth: true,
+                    roles: ['COMPRADOR', 'ADMIN', 'VENDEDOR']
+                },
+                {
+                    text: utf8.t('links.help'),
+                    href: '/help'
+                },
             ];
         },
         reloadLinks() {
