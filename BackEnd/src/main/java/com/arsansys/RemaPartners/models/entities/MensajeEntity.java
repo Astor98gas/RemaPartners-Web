@@ -3,6 +3,9 @@ package com.arsansys.RemaPartners.models.entities;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +18,10 @@ import lombok.Builder.Default;
 @Builder
 @Entity
 public class MensajeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private String id;
 
     private String idEmisor;
 
