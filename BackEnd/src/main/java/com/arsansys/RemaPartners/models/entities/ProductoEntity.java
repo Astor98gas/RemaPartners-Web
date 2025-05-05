@@ -90,4 +90,5 @@ public class ProductoEntity {
 
     @NotBlank
     private CampoCategoriaEntity[] camposCategoria;
+
 }
