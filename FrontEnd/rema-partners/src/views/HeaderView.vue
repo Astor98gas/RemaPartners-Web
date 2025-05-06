@@ -24,7 +24,7 @@
             <div v-else>
                 <div class="hidden md:flex space-x-3">
                     <router-link to="/login">
-                        <ButtonBasic variant="secondary" class="text-lg">
+                        <ButtonBasic variant="secondary" class="text-base">
                             {{ utf8.t('login.login') }}
                         </ButtonBasic>
                     </router-link>
