@@ -1,6 +1,8 @@
 import { ref } from "vue";
 import { chatService } from "@/services/chat.service";
+import { userService } from "@/services/user.service";
 import type { ChatEntity, MensajeEntity } from "@/models/chat";
+import type { User } from "@/models/user";
 
 export function useChat() {
     const currentChat = ref<ChatEntity | null>(null);
@@ -117,6 +119,42 @@ export function useChat() {
         }
     };
 
+    const getUserNameById = async (userId: string): Promise<string> => {
+        try {
+            if (!userId) return '';
+
+            const response = await userService.getUserById(userId);
+            const user = response.data;
+
+            if (user && user.username) {
+                return user.username;
+            }
+            return '';
+        } catch (err) {
+            console.error("Error fetching user name:", err);
+            return '';
+        }
+    };
+
+    const getChatPartnerName = async (chatId: string, currentUserId?: string): Promise<string> => {
+        try {
+            // Obtener el chat
+            const chat = await getChatById(chatId);
+            if (!chat) return '';
+
+            // Determinar quién es el interlocutor (si no se especifica currentUserId, asumir que es el comprador)
+            const partnerId = currentUserId ?
+                (chat.idComprador === currentUserId ? chat.idVendedor : chat.idComprador) :
+                chat.idVendedor;
+
+            // Obtener el nombre del interlocutor
+            return await getUserNameById(partnerId);
+        } catch (err) {
+            console.error("Error fetching chat partner name:", err);
+            return '';
+        }
+    };
+
     return {
         currentChat,
         chats,
@@ -128,6 +166,8 @@ export function useChat() {
         getChatsByBuyerId,
         getChatsBySellerId,
         getChatByParticipants,
-        addMessage
+        addMessage,
+        getUserNameById,
+        getChatPartnerName
     };
 }

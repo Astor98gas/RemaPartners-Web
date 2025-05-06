@@ -71,6 +71,10 @@
                         <div class="flex-1">
                             <h3 class="text-lg font-semibold text-gray-900">{{ getProductTitle(chat.idProducto) ||
                                 t('chat.unknownProduct') }}</h3>
+                            <!-- Mostrar con quién se está conversando -->
+                            <p class="text-blue-600 text-sm font-medium mt-1">
+                                {{ getUserRole(chat) }}
+                            </p>
                             <!-- Último mensaje -->
                             <p v-if="getLastMessage(chat)" class="text-gray-500 mt-1 text-sm line-clamp-1">
                                 {{ getLastMessage(chat) }}
@@ -144,6 +148,7 @@ export default defineComponent({
             chats: [] as ChatEntity[],
             currentUser: null as any,
             productCache: {} as Record<string, any>,
+            userCache: {} as Record<string, string>, // Nuevo: caché para nombres de usuarios
             showChatModal: false,
             selectedChat: null as ChatEntity | null
         };
@@ -201,6 +206,9 @@ export default defineComponent({
 
                 // Precarga información de productos para mostrar
                 await this.preloadProductInfo();
+
+                // Precarga información de usuarios para mostrar
+                await this.preloadUserInfo();
             } catch (err: any) {
                 console.error('Error cargando chats:', err);
                 this.error = err.message || this.t('chat.list.loadError');
@@ -227,6 +235,32 @@ export default defineComponent({
             }
         },
 
+        async preloadUserInfo() {
+            const chatComposable = useChat();
+
+            // Construir lista de IDs de usuario a cargar (tanto vendedores como compradores)
+            const userIds = new Set<string>();
+
+            for (const chat of this.chats) {
+                // Determinar cuál es el usuario con el que se está conversando
+                const partnerId = chat.idComprador === this.currentUser.id ?
+                    chat.idVendedor : chat.idComprador;
+                userIds.add(partnerId);
+            }
+
+            // Cargar los nombres de usuarios
+            for (const userId of userIds) {
+                try {
+                    const userName = await chatComposable.getUserNameById(userId);
+                    if (userName) {
+                        this.userCache[userId] = userName;
+                    }
+                } catch (error) {
+                    console.error(`Error al cargar nombre de usuario ${userId}:`, error);
+                }
+            }
+        },
+
         getProductTitle(productId: string): string {
             return this.productCache[productId]?.titulo || '';
         },
@@ -236,6 +270,26 @@ export default defineComponent({
                 return this.productCache[productId].imagenes[0];
             }
             return '';
+        },
+
+        getUserName(chat: ChatEntity): string {
+            // Determinar cuál es el usuario con el que se está conversando
+            const partnerId = chat.idComprador === this.currentUser.id ?
+                chat.idVendedor : chat.idComprador;
+
+            return this.userCache[partnerId] || this.t('common.notAvailable');
+        },
+
+        getUserRole(chat: ChatEntity): string {
+            // Determinar si el usuario con quien estamos hablando es un comprador o un vendedor
+            const isSeller = this.currentUser.id === chat.idVendedor;
+            const userName = this.getUserName(chat);
+
+            if (isSeller) {
+                return this.t('chat.withUser.buyer').replace('{userName}', userName);
+            } else {
+                return this.t('chat.withUser.seller').replace('{userName}', userName);
+            }
         },
 
         getLastMessage(chat: ChatEntity): string {

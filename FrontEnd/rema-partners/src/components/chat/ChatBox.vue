@@ -8,7 +8,15 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                <h3 class="font-semibold">{{ t('chat.title') }}</h3>
+                <div>
+                    <h3 class="font-semibold">{{ isSeller ? t('chat.title.asSeller') : t('chat.title') }}</h3>
+                    <p v-if="chatPartnerName" class="text-xs text-blue-100">
+                        {{ isSeller ?
+                            t('chat.withUser.buyer', { userName: chatPartnerName }) :
+                            t('chat.withUser.seller', { userName: chatPartnerName })
+                        }}
+                    </p>
+                </div>
             </div>
             <button @click="$emit('close')" class="text-white hover:text-gray-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -19,7 +27,8 @@
         </div>
 
         <!-- Chat messages -->
-        <div ref="messagesContainer" class="flex-1 p-4 bg-gray-50 overflow-y-auto max-h-96">
+        <div ref="messagesContainer" class="flex-1 p-4 bg-gray-50 overflow-y-auto"
+            style="max-height: calc(100% - 120px);">
             <div v-if="isLoading" class="flex justify-center items-center h-full">
                 <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
             </div>
@@ -105,8 +114,9 @@ export default defineComponent({
             chatComposable: useChat(),
             loading: false,
             error: null as string | null,
-            chat: null,
-            refreshInterval: null as number | null
+            chat: null as ChatEntity | null,
+            refreshInterval: null as number | null,
+            chatPartnerName: null as string | null
         };
     },
     computed: {
@@ -118,6 +128,9 @@ export default defineComponent({
         },
         currentChat(): ChatEntity | null {
             return this.chat || this.chatComposable.currentChat;
+        },
+        isSeller(): boolean {
+            return this.userId === this.sellerId;
         }
     },
     watch: {
@@ -164,6 +177,21 @@ export default defineComponent({
                 }
 
                 console.log("Estado final del chat:", this.chat);
+
+                // Obtener el nombre del usuario con quien se está conversando
+                if (this.chat?.id) {
+                    // Determinar el ID del usuario con quien se está conversando
+                    const partnerId = this.isSeller ?
+                        this.chat.idComprador :
+                        this.chat.idVendedor;
+
+                    // Obtener directamente el nombre del usuario por ID
+                    const userName = await this.chatComposable.getUserNameById(partnerId);
+                    this.chatPartnerName = userName;
+
+                    console.log("Nombre del usuario con quien se está conversando:", this.chatPartnerName);
+                }
+
                 await this.scrollToBottom();
 
                 // Configurar intervalo de actualización automática
@@ -259,9 +287,18 @@ export default defineComponent({
                 return dateStr;
             }
         },
-        t(key: string) {
+        t(key: string, params?: Record<string, any>) {
             const store = useutf8Store();
-            return store.t(key);
+            const translation = store.t(key);
+
+            // Replace parameters if provided
+            if (params) {
+                return Object.entries(params).reduce((str, [key, value]) => {
+                    return str.replace(`{${key}}`, String(value));
+                }, translation);
+            }
+
+            return translation;
         }
     },
     mounted() {
@@ -279,9 +316,9 @@ export default defineComponent({
 
 <style scoped>
 .chat-box {
-    height: 500px;
+    height: 650px;
     width: 100%;
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
 }
 </style>
