@@ -236,7 +236,7 @@
                             class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow col-span-1 md:col-span-2 lg:col-span-3">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.direccion') }}</p>
                             <p class="text-gray-900 font-semibold mb-2">{{ product.direccion || t('common.notAvailable')
-                                }}</p>
+                            }}</p>
 
                             <div v-if="product.direccion"
                                 class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden shadow-sm mt-2 hover:shadow-md transition-shadow"
@@ -328,9 +328,14 @@
             <!-- Chat component -->
             <div v-else class="p-4 w-full">
                 <ChatBox :product-id="product.id" :seller-id="product.idUsuario" :user-id="currentUser.id"
-                    @close="showChat = false" />
+                    :chat-id="activeChatId" @close="showChat = false" />
             </div>
         </div>
+
+        <!-- Offer Modal -->
+        <OfferModal v-if="showOfferModal && product" :product-title="product.titulo" :product-image="currentImage"
+            :original-price="product.precioCentimos" :currency="product.moneda" @close="showOfferModal = false"
+            @offer-submitted="handleOfferSubmitted" />
     </div>
 </template>
 
@@ -338,10 +343,12 @@
 import { defineComponent, ref } from 'vue';
 import { useProducto } from '@/composables/useProducto';
 import { useUsers } from '@/composables/useUsers';
+import { useChat } from '@/composables/useChat';
 import { useutf8Store } from '@/stores/counter';
 import EditButton from '@/components/ui/EditButton.vue'; // Add import for EditButton
 import DeleteButton from '@/components/ui/DeleteButton.vue'; // Add import for DeleteButton
 import ChatBox from '@/components/chat/ChatBox.vue'; // Add import for ChatBox
+import OfferModal from '@/components/productos/OfferModal.vue'; // Add import for OfferModal
 import Swal from 'sweetalert2';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
@@ -350,13 +357,15 @@ import * as L from 'leaflet';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import type { Producto } from '@/models/producto';
 
 export default defineComponent({
     name: 'ProductoDetailView',
     components: {
         EditButton,   // Register the EditButton component
         DeleteButton,  // Register the DeleteButton component
-        ChatBox      // Register the ChatBox component
+        ChatBox,      // Register the ChatBox component
+        OfferModal    // Register the OfferModal component
     },
     setup() {
         const mapContainer = ref(null);
@@ -369,15 +378,16 @@ export default defineComponent({
     },
     data() {
         return {
-            product: null as any,
+            product: null as Producto | null,
             loading: true,
             error: null as string | null,
             isAdmin: false,
             currentImage: '',
             currentImageIndex: 0,
-            // Chat-related data
             showChat: false,
-            currentUser: null,
+            showOfferModal: false,
+            activeChatId: undefined as string | undefined,
+            currentUser: null as { id: string } | null,
             isLoggedIn: false,
             isOwner: false
         };
@@ -461,16 +471,18 @@ export default defineComponent({
         },
         selectImage(image: string) {
             this.currentImage = image;
-            this.currentImageIndex = this.product.imagenes.indexOf(image);
+            if (this.product?.imagenes) {
+                this.currentImageIndex = this.product.imagenes.indexOf(image);
+            }
         },
         nextImage() {
-            if (this.product.imagenes.length > 0) {
+            if (this.product && this.product.imagenes.length > 0) {
                 this.currentImageIndex = (this.currentImageIndex + 1) % this.product.imagenes.length;
                 this.currentImage = this.product.imagenes[this.currentImageIndex];
             }
         },
         prevImage() {
-            if (this.product.imagenes.length > 0) {
+            if (this.product && this.product.imagenes.length > 0) {
                 this.currentImageIndex = (this.currentImageIndex - 1 + this.product.imagenes.length) % this.product.imagenes.length;
                 this.currentImage = this.product.imagenes[this.currentImageIndex];
             }
@@ -630,7 +642,78 @@ export default defineComponent({
             }
         },
         startChat() {
-            this.showChat = true;
+            // Show offer modal first instead of directly opening chat
+            if (!this.currentUser) {
+                // If user is not logged in, show the chat modal which will display login message
+                this.showChat = true;
+                return;
+            }
+
+            // If user is the owner of the product, don't allow to make an offer
+            if (this.isOwner) {
+                Swal.fire({
+                    icon: 'info',
+                    title: this.t('producto.action.ownProduct'),
+                    text: this.t('producto.action.cantBuyOwn'),
+                    confirmButtonText: this.t('common.ok')
+                });
+                return;
+            }
+
+            // Show offer modal first
+            this.showOfferModal = true;
+        },
+        async handleOfferSubmitted(offerDetails: { amount: number, currency: string, formattedOffer: string }) {
+            console.log('Offer submitted:', offerDetails);
+            this.showOfferModal = false;
+
+            if (!this.currentUser || !this.product) return;
+
+            try {
+                // Create a chat or get existing chat
+                const chatService = useChat();
+                const chat = await chatService.getChatByParticipants(
+                    this.product.id,
+                    this.currentUser.id,
+                    this.product.idUsuario
+                );
+
+                if (chat && chat.id) {
+                    // Set the active chat ID
+                    this.activeChatId = chat.id;
+
+                    // Prepare the offer message
+                    const offerMessage = this.t('producto.offerMessage')
+                        .replace('{productTitle}', this.product.titulo)
+                        .replace('{offerAmount}', offerDetails.formattedOffer);
+
+                    // Send the offer message
+                    await chatService.addMessage(
+                        chat.id,
+                        this.currentUser.id,
+                        offerMessage
+                    );
+
+                    // Show the chat after sending the offer
+                    this.showChat = true;
+                } else {
+                    // Error handling if chat creation failed
+                    Swal.fire({
+                        icon: 'error',
+                        title: this.t('chat.error'),
+                        text: this.t('chat.createError'),
+                        confirmButtonText: this.t('common.ok')
+                    });
+                }
+            } catch (error) {
+                console.error('Error creating chat with offer:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: this.t('common.error'),
+                    text: this.t('chat.createError'),
+                    confirmButtonText: this.t('common.ok')
+                });
+            }
         }
     }
 });

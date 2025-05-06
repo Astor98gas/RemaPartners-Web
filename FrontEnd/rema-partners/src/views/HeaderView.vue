@@ -24,12 +24,12 @@
             <div v-else>
                 <div class="hidden md:flex space-x-3">
                     <router-link to="/login">
-                        <ButtonBasic variant="secondary" size="sm" class="text-lg">
+                        <ButtonBasic variant="secondary" class="text-lg">
                             {{ utf8.t('login.login') }}
                         </ButtonBasic>
                     </router-link>
                     <router-link to="/signup">
-                        <ButtonBasic variant="primary" size="base" class="text-base">
+                        <ButtonBasic variant="primary" class="text-base">
                             {{ utf8.t('login.register') }}
                         </ButtonBasic>
                     </router-link>

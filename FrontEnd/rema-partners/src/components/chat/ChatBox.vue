@@ -20,17 +20,18 @@
 
         <!-- Chat messages -->
         <div ref="messagesContainer" class="flex-1 p-4 bg-gray-50 overflow-y-auto max-h-96">
-            <div v-if="loading" class="flex justify-center items-center h-full">
+            <div v-if="isLoading" class="flex justify-center items-center h-full">
                 <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
             </div>
-            <div v-else-if="error" class="text-red-500 text-center">
-                {{ error }}
+            <div v-else-if="errorMessage" class="text-red-500 text-center">
+                {{ errorMessage }}
             </div>
-            <div v-else-if="!chat?.mensajes || chat.mensajes.length === 0" class="text-gray-500 text-center py-4">
+            <div v-else-if="!currentChat?.mensajes || currentChat.mensajes.length === 0"
+                class="text-gray-500 text-center py-4">
                 {{ t('chat.noMessages') }}
             </div>
             <template v-else>
-                <div v-for="(message, index) in chat.mensajes" :key="index" class="mb-4">
+                <div v-for="(message, index) in currentChat.mensajes" :key="index" class="mb-4">
                     <div :class="[
                         'flex max-w-xs rounded-lg p-3 shadow',
                         message.idEmisor === userId ?
@@ -43,7 +44,7 @@
                         'text-xs mt-1',
                         message.idEmisor === userId ? 'text-right text-gray-500' : 'text-left text-gray-500'
                     ]">
-                        {{ formatTime(message.fecha) }}
+                        {{ formatTime(message.fecha || '') }}
                     </div>
                 </div>
             </template>
@@ -54,11 +55,11 @@
             <form @submit.prevent="sendMessage" class="flex">
                 <input v-model="newMessage" type="text"
                     class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
-                    :placeholder="t('chat.typePlaceholder')" :disabled="loading" />
+                    :placeholder="t('chat.typePlaceholder')" :disabled="isLoading" />
                 <button type="button" @click="sendMessage"
                     class="bg-blue-600 hover:bg-blue-700 text-white rounded-r-lg px-4 py-2 flex items-center transition-colors"
-                    :disabled="!newMessage.trim() || loading"
-                    :class="{ 'opacity-50 cursor-not-allowed': !newMessage.trim() || loading }">
+                    :disabled="!newMessage.trim() || isLoading"
+                    :class="{ 'opacity-50 cursor-not-allowed': !newMessage.trim() || isLoading }">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -71,7 +72,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, onUnmounted, nextTick, watch, computed } from 'vue';
+import { defineComponent } from 'vue';
 import { useChat } from '@/composables/useChat';
 import { useutf8Store } from '@/stores/counter';
 import type { ChatEntity } from '@/models/chat';
@@ -97,136 +98,148 @@ export default defineComponent({
         }
     },
     emits: ['close'],
-    setup(props) {
-        const newMessage = ref('');
-        const messagesContainer = ref<HTMLElement | null>(null);
-        const chatComposable = useChat();
-        const loading = ref(false);
-        const error = ref<string | null>(null);
-        const chat = ref<ChatEntity | null>(null);
-        const refreshInterval = ref<number | null>(null);
-
-        // Scroll to the bottom of the messages container
-        const scrollToBottom = async () => {
-            await nextTick();
-            if (messagesContainer.value) {
-                messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
-            }
+    data() {
+        return {
+            newMessage: '',
+            messagesContainer: null,
+            chatComposable: useChat(),
+            loading: false,
+            error: null as string | null,
+            chat: null,
+            refreshInterval: null as number | null
         };
-
-        // Initialize chat
-        const initializeChat = async () => {
+    },
+    computed: {
+        isLoading(): boolean {
+            return this.loading || this.chatComposable.loading;
+        },
+        errorMessage(): string | null {
+            return this.error || this.chatComposable.error;
+        },
+        currentChat(): ChatEntity | null {
+            return this.chat || this.chatComposable.currentChat;
+        }
+    },
+    watch: {
+        ['chatComposable.currentChat.value.mensajes.length'](newVal, oldVal) {
+            if (newVal && oldVal && newVal > oldVal) {
+                this.scrollToBottom();
+            }
+        }
+    },
+    methods: {
+        async scrollToBottom() {
+            await this.$nextTick();
+            if (this.$refs.messagesContainer) {
+                (this.$refs.messagesContainer as HTMLDivElement).scrollTop = (this.$refs.messagesContainer as HTMLDivElement).scrollHeight;
+            }
+        },
+        async initializeChat() {
             try {
-                loading.value = true;
-                error.value = null;
+                this.loading = true;
+                this.error = null;
 
                 console.log("Inicializando chat con props:", {
-                    chatId: props.chatId,
-                    productId: props.productId,
-                    userId: props.userId,
-                    sellerId: props.sellerId
+                    chatId: this.chatId,
+                    productId: this.productId,
+                    userId: this.userId,
+                    sellerId: this.sellerId
                 });
 
                 // Si tenemos un ID de chat, cargar directamente por ID
-                if (props.chatId) {
-                    console.log("Cargando chat por ID:", props.chatId);
-                    const response = await chatComposable.getChatById(props.chatId);
+                if (this.chatId) {
+                    console.log("Cargando chat por ID:", this.chatId);
+                    const response = await this.chatComposable.getChatById(this.chatId);
                     console.log("Chat cargado correctamente:", response);
-                    chat.value = response;
+                    this.chat = response;
                 } else {
                     // Si no, obtener o crear chat usando los IDs de participantes
                     console.log("Obteniendo chat por participantes");
-                    const response = await chatComposable.getChatByParticipants(
-                        props.productId,
-                        props.userId,
-                        props.sellerId
+                    const response = await this.chatComposable.getChatByParticipants(
+                        this.productId,
+                        this.userId,
+                        this.sellerId
                     );
-                    chat.value = response;
+                    this.chat = response;
                 }
 
-                console.log("Estado final del chat:", chat.value);
-                await scrollToBottom();
+                console.log("Estado final del chat:", this.chat);
+                await this.scrollToBottom();
 
                 // Configurar intervalo de actualización automática
-                setupAutoRefresh();
-            } catch (err: any) {
+                this.setupAutoRefresh();
+            } catch (err) {
                 console.error('Error initializing chat:', err);
-                error.value = err.message || 'Error loading chat messages';
+                this.error = (err instanceof Error ? err.message : 'Error loading chat messages');
             } finally {
-                loading.value = false;
+                this.loading = false;
             }
-        };
-
-        // Configurar actualización automática de mensajes
-        const setupAutoRefresh = () => {
+        },
+        setupAutoRefresh() {
             // Limpiar intervalo anterior si existe
-            if (refreshInterval.value) {
-                clearInterval(refreshInterval.value);
+            if (this.refreshInterval) {
+                clearInterval(this.refreshInterval);
             }
 
             // Actualizar mensajes cada 10 segundos
-            refreshInterval.value = window.setInterval(async () => {
-                if (chat.value?.id) {
+            this.refreshInterval = window.setInterval(async () => {
+                if (this.currentChat?.id) {
                     try {
-                        const response = await chatComposable.getChatById(chat.value.id);
+                        const response = await this.chatComposable.getChatById(this.currentChat.id);
 
                         // Solo actualizar si hay cambios en la cantidad de mensajes
                         if (response && response.mensajes &&
-                            (!chat.value.mensajes || response.mensajes.length > chat.value.mensajes.length)) {
-                            chat.value = response;
-                            await scrollToBottom();
+                            (!this.currentChat.mensajes || response.mensajes.length > this.currentChat.mensajes.length)) {
+                            this.chat = response;
+                            await this.scrollToBottom();
                         }
                     } catch (err) {
                         console.error('Error al actualizar mensajes:', err);
                     }
                 }
             }, 10000);
-        };
-
-        // Send a new message
-        const sendMessage = async () => {
-            if (!newMessage.value.trim() || !chat.value?.id) {
+        },
+        async sendMessage() {
+            if (!this.newMessage.trim() || !this.currentChat?.id) {
                 console.log("No se puede enviar: mensaje vacío o chat nulo", {
-                    messageEmpty: !newMessage.value.trim(),
-                    chatId: chat.value?.id
+                    messageEmpty: !this.newMessage.trim(),
+                    chatId: this.currentChat?.id
                 });
                 return;
             }
 
             try {
                 console.log("Intentando enviar mensaje:", {
-                    chatId: chat.value.id,
-                    userId: props.userId,
-                    message: newMessage.value.trim()
+                    chatId: this.currentChat.id,
+                    userId: this.userId,
+                    message: this.newMessage.trim()
                 });
 
-                loading.value = true;
-                const updatedChat = await chatComposable.addMessage(
-                    chat.value.id,
-                    props.userId,
-                    newMessage.value.trim()
+                this.loading = true;
+                const updatedChat = await this.chatComposable.addMessage(
+                    this.currentChat.id,
+                    this.userId,
+                    this.newMessage.trim()
                 );
 
                 console.log("Respuesta del servidor:", updatedChat);
 
                 // Actualizar el chat con los datos más recientes del servidor
-                chat.value = updatedChat;
+                this.chat = updatedChat;
 
                 // Limpiar el campo de mensaje
-                newMessage.value = '';
+                this.newMessage = '';
 
                 // Desplazarse al final para mostrar el mensaje más reciente
-                await scrollToBottom();
-            } catch (err: any) {
+                await this.scrollToBottom();
+            } catch (err) {
                 console.error('Error enviando mensaje:', err);
-                error.value = err.message || 'Error sending message';
+                this.error = (err instanceof Error ? err.message : 'Error sending message');
             } finally {
-                loading.value = false;
+                this.loading = false;
             }
-        };
-
-        // Format time for display
-        const formatTime = (dateStr?: string): string => {
+        },
+        formatTime(dateStr: string) {
             if (!dateStr) return '';
 
             try {
@@ -245,42 +258,20 @@ export default defineComponent({
                 console.error('Error formatting date:', error);
                 return dateStr;
             }
-        };
-
-        // Handle automatic scrolling when new messages arrive
-        watch(() => chatComposable.currentChat.value?.mensajes?.length, (newVal, oldVal) => {
-            if (newVal && oldVal && newVal > oldVal) {
-                scrollToBottom();
-            }
-        });
-
-        onMounted(() => {
-            initializeChat();
-        });
-
-        // Limpieza cuando el componente se desmonta
-        onUnmounted(() => {
-            // Detener el intervalo de actualización automática
-            if (refreshInterval.value) {
-                clearInterval(refreshInterval.value);
-                refreshInterval.value = null;
-            }
-        });
-
-        return {
-            newMessage,
-            messagesContainer,
-            loading: computed(() => loading.value || chatComposable.loading.value),
-            error: computed(() => error.value || chatComposable.error.value),
-            chat: computed(() => chat.value || chatComposable.currentChat.value),
-            sendMessage,
-            formatTime
-        };
-    },
-    methods: {
-        t(key: string): string {
+        },
+        t(key: string) {
             const store = useutf8Store();
             return store.t(key);
+        }
+    },
+    mounted() {
+        this.initializeChat();
+    },
+    beforeUnmount() {
+        // Detener el intervalo de actualización automática
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+            this.refreshInterval = null;
         }
     }
 });
