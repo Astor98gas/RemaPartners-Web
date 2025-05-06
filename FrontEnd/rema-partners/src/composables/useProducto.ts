@@ -10,6 +10,22 @@ export function useProducto() {
     const loading = ref<boolean>(false);
     const currentProducto = ref<Producto | null>(null);
 
+    const getProductosByIdCategoria = async (id: string) => {
+        try {
+            loading.value = true;
+            error.value = null;
+            const response = await productoService.getProductosByIdCategoria(id);
+            productos.value = response.data;
+        } catch (err: any) {
+            console.error("Error fetching productos by category ID:", err);
+            error.value = err.response?.data?.message || "Error fetching productos by category ID";
+            success.value = null;
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     const toggleStatus = async (id: string) => {
         try {
             loading.value = true;
@@ -149,7 +165,8 @@ export function useProducto() {
         deleteProducto,
         getProductosByUsuario,
         toggleStatus,
-        getProductosActivos
+        getProductosActivos,
+        getProductosByIdCategoria
     }
 
 }

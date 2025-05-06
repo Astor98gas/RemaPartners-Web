@@ -74,6 +74,16 @@ public class ProductoController {
         }
     }
 
+    @GetMapping("vendedor/producto/getProductosByIdCategoria/{id}")
+    public ResponseEntity<?> getProductosByIdCategoria(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(productoService.getProductosByIdCategoria(id));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error retrieving productos by categoria: " + e.getMessage());
+        }
+    }
+
     @PostMapping("vendedor/producto/toggleStatus/{id}")
     public ResponseEntity<?> toggleStatus(@PathVariable String id) {
         try {

@@ -27,4 +27,7 @@ export const productoService = {
     async getProductosByUsuario(id: string) {
         return axios.get(`${CATEGORIA_API_URL}/getByUserId/${id}`);
     },
+    async getProductosByIdCategoria(id: string) {
+        return axios.get(`${CATEGORIA_API_URL}/getByIdCategoria/${id}`);
+    }
 }

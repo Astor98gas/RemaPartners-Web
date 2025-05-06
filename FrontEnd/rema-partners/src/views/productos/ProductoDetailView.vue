@@ -288,6 +288,21 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Productos similares -->
+                <div class="mb-8" v-if="productosSimilares.length > 0">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-900 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3V3z" />
+                        </svg>
+                        {{ t('producto.similarProducts') }}
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <ProductoComponent v-for="(similar, index) in productosSimilares" :key="index"
+                            :producto="similar" />
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -353,20 +368,20 @@ import OfferModal from '@/components/productos/OfferModal.vue'; // Add import fo
 import Swal from 'sweetalert2';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
-
-// Leaflet marker images
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import type { Producto } from '@/models/producto';
+import ProductoComponent from '@/components/layout/ProductoComponent.vue';
 
 export default defineComponent({
     name: 'ProductoDetailView',
     components: {
-        EditButton,   // Register the EditButton component
-        DeleteButton,  // Register the DeleteButton component
-        ChatBox,      // Register the ChatBox component
-        OfferModal    // Register the OfferModal component
+        EditButton,
+        DeleteButton,
+        ChatBox,
+        OfferModal,
+        ProductoComponent
     },
     setup() {
         const mapContainer = ref(null);
@@ -390,7 +405,8 @@ export default defineComponent({
             activeChatId: undefined as string | undefined,
             currentUser: null as { id: string } | null,
             isLoggedIn: false,
-            isOwner: false
+            isOwner: false,
+            productosSimilares: [] as Producto[],
         };
     },
     computed: {
@@ -414,6 +430,7 @@ export default defineComponent({
             this.currentUser = userData;
             this.isLoggedIn = !!userData;
 
+
             // Get product details
             const productoService = useProducto();
             await productoService.getProductoById(productoId);
@@ -435,6 +452,10 @@ export default defineComponent({
             this.isOwner = userData?.id === this.product?.idUsuario;
 
             this.error = null;
+
+            if (this.product) {
+                await this.getProductosByIdCategoria(this.product.idCategoria);
+            }
 
             // Initialize map after product loads and only if there's a location
             if (this.product && this.product.direccion) {
@@ -552,7 +573,6 @@ export default defineComponent({
                 console.error('Error in delete confirmation:', error);
             }
         },
-
         async deleteProduct() {
             if (!this.product) return;
 
@@ -614,7 +634,6 @@ export default defineComponent({
             // Geocode the address and center map
             await this.geocodeAddress();
         },
-
         async geocodeAddress() {
             if (!this.product?.direccion) return;
 
@@ -725,6 +744,31 @@ export default defineComponent({
                     text: this.t('chat.createError'),
                     confirmButtonText: this.t('common.ok')
                 });
+            }
+        },
+        async getProductosByIdCategoria(idCategoria: string) {
+            if (!idCategoria || !this.product) return;
+
+            try {
+                const productoService = useProducto();
+                // Using regular getProductos method since we don't see a specific idCategoria method
+                await productoService.getProductos();
+
+                // Filter products to only include those:
+                // 1. From the same category
+                // 2. That are not the current product
+                // 3. That are active (optional, but recommended)
+                // 4. Limit to a reasonable number (e.g., 3-6)
+                this.productosSimilares = productoService.productos.value
+                    .filter(producto =>
+                        producto.idCategoria === idCategoria &&
+                        producto.id !== this.product?.id &&
+                        producto.activo === true
+                    )
+                    .slice(0, 3); // Limit to 3 similar products
+            } catch (error) {
+                console.error('Error loading similar products:', error);
+                this.productosSimilares = [];
             }
         }
     }

@@ -292,6 +292,7 @@ export const useutf8Store = defineStore('utf8', {
           'profile.update_error': 'Error updating profile',
           'profile.login_error': 'Error checking login status',
           'profile.back_to_login': 'Back to Login',
+          'producto.similarProducts': 'Similar Products',
         },
         es: {
           'producto.add.title': 'Añadir Nuevo Producto',
@@ -570,6 +571,7 @@ export const useutf8Store = defineStore('utf8', {
           'profile.update_error': 'Error al actualizar el perfil',
           'profile.login_error': 'Error al verificar el estado de inicio de sesión',
           'profile.back_to_login': 'Volver a Iniciar Sesión',
+          'producto.similarProducts': 'Productos Similares',
         },
         cat: {
           'producto.add.title': 'Afegir Nou Producte',
@@ -848,6 +850,7 @@ export const useutf8Store = defineStore('utf8', {
           'profile.update_error': 'Error en actualitzar el perfil',
           'profile.login_error': 'Error en verificar l\'estat d\'inici de sessió',
           'profile.back_to_login': 'Tornar a Iniciar Sessió',
+          'producto.similarProducts': 'Productes Similars',
         }
       } as Translations
     };
