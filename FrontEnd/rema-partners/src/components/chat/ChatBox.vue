@@ -18,8 +18,8 @@
                     </p>
                 </div>
             </div>
-            <button @click="$emit('close')" class="text-white hover:text-gray-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+            <button @click="$emit('close')" class="text-white hover:text-gray-200 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -133,55 +133,25 @@ export default defineComponent({
             return this.userId === this.sellerId;
         }
     },
-    watch: {
-        ['chatComposable.currentChat.value.mensajes.length'](newVal, oldVal) {
-            if (newVal && oldVal && newVal > oldVal) {
-                this.scrollToBottom();
-            }
-        }
-    },
     methods: {
         async scrollToBottom() {
             await this.$nextTick();
             if (this.$refs.messagesContainer) {
-                (this.$refs.messagesContainer as HTMLDivElement).scrollTop = (this.$refs.messagesContainer as HTMLDivElement).scrollHeight;
+                const container = this.$refs.messagesContainer as HTMLDivElement;
+                setTimeout(() => {
+                    container.scrollTop = container.scrollHeight;
+                }, 50);
             }
         },
-        /**
-         * Inicializa el componente de chat, cargando el historial de mensajes y configurando la actualización automática.
-         * Este método se encarga de:
-         * - Cargar un chat existente por ID o crear uno nuevo
-         * - Obtener el nombre del usuario con el que se está conversando
-         * - Configurar el desplazamiento automático al último mensaje
-         * - Iniciar el refresco automático de mensajes
-         */
         async initializeChat() {
             try {
                 this.loading = true;
                 this.error = null;
 
-                // Comentado: console.log de inicialización de chat
-                /*
-                console.log("Inicializando chat con props:", {
-                    chatId: this.chatId,
-                    productId: this.productId,
-                    userId: this.userId,
-                    sellerId: this.sellerId
-                });
-                */
-
-                // Si tenemos un ID de chat, cargar directamente por ID
                 if (this.chatId) {
-                    // Comentado: console.log de carga de chat por ID
-                    // console.log("Cargando chat por ID:", this.chatId);
                     const response = await this.chatComposable.getChatById(this.chatId);
-                    // Comentado: console.log de respuesta del chat
-                    // console.log("Chat cargado correctamente:", response);
                     this.chat = response;
                 } else {
-                    // Si no, obtener o crear chat usando los IDs de participantes
-                    // Comentado: console.log de obtención de chat por participantes
-                    // console.log("Obteniendo chat por participantes");
                     const response = await this.chatComposable.getChatByParticipants(
                         this.productId,
                         this.userId,
@@ -190,89 +160,55 @@ export default defineComponent({
                     this.chat = response;
                 }
 
-                // Comentado: console.log del estado final del chat
-                // console.log("Estado final del chat:", this.chat);
+                await this.$nextTick();
 
-                // Obtener el nombre del usuario con quien se está conversando
                 if (this.chat?.id) {
-                    // Determinar el ID del usuario con quien se está conversando
                     const partnerId = this.isSeller ?
                         this.chat.idComprador :
                         this.chat.idVendedor;
 
-                    // Obtener directamente el nombre del usuario por ID
                     const userName = await this.chatComposable.getUserNameById(partnerId);
                     this.chatPartnerName = userName;
-
-                    // Comentado: console.log del nombre del usuario
-                    // console.log("Nombre del usuario con quien se está conversando:", this.chatPartnerName);
                 }
 
-                await this.scrollToBottom();
-
-                // Configurar intervalo de actualización automática
                 this.setupAutoRefresh();
             } catch (err) {
                 console.error('Error initializing chat:', err);
                 this.error = (err instanceof Error ? err.message : 'Error loading chat messages');
             } finally {
                 this.loading = false;
+                this.scrollToBottom();
             }
         },
         setupAutoRefresh() {
-            // Limpiar intervalo anterior si existe
             if (this.refreshInterval) {
                 clearInterval(this.refreshInterval);
             }
 
-            // Actualizar mensajes cada 10 segundos
             this.refreshInterval = window.setInterval(async () => {
                 if (this.currentChat?.id) {
                     try {
                         const response = await this.chatComposable.getChatById(this.currentChat.id);
 
-                        // Solo actualizar si hay cambios en la cantidad de mensajes
                         if (response && response.mensajes &&
                             (!this.currentChat.mensajes || response.mensajes.length > this.currentChat.mensajes.length)) {
                             this.chat = response;
-                            await this.scrollToBottom();
                         }
                     } catch (err) {
                         console.error('Error al actualizar mensajes:', err);
+                    } finally {
+                        this.loading = false;
+                        await this.scrollToBottom();
                     }
                 }
             }, 10000);
         },
-        /**
-         * Envía un nuevo mensaje en la conversación actual.
-         * Este método se encarga de:
-         * - Validar que el mensaje no esté vacío y que exista un chat activo
-         * - Enviar el mensaje al servidor a través del composable de chat
-         * - Actualizar la vista con el mensaje enviado
-         * - Desplazar la vista hasta el último mensaje
-         */
         async sendMessage() {
             if (!this.newMessage.trim() || !this.currentChat?.id) {
-                // Comentado: console.log de validación
-                /* 
-                console.log("No se puede enviar: mensaje vacío o chat nulo", {
-                    messageEmpty: !this.newMessage.trim(),
-                    chatId: this.currentChat?.id
-                });
-                */
                 return;
             }
 
             try {
-                // Comentado: console.log de intento de envío de mensaje
-                /*
-                console.log("Intentando enviar mensaje:", {
-                    chatId: this.currentChat.id,
-                    userId: this.userId,
-                    message: this.newMessage.trim()
-                });
-                */
-
                 this.loading = true;
                 const updatedChat = await this.chatComposable.addMessage(
                     this.currentChat.id,
@@ -280,22 +216,14 @@ export default defineComponent({
                     this.newMessage.trim()
                 );
 
-                // Comentado: console.log de respuesta del servidor
-                // console.log("Respuesta del servidor:", updatedChat);
-
-                // Actualizar el chat con los datos más recientes del servidor
                 this.chat = updatedChat;
-
-                // Limpiar el campo de mensaje
                 this.newMessage = '';
-
-                // Desplazarse al final para mostrar el mensaje más reciente
-                await this.scrollToBottom();
             } catch (err) {
                 console.error('Error enviando mensaje:', err);
                 this.error = (err instanceof Error ? err.message : 'Error sending message');
             } finally {
                 this.loading = false;
+                await this.scrollToBottom();
             }
         },
         formatTime(dateStr: string) {
@@ -303,7 +231,7 @@ export default defineComponent({
 
             try {
                 const store = useutf8Store();
-                const userLanguage = store.currentLanguage; // Obtener el idioma del usuario desde el store
+                const userLanguage = store.currentLanguage;
 
                 const date = new Date(dateStr);
                 return new Intl.DateTimeFormat(userLanguage || 'es', {
@@ -322,7 +250,6 @@ export default defineComponent({
             const store = useutf8Store();
             const translation = store.t(key);
 
-            // Replace parameters if provided
             if (params) {
                 return Object.entries(params).reduce((str, [key, value]) => {
                     return str.replace(`{${key}}`, String(value));
@@ -334,9 +261,11 @@ export default defineComponent({
     },
     mounted() {
         this.initializeChat();
+        this.$nextTick(() => {
+            this.scrollToBottom();
+        });
     },
     beforeUnmount() {
-        // Detener el intervalo de actualización automática
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
             this.refreshInterval = null;
