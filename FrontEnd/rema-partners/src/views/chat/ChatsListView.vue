@@ -56,7 +56,7 @@
                     <!-- Información del producto -->
                     <div class="flex flex-1 items-start space-x-4 mb-4 md:mb-0">
                         <div v-if="getProductImage(chat.idProducto)"
-                            class="flex-shrink-0 h-16 w-16 rounded-lg overflow-hidden bg-gray-100">
+                            class="flex-shrink-0 h-24 w-24 rounded-lg overflow-hidden bg-gray-100">
                             <img :src="getProductImage(chat.idProducto)" :alt="getProductTitle(chat.idProducto)"
                                 class="h-full w-full object-cover" @error="onImageError" />
                         </div>
@@ -339,5 +339,6 @@ export default defineComponent({
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
 }
 </style>
