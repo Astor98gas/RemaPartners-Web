@@ -39,22 +39,6 @@
             <ProductoCard v-for="producto in productos" :key="producto.id" :producto="producto"
                 class="transform hover:scale-[1.03] transition-all duration-300" />
         </div>
-
-        <!-- Paginación (opcional) -->
-        <div class="mt-10 flex justify-center" v-if="productos.length > 0">
-            <nav class="flex space-x-2" aria-label="Pagination">
-                <!-- Ejemplo de controles de paginación -->
-                <button class="px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50">
-                    &lt; Anterior
-                </button>
-                <button class="px-3 py-1 rounded-md bg-blue-500 text-white">1</button>
-                <button class="px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50">2</button>
-                <button class="px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50">3</button>
-                <button class="px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50">
-                    Siguiente &gt;
-                </button>
-            </nav>
-        </div>
     </div>
 </template>
 
@@ -78,9 +62,6 @@ export default defineComponent({
             productos: [] as Producto[],
             loading: true,
             error: null as string | null,
-            // Para paginación (opcional)
-            currentPage: 1,
-            totalPages: 1,
             isAdmin: false
         };
     },
@@ -150,7 +131,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Añadir efecto de fade-in para los productos */
 .grid {
     animation: fade-in 0.5s ease-in-out;
 }

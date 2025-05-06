@@ -236,7 +236,7 @@
                             class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow col-span-1 md:col-span-2 lg:col-span-3">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.direccion') }}</p>
                             <p class="text-gray-900 font-semibold mb-2">{{ product.direccion || t('common.notAvailable')
-                                }}</p>
+                            }}</p>
 
                             <div v-if="product.direccion"
                                 class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden shadow-sm mt-2 hover:shadow-md transition-shadow"
@@ -299,8 +299,8 @@
                         {{ t('producto.similarProducts') }}
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <ProductoComponent v-for="(similar, index) in productosSimilares" :key="index"
-                            :producto="similar" />
+                        <ProductoComponent v-for="productoSim in productosSimilares" :key="productoSim.id"
+                            :producto="productoSim" />
                     </div>
                 </div>
             </div>
@@ -356,7 +356,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import { useProducto } from '@/composables/useProducto';
 import { useUsers } from '@/composables/useUsers';
 import { useChat } from '@/composables/useChat';
@@ -416,71 +416,29 @@ export default defineComponent({
     },
     async mounted() {
         const productoId = this.$route.params.id as string;
-        if (!productoId) {
-            this.error = 'No product ID provided';
-            this.loading = false;
-            return;
-        }
-
-        try {
-            // Check if user is admin and get current user
-            const usersComposable = useUsers();
-            const userData = await usersComposable.isLoggedIn();
-            this.isAdmin = userData?.rol?.name === 'ADMIN';
-            this.currentUser = userData;
-            this.isLoggedIn = !!userData;
-
-
-            // Get product details
-            const productoService = useProducto();
-            await productoService.getProductoById(productoId);
-            this.product = productoService.currentProducto.value;
-
-            if (this.product && this.product.imagenes && this.product.imagenes.length > 0) {
-                this.currentImage = this.product.imagenes[0];
-                this.currentImageIndex = 0;
-            }
-
-            if (!this.isAdmin) {
-                if (userData?.id == this.product?.idUsuario) {
-                    this.isAdmin = true;
-                } else {
-                    this.isAdmin = false;
-                }
-            }
-
-            this.isOwner = userData?.id === this.product?.idUsuario;
-
-            this.error = null;
-
-            if (this.product) {
-                await this.getProductosByIdCategoria(this.product.idCategoria);
-            }
-
-            // Initialize map after product loads and only if there's a location
-            if (this.product && this.product.direccion) {
-                this.$nextTick(() => {
-                    setTimeout(() => this.initMap(), 300);
-                });
-            }
-        } catch (err: any) {
-            console.error('Error al cargar el producto:', err);
-            this.error = err.response?.data?.message || 'Error al cargar los datos del producto';
-
-            Swal.fire({
-                icon: 'error',
-                title: this.t('common.error'),
-                text: this.error || '',
-                confirmButtonText: this.t('common.ok')
-            });
-        } finally {
-            this.loading = false;
-        }
+        await this.loadProductData(productoId);
     },
     onBeforeUnmount() {
         if (this.map) {
             (this.map as L.Map).remove();
             this.map = null;
+        }
+    },
+    watch: {
+        '$route.params.id': {
+            immediate: false,
+            handler(newId, oldId) {
+                if (newId && newId !== oldId) {
+                    // Reinicia el estado
+                    this.loading = true;
+                    this.error = null;
+                    this.product = null;
+                    this.productosSimilares = [];
+
+                    // Recarga los datos del producto
+                    this.loadProductData(newId);
+                }
+            }
         }
     },
     methods: {
@@ -769,6 +727,67 @@ export default defineComponent({
             } catch (error) {
                 console.error('Error loading similar products:', error);
                 this.productosSimilares = [];
+            }
+        },
+        async loadProductData(productoId: string) {
+            if (!productoId) {
+                this.error = 'No product ID provided';
+                this.loading = false;
+                return;
+            }
+
+            try {
+                // Check if user is admin and get current user
+                const usersComposable = useUsers();
+                const userData = await usersComposable.isLoggedIn();
+                this.isAdmin = userData?.rol?.name === 'ADMIN';
+                this.currentUser = userData;
+                this.isLoggedIn = !!userData;
+
+                // Get product details
+                const productoService = useProducto();
+                await productoService.getProductoById(productoId);
+                this.product = productoService.currentProducto.value;
+
+                if (this.product && this.product.imagenes && this.product.imagenes.length > 0) {
+                    this.currentImage = this.product.imagenes[0];
+                    this.currentImageIndex = 0;
+                }
+
+                if (!this.isAdmin) {
+                    if (userData?.id == this.product?.idUsuario) {
+                        this.isAdmin = true;
+                    } else {
+                        this.isAdmin = false;
+                    }
+                }
+
+                this.isOwner = userData?.id === this.product?.idUsuario;
+
+                this.error = null;
+
+                if (this.product) {
+                    await this.getProductosByIdCategoria(this.product.idCategoria);
+                }
+
+                // Initialize map after product loads and only if there's a location
+                if (this.product && this.product.direccion) {
+                    this.$nextTick(() => {
+                        setTimeout(() => this.initMap(), 300);
+                    });
+                }
+            } catch (err: any) {
+                console.error('Error al cargar el producto:', err);
+                this.error = err.response?.data?.message || 'Error al cargar los datos del producto';
+
+                Swal.fire({
+                    icon: 'error',
+                    title: this.t('common.error'),
+                    text: this.error || '',
+                    confirmButtonText: this.t('common.ok')
+                });
+            } finally {
+                this.loading = false;
             }
         }
     }
