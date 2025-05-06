@@ -1,6 +1,9 @@
 package com.arsansys.RemaPartners.controllers.api;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.arsansys.RemaPartners.models.entities.ChatEntity;
 import com.arsansys.RemaPartners.models.entities.MensajeEntity;
+import com.arsansys.RemaPartners.models.firebase.Note;
 import com.arsansys.RemaPartners.services.ChatService;
+import com.arsansys.RemaPartners.services.UserService;
+import com.arsansys.RemaPartners.services.firebase.FirebaseMessagingService;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -22,6 +28,12 @@ public class ChatController {
 
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private FirebaseMessagingService firebaseService;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * Crea un nuevo chat
@@ -75,11 +87,54 @@ public class ChatController {
             ChatEntity chat = chatService.getChatById(id);
             if (chat != null) {
                 ChatEntity updatedChat = chatService.addMensaje(chat, mensaje);
-                return new ResponseEntity<>(updatedChat, HttpStatus.OK);
+
+                // Return successful response for the message addition first
+                ResponseEntity<ChatEntity> response = new ResponseEntity<>(updatedChat, HttpStatus.OK);
+
+                // Then try to send notification separately
+                try {
+                    // Determine recipient user ID
+                    String idUsuario = chat.getIdVendedor().equals(mensaje.getIdEmisor())
+                            ? chat.getIdComprador()
+                            : chat.getIdVendedor();
+
+                    // Get user and their tokens
+                    var recipient = userService.getUserById(idUsuario);
+                    if (recipient != null && recipient.getGoogletokens() != null
+                            && !recipient.getGoogletokens().isEmpty()) {
+                        // Get sender username
+                        var sender = userService.getUserById(mensaje.getIdEmisor());
+                        String title = "Nuevo mensaje de " +
+                                (sender != null ? sender.getUsername() : "Usuario");
+
+                        // Create notification
+                        Note note = new Note();
+                        note.setSubject(title);
+                        note.setContent(mensaje.getMensaje());
+                        Map<String, String> data = new HashMap<>();
+                        data.put("idChat", chat.getId());
+                        data.put("idEmisor", mensaje.getIdEmisor());
+                        note.setData(data);
+
+                        // Send to each token (or just the first one)
+                        String firstToken = recipient.getGoogletokens().iterator().next();
+                        note.setToken(firstToken);
+
+                        firebaseService.sendNotification(note, firstToken);
+                    }
+                } catch (Exception e) {
+                    // Log notification error but don't fail the API response
+                    System.err.println("Error sending notification: " + e.getMessage());
+                    e.printStackTrace();
+                }
+
+                return response;
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
+            System.err.println("Error processing message: " + e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
