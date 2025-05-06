@@ -236,7 +236,7 @@
                             class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow col-span-1 md:col-span-2 lg:col-span-3">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.direccion') }}</p>
                             <p class="text-gray-900 font-semibold mb-2">{{ product.direccion || t('common.notAvailable')
-                            }}</p>
+                                }}</p>
 
                             <div v-if="product.direccion"
                                 class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden shadow-sm mt-2 hover:shadow-md transition-shadow"
@@ -321,6 +321,7 @@
                                 {{ t('login.login') }}
                             </router-link>
                         </div>
+
                     </div>
 
                 </div>
@@ -663,8 +664,19 @@ export default defineComponent({
             // Show offer modal first
             this.showOfferModal = true;
         },
+        /**
+         * Maneja el proceso cuando un usuario envía una oferta por un producto.
+         * Este método:
+         * - Cierra el modal de oferta
+         * - Crea o recupera un chat entre el comprador y el vendedor
+         * - Envía un mensaje automático con la oferta propuesta
+         * - Muestra el chat para continuar la conversación
+         * 
+         * @param offerDetails - Objeto con los detalles de la oferta: amount (cantidad), currency (moneda) y formattedOffer (oferta formateada)
+         */
         async handleOfferSubmitted(offerDetails: { amount: number, currency: string, formattedOffer: string }) {
-            console.log('Offer submitted:', offerDetails);
+            // Comentado: console.log de detalles de oferta
+            // console.log('Offer submitted:', offerDetails);
             this.showOfferModal = false;
 
             if (!this.currentUser || !this.product) return;

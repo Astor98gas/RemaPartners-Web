@@ -80,7 +80,8 @@ export default {
             }
             useUsers().loginUser(this.userLogin)
                 .then((response) => {
-                    console.log('Login successful:', response)
+                    // Comentado: console.log de respuesta exitosa de login
+                    // console.log('Login successful:', response)
                     this.$router.push({ name: 'root' })
                 })
                 .catch((error) => {

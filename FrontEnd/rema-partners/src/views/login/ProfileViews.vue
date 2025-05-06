@@ -61,14 +61,14 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.new_password')
-                                        }}</label>
+                                    }}</label>
                                     <input type="password" v-model="formData.password"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <p class="text-xs text-gray-500 mt-1">{{ utf8.t('profile.password_note') }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.confirm_password')
-                                        }}</label>
+                                    }}</label>
                                     <input type="password" v-model="formData.confirmPassword"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
@@ -314,16 +314,17 @@ export default defineComponent({
             this.modalMessage = message;
             this.showModal = true;
         },
-        logout() {
-            this.usersComposable.logout()
-                .then(() => {
-                    console.log('Logout successful');
-                    this.$router.push({ name: 'login' });
-                })
-                .catch((error) => {
-                    console.error('Logout error:', error);
-                });
-        }
+        async logout() {
+            try {
+                const userComposable = useUsers();
+                await userComposable.logout();
+                // Comentado: console.log de logout exitoso
+                // console.log('Logout successful');
+                // La redirección ya es manejada por el composable
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            }
+        },
     }
 });
 </script>

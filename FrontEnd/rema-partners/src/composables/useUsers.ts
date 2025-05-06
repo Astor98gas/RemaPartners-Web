@@ -24,13 +24,28 @@ export function useUsers() {
         }
     }
 
+    /**
+     * Autentica a un usuario con sus credenciales y establece el token de sesión.
+     * 
+     * Este método realiza las siguientes operaciones:
+     * - Envía las credenciales del usuario al servidor para su validación
+     * - Almacena el token de sesión recibido en cookies
+     * - Configura el token para futuras solicitudes HTTP
+     * - Actualiza el estado del usuario actual
+     * - Redirige a la página principal en caso de éxito
+     * 
+     * @param formData - Datos de inicio de sesión (username/email y password)
+     * @returns Los datos del usuario autenticado, incluyendo el token
+     * @throws Error si no se puede autenticar al usuario
+     */
     const loginUser = async (formData: UserLogin) => {
         try {
             loading.value = true
             error.value = null
             const response = await userService.loginUser(formData)
 
-            console.log('Login response:', response)
+            // Comentado: console.log de respuesta de login
+            // console.log('Login response:', response)
 
             if (response.data && response.data.token) {
                 // Guardar el token en cookies
