@@ -230,8 +230,11 @@ export default defineComponent({
             if (!dateStr) return '';
 
             try {
+                const store = useutf8Store();
+                const userLanguage = store.currentLanguage; // Obtener el idioma del usuario desde el store
+
                 const date = new Date(dateStr);
-                return new Intl.DateTimeFormat(document.documentElement.lang || 'es', {
+                return new Intl.DateTimeFormat(userLanguage || 'es', {
                     hour: 'numeric',
                     minute: 'numeric',
                     year: 'numeric',
