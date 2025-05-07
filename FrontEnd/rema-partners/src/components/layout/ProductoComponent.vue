@@ -21,6 +21,20 @@
                     {{ t('producto.outOfStock') }}
                 </span>
             </div>
+
+            <!-- Estado del producto badge -->
+            <div class="absolute top-3 left-3">
+                <span class="bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                    {{ t(`producto.estados.${producto.estado}`) }}
+                </span>
+            </div>
+
+            <!-- Fecha de publicación badge -->
+            <div class="absolute bottom-3 left-3">
+                <span class="bg-white/80 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">
+                    {{ formatDate(producto.fechaPublicacion) }}
+                </span>
+            </div>
         </div>
 
         <!-- Resto del contenido de la tarjeta -->
@@ -29,11 +43,18 @@
                 producto.titulo }}</h2>
 
             <!-- Precio con estilo destacado -->
-            <div class="mb-3">
-                <span class="text-2xl font-bold text-blue-600">
-                    {{ (producto.precioCentimos / 100).toFixed(2) }}
+            <div class="mb-3 flex justify-between items-center">
+                <span>
+                    <span class="text-2xl font-bold text-blue-600">
+                        {{ (producto.precioCentimos / 100).toFixed(2) }}
+                    </span>
+                    <span class="text-gray-600 text-sm ml-1">{{ producto.moneda }}</span>
                 </span>
-                <span class="text-gray-600 text-sm ml-1">{{ producto.moneda }}</span>
+
+                <!-- Badge destacado si aplicable -->
+                <span v-if="producto.destacado" class="bg-yellow-400 text-yellow-800 text-xs px-2 py-1 rounded-full">
+                    {{ t('producto.destacado') }}
+                </span>
             </div>
 
             <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ producto.descripcion }}</p>
@@ -60,13 +81,64 @@
                         <p class="text-gray-700 font-medium text-sm">{{ t('producto.state') }}</p>
                         <p class="text-gray-900 font-semibold">{{ producto.estado }}</p>
                     </div>
+
+                    <!-- Ubicación -->
                     <div
-                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors col-span-2">
+                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors">
+                        <p class="text-gray-700 font-medium text-sm flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            {{ t('producto.direccion') }}
+                        </p>
+                        <p class="text-gray-900 font-semibold truncate" :title="producto.direccion">
+                            {{ producto.direccion || t('common.notAvailable') }}
+                        </p>
+                    </div>
+
+                    <!-- Stock -->
+                    <div
+                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors">
                         <p class="text-gray-700 font-medium text-sm">{{ t('producto.stock') }}</p>
                         <p class="text-gray-900 font-semibold">
                             {{ producto.stock > 0
                                 ? t('producto.stock.available').replace('{count}', producto.stock.toString())
                                 : t('producto.stock.unavailable') }}
+                        </p>
+                    </div>
+
+                    <!-- Campos de categoría -->
+                    <div v-if="producto.camposCategoria && producto.camposCategoria.length > 0"
+                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors col-span-2">
+                        <p class="text-gray-700 font-medium text-sm mb-1">{{ t('producto.category.fields') }}</p>
+                        <div class="flex flex-wrap gap-2 justify-center">
+                            <span v-for="(campo, index) in producto.camposCategoria.slice(0, 2)" :key="index"
+                                class="bg-white px-2 py-1 rounded-md text-xs text-gray-700">
+                                <span class="font-medium">{{ campo.nombreCampo }}:</span> {{ campo.datos || '-' }}
+                            </span>
+                            <span v-if="producto.camposCategoria.length > 2" class="text-xs text-gray-500">
+                                +{{ producto.camposCategoria.length - 2 }} {{ t('categoria.form.fieldsPlural') }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Categoría -->
+                    <div
+                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors">
+                        <p class="text-gray-700 font-medium text-sm flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                            </svg>
+                            {{ t('producto.category') }}
+                        </p>
+                        <p class="text-gray-900 font-semibold truncate" :title="categoriaTitulo">
+                            {{ categoriaTitulo || t('common.notAvailable') }}
                         </p>
                     </div>
                 </div>
@@ -109,6 +181,7 @@ import type { Producto } from '@/models/producto';
 import { useutf8Store } from '@/stores/counter';
 import { useUsers } from '@/composables/useUsers';
 import { useProducto } from '@/composables/useProducto';
+import { useCategoria } from '@/composables/useCategoria';
 
 export default defineComponent({
     name: 'ProductoCard',
@@ -116,12 +189,22 @@ export default defineComponent({
         producto: {
             type: Object as () => Producto,
             required: true
+        },
+        categorias: {
+            type: Array,
+            default: () => []
         }
     },
     data() {
         return {
             isAdmin: false
         };
+    },
+    computed: {
+        categoriaTitulo(): string {
+            const categoria = this.categorias.find(cat => cat.id === this.producto.idCategoria);
+            return categoria ? categoria.titulo : '';
+        }
     },
     async mounted() {
         try {
@@ -151,6 +234,21 @@ export default defineComponent({
                     console.error('Error toggling product status:', error);
                 });
             this.$emit('toggle-status', this.producto.id);
+        },
+        formatDate(dateStr: string): string {
+            if (!dateStr) return this.t('common.notAvailable');
+
+            try {
+                const date = new Date(dateStr);
+                return new Intl.DateTimeFormat(document.documentElement.lang || 'es', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                }).format(date);
+            } catch (error) {
+                console.error('Error formatting date:', error);
+                return dateStr;
+            }
         }
     }
 });
