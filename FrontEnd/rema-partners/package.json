@@ -18,6 +18,7 @@
     "@headlessui/vue": "^1.7.23",
     "@tailwindcss/vite": "^4.1.0",
     "@types/leaflet": "^1.9.17",
+    "@vue-stripe/vue-stripe": "^4.5.0",
     "@vueform/multiselect": "^2.6.11",
     "axios": "^1.8.4",
     "js-cookies": "^1.0.4",

@@ -48,7 +48,7 @@ public class StripeService {
         port(4242);
 
         String endpointSecret = "whsec_12345";
-        final String YOUR_DOMAIN = "http://localhost:4242";
+        final String YOUR_DOMAIN = "http://localhost:5173";
 
         staticFiles.externalLocation(Paths.get("public").toAbsolutePath().toString());
 
