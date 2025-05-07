@@ -82,49 +82,6 @@
                         <p class="text-gray-900 font-semibold">{{ producto.estado }}</p>
                     </div>
 
-                    <!-- Ubicación -->
-                    <div
-                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors">
-                        <p class="text-gray-700 font-medium text-sm flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-500" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            {{ t('producto.direccion') }}
-                        </p>
-                        <p class="text-gray-900 font-semibold truncate" :title="producto.direccion">
-                            {{ producto.direccion || t('common.notAvailable') }}
-                        </p>
-                    </div>
-
-                    <!-- Stock -->
-                    <div
-                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors">
-                        <p class="text-gray-700 font-medium text-sm">{{ t('producto.stock') }}</p>
-                        <p class="text-gray-900 font-semibold">
-                            {{ producto.stock > 0
-                                ? t('producto.stock.available').replace('{count}', producto.stock.toString())
-                                : t('producto.stock.unavailable') }}
-                        </p>
-                    </div>
-
-                    <!-- Campos de categoría -->
-                    <div v-if="producto.camposCategoria && producto.camposCategoria.length > 0"
-                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors col-span-2">
-                        <p class="text-gray-700 font-medium text-sm mb-1">{{ t('producto.category.fields') }}</p>
-                        <div class="flex flex-wrap gap-2 justify-center">
-                            <span v-for="(campo, index) in producto.camposCategoria.slice(0, 2)" :key="index"
-                                class="bg-white px-2 py-1 rounded-md text-xs text-gray-700">
-                                <span class="font-medium">{{ campo.nombreCampo }}:</span> {{ campo.datos || '-' }}
-                            </span>
-                            <span v-if="producto.camposCategoria.length > 2" class="text-xs text-gray-500">
-                                +{{ producto.camposCategoria.length - 2 }} {{ t('categoria.form.fieldsPlural') }}
-                            </span>
-                        </div>
-                    </div>
 
                     <!-- Categoría -->
                     <div
@@ -141,6 +98,48 @@
                             {{ categoriaTitulo || t('common.notAvailable') }}
                         </p>
                     </div>
+                    <!-- Stock -->
+                    <div
+                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors">
+                        <p class="text-gray-700 font-medium text-sm">{{ t('producto.stock') }}</p>
+                        <p class="text-gray-900 font-semibold">
+                            {{ producto.stock > 0
+                                ? t('producto.stock.available').replace('{count}', producto.stock.toString())
+                                : t('producto.stock.unavailable') }}
+                        </p>
+                    </div>
+                    <!-- Campos de categoría -->
+                    <div v-if="producto.camposCategoria && producto.camposCategoria.length > 0"
+                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors col-span-2">
+                        <p class="text-gray-700 font-medium text-sm mb-1">{{ t('producto.category.fields') }}</p>
+                        <div class="flex flex-wrap gap-2 justify-center">
+                            <span v-for="(campo, index) in producto.camposCategoria.slice(0, 2)" :key="index"
+                                class="bg-white px-2 py-1 rounded-md text-xs text-gray-700">
+                                <span class="font-medium">{{ campo.nombreCampo }}:</span> {{ campo.datos || '-' }}
+                            </span>
+                            <span v-if="producto.camposCategoria.length > 2" class="text-xs text-gray-500">
+                                +{{ producto.camposCategoria.length - 2 }} {{ t('categoria.form.fieldsPlural') }}
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Ubicación -->
+                    <div
+                        class="bg-blue-50 p-3 rounded-lg shadow-sm text-center border border-blue-100 hover:bg-blue-100 transition-colors col-span-2">
+                        <p class="text-gray-700 font-medium text-sm flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            {{ t('producto.direccion') }}
+                        </p>
+                        <p class="text-gray-900 font-semibold truncate" :title="producto.direccion">
+                            {{ producto.direccion || t('common.notAvailable') }}
+                        </p>
+                    </div>
+
                 </div>
             </div>
         </div>

@@ -309,6 +309,7 @@ export const useutf8Store = defineStore('utf8', {
           'producto.emptyFilters': 'No products match your filters',
           'producto.emptyFiltersDescription': 'Try adjusting your search criteria or browse all products',
           'producto.priceRange': 'Price Range',
+          'links.producto.add': 'Add Product',
         },
         es: {
           'producto.add.title': 'Añadir Nuevo Producto',
@@ -604,6 +605,7 @@ export const useutf8Store = defineStore('utf8', {
           'producto.emptyFilters': 'Ningún producto coincide con tus filtros',
           'producto.emptyFiltersDescription': 'Intenta ajustar tus criterios de búsqueda o navega por todos los productos',
           'producto.priceRange': 'Rango de Precio',
+          'links.producto.add': 'Añadir Producto',
         },
         cat: {
           'producto.add.title': 'Afegir Nou Producte',
@@ -899,6 +901,7 @@ export const useutf8Store = defineStore('utf8', {
           'producto.emptyFilters': 'Cap producte coincideix amb els teus filtres',
           'producto.emptyFiltersDescription': 'Intenta ajustar els teus criteris de cerca o navega per tots els productes',
           'producto.priceRange': 'Rang de Preu',
+          'links.producto.add': 'Afegir Producte',
         }
       } as Translations
     };
