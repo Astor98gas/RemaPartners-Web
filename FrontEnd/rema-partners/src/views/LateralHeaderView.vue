@@ -1,29 +1,51 @@
 <template>
     <div class="flex flex-col h-full sticky top-0 shadow-xl">
-        <!-- Sidebar -->
-        <aside class="bg-gradient-to-b from-gray-800 to-gray-900 text-white w-64 flex flex-col h-full">
+        <!-- Sidebar con clase dinámica para el ancho -->
+        <aside 
+            class="bg-gradient-to-b from-gray-800 to-gray-900 text-white flex flex-col h-full transition-all duration-300"
+            :class="isCollapsed ? 'w-16' : 'w-64'"
+        >
             <!-- Header -->
-            <header class="px-6 py-8 border-b border-gray-700">
-                <div class="flex items-center space-x-3">
-                    <img src="@/assets/logo.png" alt="Logo" class="h-10 w-10" />
-                    <h1 class="text-xl font-bold tracking-wider">REMA Partners</h1>
-                </div>
+            <header class="px-6 py-8 border-b border-gray-700 flex justify-between items-center">                
+                <!-- Botón para colapsar/expandir -->
+                <button 
+                    @click="toggleSidebar" 
+                    class="text-gray-400 hover:text-white focus:outline-none transition-transform duration-300"
+                    :class="{ 'rotate-180': isCollapsed }"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                    </svg>
+                </button>
             </header>
 
             <!-- Navigation -->
             <nav class="flex-1 px-4 py-6 overflow-y-auto">
-                <h3 class="text-xs uppercase text-gray-500 font-semibold mb-3 px-4">{{ utf8.t('navigation.dynamic')
-                    }}</h3>
+                <h3 class="text-xs uppercase text-gray-500 font-semibold mb-3 px-4 transition-opacity duration-300"
+                    :class="{ 'opacity-0': isCollapsed }">
+                    {{ isCollapsed ? '' : utf8.t('navigation.dynamic') }}
+                </h3>
                 <ul class="space-y-1">
                     <li v-for="link in filteredLinks" :key="link.text">
                         <router-link :to="link.href"
                             class="flex items-center px-4 py-3 text-gray-300 rounded-lg transition-all duration-200 group"
                             :class="{
-                                'bg-gray-300 text-gray-700': currentPath === link.href,
-                                'hover:bg-gray-700 hover:text-white': currentPath !== link.href
-                            }">
-                            <span class="flex-1">{{ link.text }}</span>
-                            <svg v-if="currentPath === link.href" class="w-5 h-5" xmlns="http://www.w3.org/2000/svg"
+                                'bg-gray-300 text-gray-700': currentPath === link.href && !isCollapsed,
+                                'hover:bg-gray-700 hover:text-white': currentPath !== link.href || isCollapsed,
+                                'justify-center': isCollapsed
+                            }"
+                            :title="link.text"
+                        >
+                            <!-- Icon placeholder (you can add specific icons for each link) -->
+                            <svg v-if="isCollapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                            </svg>
+                            
+                            <span class="flex-1 transition-opacity duration-300" :class="{ 'hidden': isCollapsed }">
+                                {{ link.text }}
+                            </span>
+                            
+                            <svg v-if="currentPath === link.href && !isCollapsed" class="w-5 h-5" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 5l7 7-7 7" />
@@ -35,7 +57,9 @@
 
             <!-- Static Navigation -->
             <div class="px-6 py-4 border-t border-gray-700">
-                <h3 class="text-xs uppercase text-gray-500 font-semibold mb-3 px-4">{{ utf8.t('navigation.static') }}
+                <h3 class="text-xs uppercase text-gray-500 font-semibold mb-3 px-4 transition-opacity duration-300"
+                    :class="{ 'opacity-0': isCollapsed }">
+                    {{ isCollapsed ? '' : utf8.t('navigation.static') }}
                 </h3>
                 <nav class="px-4 overflow-y-auto">
                     <ul class="space-y-1">
@@ -43,11 +67,22 @@
                             <router-link :to="link.href"
                                 class="flex items-center px-4 py-3 text-gray-300 rounded-lg transition-all duration-200 group"
                                 :class="{
-                                    'bg-gray-300 text-gray-700': currentPath === link.href,
-                                    'hover:bg-gray-700 hover:text-white': currentPath !== link.href
-                                }">
-                                <span class="flex-1">{{ link.text }}</span>
-                                <svg v-if="currentPath === link.href" class="w-5 h-5" xmlns="http://www.w3.org/2000/svg"
+                                    'bg-gray-300 text-gray-700': currentPath === link.href && !isCollapsed,
+                                    'hover:bg-gray-700 hover:text-white': currentPath !== link.href || isCollapsed,
+                                    'justify-center': isCollapsed
+                                }"
+                                :title="link.text"
+                            >
+                                <!-- Icon placeholder (you can add specific icons for each link) -->
+                                <svg v-if="isCollapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                                </svg>
+                                
+                                <span class="flex-1 transition-opacity duration-300" :class="{ 'hidden': isCollapsed }">
+                                    {{ link.text }}
+                                </span>
+                                
+                                <svg v-if="currentPath === link.href && !isCollapsed" class="w-5 h-5" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 5l7 7-7 7" />
@@ -59,8 +94,9 @@
             </div>
 
             <!-- Footer -->
-            <footer class="px-6 py-4 text-gray-400 text-sm border-t border-gray-700">
-                <p class="flex justify-between">
+            <footer class="px-6 py-4 text-gray-400 text-sm border-t border-gray-700 transition-opacity duration-300"
+                :class="{ 'opacity-0': isCollapsed }">
+                <p v-if="!isCollapsed" class="flex justify-between">
                     <span>&copy; {{ currentDate }} Arsansys</span>
                     <span>v1.0.0</span>
                 </p>
@@ -79,6 +115,7 @@ export default defineComponent({
     name: 'LateralHeaderView',
     data() {
         return {
+            isCollapsed: false, // Nueva propiedad para el estado de colapso
             links: [] as Array<{ text: string; href: string; visibleOn?: string[]; requiresAuth?: boolean; roles?: string[] }>,
             currentPath: '',
             currentLanguage: '',
@@ -152,6 +189,12 @@ export default defineComponent({
 
         // Check login status
         this.checkLoginStatus();
+        
+        // Cargar estado de colapso del local storage si existe
+        const savedState = localStorage.getItem('sidebarCollapsed');
+        if (savedState) {
+            this.isCollapsed = savedState === 'true';
+        }
     },
     mounted() {
         // Observar cambios en la ruta
@@ -182,6 +225,13 @@ export default defineComponent({
         );
     },
     methods: {
+        // Método para alternar el estado de la barra lateral
+        toggleSidebar() {
+            this.isCollapsed = !this.isCollapsed;
+            // Guardar estado en localStorage para persistencia
+            localStorage.setItem('sidebarCollapsed', this.isCollapsed.toString());
+        },
+        
         async checkLoginStatus() {
             try {
                 const usersComposable = useUsers();
@@ -201,6 +251,10 @@ export default defineComponent({
         loadLinks() {
             const utf8 = useutf8Store();
             this.links = [
+            {
+                    text: utf8.t('route.home'),
+                    href: '/',
+                },
                 {
                     text: utf8.t('links.producto.add'),
                     href: '/producto/create',
@@ -250,3 +304,7 @@ export default defineComponent({
     }
 });
 </script>
+
+<style scoped>
+/* Añadir cualquier estilo específico que necesites aquí */
+</style>

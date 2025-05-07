@@ -191,7 +191,7 @@ export default defineComponent({
             required: true
         },
         categorias: {
-            type: Array,
+            type: Array as () => Array<{ id: string; titulo: string }>,
             default: () => []
         }
     },
