@@ -43,40 +43,28 @@
                 <!-- Filtro por categoría -->
                 <div class="flex flex-col">
                     <label class="text-sm text-gray-600 mb-1 font-medium">{{ t('producto.filters.category') }}</label>
-                    <select v-model="filtros.categoria"
-                        class="px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200"
-                        @change="aplicarFiltros">
-                        <option value="">{{ t('producto.filters.allCategories') }}</option>
-                        <option v-for="categoria in categorias" :key="categoria.id" :value="categoria.id">
-                            {{ categoria.titulo }}
-                        </option>
-                    </select>
+                    <v-select v-model="filtros.categoria" :options="categoriaOptions"
+                        class="rounded-lg bg-gray-50 transition-all duration-200"
+                        :placeholder="t('producto.filters.allCategories')" :searchable="true" :clearable="true"
+                        @input="aplicarFiltros" />
                 </div>
 
                 <!-- Filtro por estado -->
                 <div class="flex flex-col">
                     <label class="text-sm text-gray-600 mb-1 font-medium">{{ t('producto.filters.state') }}</label>
-                    <select v-model="filtros.estado"
-                        class="px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200"
-                        @change="aplicarFiltros">
-                        <option value="">{{ t('producto.filters.allStates') }}</option>
-                        <option v-for="estado in estadosProducto" :key="estado" :value="estado">
-                            {{ t(`producto.estados.${estado}`) }}
-                        </option>
-                    </select>
+                    <v-select v-model="filtros.estado" :options="estadoOptions"
+                        class=" rounded-lg bg-gray-50 transition-all duration-200"
+                        :placeholder="t('producto.filters.allStates')" :searchable="true" :clearable="true"
+                        @input="aplicarFiltros" />
                 </div>
 
                 <!-- Filtro por ubicación -->
                 <div class="flex flex-col">
                     <label class="text-sm text-gray-600 mb-1 font-medium">{{ t('producto.filters.location') }}</label>
-                    <select v-model="filtros.ubicacion"
-                        class="px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200"
-                        @change="aplicarFiltros">
-                        <option value="">{{ t('producto.filters.allLocations') }}</option>
-                        <option v-for="ubicacion in ubicacionesDisponibles" :key="ubicacion" :value="ubicacion">
-                            {{ ubicacion }}
-                        </option>
-                    </select>
+                    <v-select v-model="filtros.ubicacion" :options="ubicacionesDisponibles"
+                        class="rounded-lg bg-gray-50 transition-all duration-200"
+                        :placeholder="t('producto.filters.allLocations')" :searchable="true" :clearable="true"
+                        @input="aplicarFiltros" />
                 </div>
 
                 <!-- Filtro por rango de precio -->
@@ -149,11 +137,14 @@ import Swal from 'sweetalert2';
 import { useutf8Store } from '@/stores/counter';
 import { useUsers } from '@/composables/useUsers';
 import { EEstado } from '@/models/enums/EEstado';
+import VSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
 
 export default defineComponent({
     name: 'HomeView',
     components: {
-        ProductoCard
+        ProductoCard,
+        VSelect
     },
     data() {
         return {
@@ -186,6 +177,22 @@ export default defineComponent({
                 this.filtros.ubicacion !== '' ||
                 this.filtros.precioMin !== null ||
                 this.filtros.precioMax !== null;
+        },
+        categoriaOptions() {
+            // Format categories for v-select (label/value pairs)
+            return [
+                ...this.categorias.map(cat => ({
+                    label: cat.titulo,
+                    value: cat.id
+                }))
+            ];
+        },
+        estadoOptions() {
+            // Format estado options for v-select (label/value pairs)
+            return this.estadosProducto.map(estado => ({
+                label: this.t(`producto.estados.${estado}`),
+                value: estado
+            }));
         }
     },
     async mounted() {
