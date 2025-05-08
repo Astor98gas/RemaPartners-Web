@@ -61,14 +61,14 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.new_password')
-                                    }}</label>
+                                        }}</label>
                                     <input type="password" v-model="formData.password"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <p class="text-xs text-gray-500 mt-1">{{ utf8.t('profile.password_note') }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.confirm_password')
-                                    }}</label>
+                                        }}</label>
                                     <input type="password" v-model="formData.confirmPassword"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
@@ -222,7 +222,7 @@
                     </div>
                 </div>
 
-                <StripePayComponent @success="handleSubscriptionSuccess" @cancel="showStripeModal = false" />
+                <StripePayComponent @success="handleSubscriptionSuccess" @cancel="handleSubscriptionCancel" />
             </div>
         </div>
     </transition>
@@ -236,6 +236,8 @@ import { useToast } from 'vue-toastification';
 import { defineComponent } from 'vue';
 import type { User } from '@/models/user';
 import StripePayComponent from '@/components/features/stripe/StripePayComponent.vue';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default defineComponent({
     name: 'ProfileViews',
@@ -297,6 +299,7 @@ export default defineComponent({
     },
     mounted() {
         this.checkLoginStatus();
+        this.checkPaymentStatus();
     },
     methods: {
         async checkLoginStatus() {
@@ -397,14 +400,79 @@ export default defineComponent({
                 console.error('Error al cerrar sesión:', error);
             }
         },
-        handleSubscriptionSuccess() {
-            const toast = useToast();
-            toast.success(this.utf8.t('profile.subscription_success') || 'Subscription successful!');
+        checkPaymentStatus() {
+            // Verificar si hay un parámetro de éxito o cancelación en la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('payment');
+
+            console.log('Checking payment status:', status); // Añadir log para depuración
+
+            if (status === 'success') {
+                // Llamar al método para manejar el pago exitoso
+                this.handleSubscriptionSuccess();
+
+                // Limpiar la URL de parámetros
+                if (window.history.replaceState) {
+                    const newUrl = window.location.href.split('?')[0];
+                    window.history.replaceState({ path: newUrl }, '', newUrl);
+                }
+            } else if (status === 'cancelled') {
+                // Llamar al método para manejar la cancelación del pago
+                this.handleSubscriptionCancel();
+
+                // Limpiar la URL de parámetros
+                if (window.history.replaceState) {
+                    const newUrl = window.location.href.split('?')[0];
+                    window.history.replaceState({ path: newUrl }, '', newUrl);
+                }
+            }
+        },
+        async handleSubscriptionSuccess() {
+            console.log('Handling subscription success'); // Añadir log para depuración
             this.showStripeModal = false;
 
-            // Here you would typically update the user's subscription status in your backend
-            // this.usersComposable.updateSubscriptionStatus(this.currentUser.id);
+            // Mostrar SweetAlert2 para el pago exitoso - primero mostrar la alerta
+            Swal.fire({
+                icon: 'success',
+                title: this.utf8.t('profile.subscription_success') || 'Pago realizado con éxito',
+                text: this.utf8.t('profile.subscription_success_message') || 'Tu cuenta ha sido actualizada a Premium',
+                confirmButtonText: this.utf8.t('common.ok') || 'OK'
+            });
+
+            try {
+                // Actualizar estado premium en el backend - esto puede complementar el webhook
+                // TO-DO: Descomentar y ajustar según la lógica de tu aplicación
+                // if (this.currentUser && this.currentUser.id) {
+                //     await axios.post(`/api/stripe/update-user-payment`, {
+                //         userId: this.currentUser.id,
+                //         hasPaid: true
+                //     });
+
+                //     // Actualizar el usuario actual en el frontend
+                //     this.currentUser.premium = true;
+                // }
+            } catch (error) {
+                console.error('Error al actualizar estado premium:', error);
+
+                Swal.fire({
+                    icon: 'error',
+                    title: this.utf8.t('common.error') || 'Error',
+                    text: this.utf8.t('profile.subscription_update_error') || 'No se pudo actualizar tu estado Premium',
+                    confirmButtonText: this.utf8.t('common.ok') || 'OK'
+                });
+            }
         },
+        handleSubscriptionCancel() {
+            console.log('Handling subscription cancel'); // Añadir log para depuración
+            this.showStripeModal = false;
+
+            Swal.fire({
+                icon: 'info',
+                title: this.utf8.t('profile.subscription_cancelled') || 'Pago cancelado',
+                text: this.utf8.t('profile.subscription_cancelled_message') || 'Has cancelado el proceso de pago',
+                confirmButtonText: this.utf8.t('common.ok') || 'OK'
+            });
+        }
     }
 });
 </script>

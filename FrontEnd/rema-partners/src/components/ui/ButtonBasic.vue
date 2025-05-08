@@ -5,6 +5,7 @@
         variant === 'primary' ? ' shadow-sm bg-blue-600 text-white hover:bg-blue-500 focus:ring-blue-500 hover:shadow-md' :
             variant === 'secondary' ? 'text-gray-700 hover:bg-gray-200 hover:text-orange-500 focus:ring-gray-500' :
                 variant === 'danger' ? 'bg-red-600 text-white hover:bg-red-500 focus:ring-red-500 hover:shadow-md' :
+                    variant === 'success' ? 'bg-green-600 text-white hover:bg-green-500 focus:ring-green-500 hover:shadow-md' :
                     'bg-gray-600 text-white hover:bg-gray-500 focus:ring-gray-500 hover:shadow-md',
         disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer',
         fullWidth ? 'w-full' : '',
@@ -25,7 +26,7 @@ export default {
         variant: {
             type: String,
             default: 'primary',
-            validator: (value: string) => ['primary', 'secondary', 'danger', 'default'].includes(value)
+            validator: (value: string) => ['primary', 'secondary', 'danger', 'success', 'default'].includes(value)
         },
         size: {
             type: String,
