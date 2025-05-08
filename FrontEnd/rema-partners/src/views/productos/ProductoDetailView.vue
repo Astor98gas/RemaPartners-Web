@@ -361,10 +361,10 @@ import { useProducto } from '@/composables/useProducto';
 import { useUsers } from '@/composables/useUsers';
 import { useChat } from '@/composables/useChat';
 import { useutf8Store } from '@/stores/counter';
-import EditButton from '@/components/ui/EditButton.vue'; // Add import for EditButton
-import DeleteButton from '@/components/ui/DeleteButton.vue'; // Add import for DeleteButton
-import ChatBox from '@/components/chat/ChatBox.vue'; // Add import for ChatBox
-import OfferModal from '@/components/productos/OfferModal.vue'; // Add import for OfferModal
+import EditButton from '@/components/ui/EditButton.vue';
+import DeleteButton from '@/components/ui/DeleteButton.vue';
+import ChatBox from '@/components/chat/ChatBox.vue';
+import OfferModal from '@/components/features/productos/OfferModal.vue';
 import Swal from 'sweetalert2';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';

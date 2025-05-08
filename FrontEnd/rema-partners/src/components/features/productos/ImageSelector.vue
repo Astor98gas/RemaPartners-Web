@@ -49,13 +49,29 @@ export default {
     data() {
         return {
             currentImageIndex: 0,
-            imagePreview: [...this.images]
+            imagePreview: Array(this.maxImages).fill('') // Inicializar con array vacío del tamaño máximo
         };
+    },
+    created() {
+        // Inicializar preview con las imágenes existentes
+        this.initializePreview();
     },
     methods: {
         t(key) {
             const store = useutf8Store();
             return store.t(key);
+        },
+        initializePreview() {
+            // Llenar el array de preview con las imágenes existentes
+            if (this.images && this.images.length > 0) {
+                const newPreview = Array(this.maxImages).fill('');
+                this.images.forEach((img, index) => {
+                    if (index < this.maxImages) {
+                        newPreview[index] = img;
+                    }
+                });
+                this.imagePreview = newPreview;
+            }
         },
         triggerFileInput(index) {
             this.currentImageIndex = index;
@@ -69,7 +85,9 @@ export default {
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         if (e.target?.result) {
-                            this.imagePreview[this.currentImageIndex] = e.target.result;
+                            const newPreview = [...this.imagePreview];
+                            newPreview[this.currentImageIndex] = e.target.result;
+                            this.imagePreview = newPreview;
                         }
                     };
                     reader.readAsDataURL(file);
@@ -92,9 +110,12 @@ export default {
                     const imageUrl = "http://localhost:8080" + data.url;
 
                     // Actualizar array de imágenes con la URL
-                    const updatedImages = [...this.images];
-                    updatedImages[this.currentImageIndex] = imageUrl;
-                    this.$emit('update:images', updatedImages);
+                    const updatedImagesArray = [...this.imagePreview];
+                    updatedImagesArray[this.currentImageIndex] = imageUrl;
+
+                    // Filtrar para enviar solo las imágenes no vacías al componente padre
+                    const filteredImages = updatedImagesArray.filter(img => img !== '');
+                    this.$emit('update:images', filteredImages);
 
                 } catch (error) {
                     console.error('Error uploading image:', error);
@@ -105,23 +126,30 @@ export default {
         removeImage(index) {
             // Create copies of arrays to avoid reactivity issues
             const newPreview = [...this.imagePreview];
-            const newImages = [...this.images];
 
-            // Remove at the specified index
-            newPreview.splice(index, 1);
-            newPreview.push(''); // Add an empty slot at the end
+            // Remove at the specified index (set to empty string instead of removing)
+            newPreview[index] = '';
             this.imagePreview = newPreview;
 
-            newImages.splice(index, 1);
-            this.$emit('update:images', newImages);
+            // Filter out empty strings and emit only non-empty images
+            const filteredImages = newPreview.filter(img => img !== '');
+            this.$emit('update:images', filteredImages);
         }
     },
     watch: {
         images: {
             handler(newImages) {
-                this.imagePreview = [...newImages];
+                // Si recibimos nuevas imágenes desde el componente padre, actualizar preview
+                const newPreview = Array(this.maxImages).fill('');
+                newImages.forEach((img, index) => {
+                    if (index < this.maxImages) {
+                        newPreview[index] = img;
+                    }
+                });
+                this.imagePreview = newPreview;
             },
-            deep: true
+            deep: true,
+            immediate: true
         }
     }
 };

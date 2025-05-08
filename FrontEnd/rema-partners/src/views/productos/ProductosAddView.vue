@@ -184,10 +184,10 @@ import type { Categoria } from '@/models/categoria';
 import type { CamposCategoria } from '@/models/camposCategoria';
 import { useProducto } from '@/composables/useProducto';
 import Swal from 'sweetalert2';
-import ImageSelector from '@/components/productos/ImageSelector.vue';
-import LocationSelector from '@/components/productos/LocationSelector.vue';
-import CategoryFields from '@/components/productos/CategoryFields.vue';
+import LocationSelector from '@/components/features/productos/LocationSelector.vue';
+import CategoryFields from '@/components/features/productos/CategoryFields.vue';
 import { useUsers } from '@/composables/useUsers';
+import ImageSelector from '@/components/features/productos/ImageSelector.vue';
 
 export default defineComponent({
     name: 'ProductosAddView',
@@ -504,7 +504,7 @@ export default defineComponent({
             const categoriaSeleccionada = this.getCategoriaSeleccionada();
             if (categoriaSeleccionada) {
                 // Save existing values if any
-                const existingValues = {};
+                const existingValues: Record<string, string> = {};
                 if (this.producto.camposCategoria && this.producto.camposCategoria.length > 0) {
                     this.producto.camposCategoria.forEach(campo => {
                         existingValues[campo.nombreCampo] = campo.datos;

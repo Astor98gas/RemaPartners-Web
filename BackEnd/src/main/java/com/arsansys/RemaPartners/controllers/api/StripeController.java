@@ -6,13 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.arsansys.RemaPartners.controllers.dto.PaymentIntentDTO;
-import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.services.UserService;
 import com.arsansys.RemaPartners.services.stripe.StripeService;
 import com.arsansys.RemaPartners.services.stripe.SuscripcionService;
-import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
 import com.stripe.Stripe;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
@@ -37,46 +33,10 @@ public class StripeController {
     @Value("${stripe.api.secret}")
     private String stripeApiKey;
 
-    // @Value("${stripe.webhook.secret}")
-    // private String webhookSecret;
-
     @GetMapping("/suscripciones")
     public ResponseEntity<?> getAllSuscripciones() {
         try {
             return ResponseEntity.ok(suscripcionService.getAllSuscripciones());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
-    }
-
-    @PostMapping("/paymentintent")
-    public ResponseEntity<String> createPaymentIntent(@RequestBody PaymentIntentDTO paymentIntentDTO) {
-        try {
-            PaymentIntent paymentIntent = stripeService.paymentIntent(paymentIntentDTO);
-            String paymentString = paymentIntent.toJson();
-            return ResponseEntity.ok(paymentString);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
-    }
-
-    @PostMapping("/confirm/{paymentIntentId}")
-    public ResponseEntity<String> confirmPaymentIntent(@RequestBody String paymentIntentId) {
-        try {
-            PaymentIntent paymentIntent = stripeService.confirmPaymentIntent(paymentIntentId);
-            String paymentString = paymentIntent.toJson();
-            return ResponseEntity.ok(paymentString);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
-    }
-
-    @PostMapping("/cancel/{paymentIntentId}")
-    public ResponseEntity<String> cancelPaymentIntent(@RequestBody String paymentIntentId) {
-        try {
-            PaymentIntent paymentIntent = stripeService.cancelPaymentIntent(paymentIntentId);
-            String paymentString = paymentIntent.toJson();
-            return ResponseEntity.ok(paymentString);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
         }
@@ -135,20 +95,4 @@ public class StripeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
-
-    // // Webhook para recibir eventos de Stripe
-    // @PostMapping("/webhook")
-    // public ResponseEntity<?> handleStripeWebhook(
-    // @RequestBody String payload,
-    // @RequestHeader("Stripe-Signature") String sigHeader) {
-    // try {
-    // // Procesar el evento recibido de Stripe
-    // String event = stripeService.handleWebhookEvent(payload, sigHeader,
-    // webhookSecret);
-
-    // return ResponseEntity.ok(event);
-    // } catch (StripeException e) {
-    // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    // }
-    // }
 }
