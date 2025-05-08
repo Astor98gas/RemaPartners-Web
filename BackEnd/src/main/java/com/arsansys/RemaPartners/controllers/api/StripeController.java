@@ -6,10 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.services.UserService;
-import com.arsansys.RemaPartners.services.stripe.StripeService;
 import com.arsansys.RemaPartners.services.stripe.SuscripcionService;
 import com.stripe.Stripe;
+import com.stripe.model.Customer;
+import com.stripe.model.CustomerSearchResult;
+import com.stripe.model.PromotionCode;
+import com.stripe.model.PromotionCodeCollection;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 
@@ -23,9 +27,6 @@ public class StripeController {
 
     @Autowired
     private SuscripcionService suscripcionService;
-
-    @Autowired
-    private StripeService stripeService;
 
     @Autowired
     private UserService userService;
@@ -47,13 +48,12 @@ public class StripeController {
         try {
             Stripe.apiKey = stripeApiKey;
 
-            // Imprimir datos recibidos para depuración
-            System.out.println("Datos recibidos: " + requestData);
-
+            // Obtener los datos del request
             String priceId = (String) requestData.get("priceId");
             String successUrl = (String) requestData.get("successUrl");
             String cancelUrl = (String) requestData.get("cancelUrl");
             String clientReferenceId = (String) requestData.get("clientReferenceId");
+            String promoCode = (String) requestData.get("promoCode");
 
             // Validar datos requeridos
             if (priceId == null || successUrl == null || cancelUrl == null) {
@@ -67,18 +67,148 @@ public class StripeController {
                 clientReferenceId = "default_user";
             }
 
-            SessionCreateParams params = SessionCreateParams.builder()
+            // Obtener el usuario de la base de datos usando clientReferenceId
+            UserEntity user = userService.getUserById(clientReferenceId);
+            String userEmail = user.getEmail();
+            String userName = user.getUsername();
+
+            // Crear o recuperar el cliente en Stripe
+            Customer customer = null;
+
+            try {
+                // Intentar encontrar cliente existente por email
+                Map<String, Object> params = new HashMap<>();
+                params.put("limit", 1);
+                params.put("query", "email:'" + userEmail.replace("'", "\\'") + "'");
+
+                CustomerSearchResult searchResult = Customer.search(params);
+
+                if (searchResult.getData() != null && !searchResult.getData().isEmpty()) {
+                    // Cliente existente encontrado
+                    customer = searchResult.getData().get(0);
+                    System.out.println("Cliente existente encontrado con ID: " + customer.getId());
+
+                    // Actualizar metadatos del cliente
+                    Map<String, Object> metadata = new HashMap<>();
+                    metadata.put("userId", clientReferenceId);
+                    metadata.put("username", userName);
+
+                    Map<String, Object> updateParams = new HashMap<>();
+                    updateParams.put("metadata", metadata);
+                    updateParams.put("name", userName); // Actualizar también el nombre
+
+                    customer = customer.update(updateParams);
+                } else {
+                    // Cliente no encontrado, crear uno nuevo
+                    System.out.println("Cliente no encontrado, creando nuevo");
+                    Map<String, Object> customerParams = new HashMap<>();
+                    customerParams.put("email", userEmail);
+                    customerParams.put("name", userName);
+
+                    Map<String, String> metadata = new HashMap<>();
+                    metadata.put("userId", clientReferenceId);
+                    metadata.put("username", userName);
+
+                    customerParams.put("metadata", metadata);
+                    customer = Customer.create(customerParams);
+                }
+            } catch (Exception e) {
+                // Si hay un error en la búsqueda, crear un nuevo cliente
+                System.out.println("Error buscando cliente: " + e.getMessage());
+                Map<String, Object> customerParams = new HashMap<>();
+                customerParams.put("email", userEmail);
+                customerParams.put("name", userName);
+
+                Map<String, String> metadata = new HashMap<>();
+                metadata.put("userId", clientReferenceId);
+                metadata.put("username", userName);
+
+                customerParams.put("metadata", metadata);
+                customer = Customer.create(customerParams);
+            }
+
+            // Crear la sesión de checkout asociada al cliente
+            SessionCreateParams.Builder paramsBuilder = SessionCreateParams.builder()
+                    // Configuración básica
                     .setMode(SessionCreateParams.Mode.PAYMENT)
                     .setClientReferenceId(clientReferenceId)
+
+                    // URLs de redirección
                     .setSuccessUrl(successUrl)
                     .setCancelUrl(cancelUrl)
+
+                    // Información del cliente
+                    .setCustomer(customer.getId())
+
+                    // Métodos de pago aceptados
+                    .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
+
+                    // Dirección de facturación y envío
+                    .setBillingAddressCollection(SessionCreateParams.BillingAddressCollection.REQUIRED)
+                    .setShippingAddressCollection(
+                            SessionCreateParams.ShippingAddressCollection.builder()
+                                    .addAllowedCountry(SessionCreateParams.ShippingAddressCollection.AllowedCountry.ES)
+                                    .build())
+
+                    // Metadatos
+                    .putMetadata("userId", clientReferenceId)
+                    .putMetadata("username", userName)
+                    .putMetadata("source", "REMA Partners Platform")
+                    .putMetadata("email", userEmail)
+
+                    // Línea de productos
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
                                     .setPrice(priceId)
                                     .setQuantity(1L)
                                     .build())
-                    .build();
 
+                    // Textos personalizados
+                    .setCustomText(
+                            SessionCreateParams.CustomText.builder()
+                                    .setSubmit(
+                                            SessionCreateParams.CustomText.Submit.builder()
+                                                    .setMessage(
+                                                            "Al pagar, aceptas nuestros términos y política de privacidad")
+                                                    .build())
+                                    .build());
+
+            // Aplicar código promocional automáticamente si se proporciona
+            boolean promoApplied = false;
+            if (promoCode != null && !promoCode.isEmpty()) {
+                try {
+                    // Buscar el código promocional
+                    Map<String, Object> promoParams = new HashMap<>();
+                    promoParams.put("code", promoCode);
+
+                    PromotionCodeCollection promotionCodes = PromotionCode.list(promoParams);
+
+                    if (promotionCodes.getData().size() > 0) {
+                        PromotionCode promotionCode = promotionCodes.getData().get(0);
+
+                        // Añadir descuento a la sesión
+                        paramsBuilder.addDiscount(
+                                SessionCreateParams.Discount.builder()
+                                        .setPromotionCode(promotionCode.getId())
+                                        .build());
+
+                        // Registrar la aplicación del código en los metadatos
+                        paramsBuilder.putMetadata("promo_code_applied", promoCode);
+                        promoApplied = true;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error al aplicar código promocional: " + e.getMessage());
+                }
+            }
+
+            // Si no se pudo aplicar el código o no se proporcionó ninguno, permitir códigos
+            // manuales
+            if (!promoApplied) {
+                paramsBuilder.setAllowPromotionCodes(true);
+            }
+
+            // Construir la sesión final
+            SessionCreateParams params = paramsBuilder.build();
             Session session = Session.create(params);
 
             Map<String, String> response = new HashMap<>();

@@ -1,5 +1,29 @@
 <template>
     <div class="w-full">
+        <!-- Campo de código promocional -->
+        <div class="mb-4" v-if="showPromoInput">
+            <label class="block text-gray-700 font-medium mb-2">{{ t('profile.promo_code') }}</label>
+            <div class="flex">
+                <input type="text" v-model="promoCode"
+                    class="flex-1 px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    :placeholder="t('profile.promo_code_placeholder')" />
+                <button @click="verifyPromoCode"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition-colors">
+                    {{ t('common.apply') }}
+                </button>
+            </div>
+            <p v-if="promoCodeValid" class="mt-2 text-green-600">
+                {{ t('profile.promo_code_valid') }}
+            </p>
+            <p v-if="promoCodeError" class="mt-2 text-red-600">
+                {{ promoCodeError }}
+            </p>
+        </div>
+
+        <p class="text-blue-600 hover:underline cursor-pointer mb-4" @click="showPromoInput = !showPromoInput">
+            {{ showPromoInput ? t('profile.hide_promo') : t('profile.have_promo') }}
+        </p>
+
         <button @click="redirectToStripe"
             class="w-full px-4 py-3 mt-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
             :disabled="loading">
@@ -30,8 +54,11 @@ export default {
         const usersComposable = useUsers();
         const loading = ref(false);
         const baseUrl = window.location.origin;
+        const showPromoInput = ref(false);
+        const promoCode = ref('');
+        const promoCodeValid = ref(false);
+        const promoCodeError = ref('');
 
-        // Computed property para obtener el ID del usuario de forma segura
         const clientReferenceId = computed(() => {
             const currentUser = usersComposable.currentUser.value;
             return currentUser && currentUser.id ? currentUser.id : '';
@@ -44,7 +71,11 @@ export default {
             loading,
             clientReferenceId,
             successURL,
-            cancelURL
+            cancelURL,
+            showPromoInput,
+            promoCode,
+            promoCodeValid,
+            promoCodeError
         };
     },
     methods: {
@@ -52,17 +83,55 @@ export default {
             const store = useutf8Store();
             return store.t(key) || key;
         },
+
+        // Opcionalmente puedes verificar el código promo antes de enviarlo
+        async verifyPromoCode() {
+            if (!this.promoCode.trim()) {
+                this.promoCodeError = this.t('profile.promo_code_empty');
+                return;
+            }
+
+            try {
+                // Aquí podrías hacer una verificación previa si implementas este endpoint
+                // const response = await axios.get(`/api/stripe/verify-promo/${this.promoCode}`);
+                // if (response.data.valid) {
+                //     this.promoCodeValid = true;
+                //     this.promoCodeError = '';
+                // } else {
+                //     this.promoCodeError = response.data.message || this.t('profile.promo_code_invalid');
+                //     this.promoCodeValid = false;
+                // }
+
+                // Simplificado: solo validamos que no esté vacío
+                this.promoCodeValid = true;
+                this.promoCodeError = '';
+            } catch (err) {
+                this.promoCodeError = this.t('profile.promo_code_error');
+                this.promoCodeValid = false;
+            }
+        },
+
         async redirectToStripe() {
             try {
                 this.loading = true;
 
+                // Verificar el usuario en tiempo real antes de enviar la solicitud
+                const usersComposable = useUsers();
+                const userData = await usersComposable.isLoggedIn();
+                const userId = userData && userData.id ? userData.id : '';
+
                 // Datos a enviar
                 const payload = {
                     priceId: 'price_1RMOTuQ99mt2tfSDk6OwTM1L',
-                    clientReferenceId: this.clientReferenceId || 'default_user',
+                    clientReferenceId: userId || this.clientReferenceId || 'default_user',
                     successUrl: this.successURL,
                     cancelUrl: this.cancelURL
                 };
+
+                // Añadir código promocional si está presente y validado
+                if (this.promoCodeValid && this.promoCode.trim()) {
+                    payload.promoCode = this.promoCode.trim();
+                }
 
                 // Configurar los headers explícitamente
                 const config = {
@@ -96,6 +165,7 @@ export default {
                 }
             }
         },
+
         handlePaymentResult() {
             // Verificar si hay un parámetro de éxito o cancelación en la URL
             const urlParams = new URLSearchParams(window.location.search);
