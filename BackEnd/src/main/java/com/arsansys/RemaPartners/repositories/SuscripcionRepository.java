@@ -3,9 +3,9 @@ package com.arsansys.RemaPartners.repositories;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.arsansys.RemaPartners.models.entities.CategoriaEntity;
+import com.arsansys.RemaPartners.models.entities.Suscripcion;
 
 @Repository
-public interface CategoriaRepository extends MongoRepository<CategoriaEntity, String> {
+public interface SuscripcionRepository extends MongoRepository<Suscripcion, String> {
 
 }

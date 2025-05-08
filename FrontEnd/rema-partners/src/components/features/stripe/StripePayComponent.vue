@@ -1,8 +1,8 @@
 <template>
     <div>
-        <stripe-checkout ref="checkoutRef" mode="subscription" :pk="publishableKey" :line-items="lineItems"
+        <stripe-checkout ref="checkoutRef" mode="payment" :pk="publishableKey" :line-items="lineItems"
             :success-url="successURL" :cancel-url="cancelURL" @loading="v => loading = v" />
-        <button @click="submit">Subscribe!</button>
+        <button @click="submit">Pay now!</button>
     </div>
 </template>
 
@@ -13,17 +13,17 @@ export default {
         StripeCheckout,
     },
     data() {
-        this.publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+        this.publishableKey = '';
         return {
             loading: false,
             lineItems: [
                 {
-                    price: 'some-price-id', // The id of the recurring price you created in your Stripe dashboard
+                    price: '', // The id of the one-time price you created in your Stripe dashboard
                     quantity: 1,
                 },
             ],
-            successURL: 'your-success-url',
-            cancelURL: 'your-cancel-url',
+            successURL: 'http://localhost:5173/',
+            cancelURL: 'http://localhost:5173/profile',
         };
     },
     methods: {

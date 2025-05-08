@@ -118,6 +118,21 @@
                                     </router-link>
                                 </div>
 
+                                <!-- New Subscription Section -->
+                                <div class="border-b pb-4">
+                                    <h3 class="font-medium mb-2">{{ utf8.t('profile.subscription') || 'Subscription' }}
+                                    </h3>
+                                    <ButtonBasic variant="success" size="md" @click="showStripeModal = true"
+                                        class="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                                        </svg>
+                                        {{ utf8.t('profile.subscribe') || 'Subscribe Premium' }}
+                                    </ButtonBasic>
+                                </div>
+
                                 <div class="pt-2">
                                     <ButtonBasic variant="danger" size="md" @click="logout">
                                         {{ utf8.t('profile.logout') }}
@@ -157,6 +172,60 @@
             </div>
         </div>
     </transition>
+
+    <!-- Modal para Stripe Payment -->
+    <transition name="fade">
+        <div v-if="showStripeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">{{ utf8.t('profile.premium_subscription') ||
+                        'Premium Subscription' }}</h2>
+                    <button @click="showStripeModal = false" class="text-gray-500 hover:text-gray-700">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="mb-6">
+                    <p class="text-gray-600 mb-4">{{ utf8.t('profile.premium_description') ||
+                        'Upgrade to premium to access exclusive features and benefits.' }}</p>
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <h3 class="font-semibold text-blue-800 mb-2">{{ utf8.t('profile.premium_benefits') ||
+                            'Premium Benefits' }}</h3>
+                        <ul class="text-blue-700 space-y-1">
+                            <li class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                                {{ utf8.t('profile.premium_benefit1') || 'Highlighted product listings' }}
+                            </li>
+                            <li class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                                {{ utf8.t('profile.premium_benefit2') || 'Priority customer support' }}
+                            </li>
+                            <li class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                                {{ utf8.t('profile.premium_benefit3') || 'Advanced analytics' }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <StripePayComponent @success="handleSubscriptionSuccess" @cancel="showStripeModal = false" />
+            </div>
+        </div>
+    </transition>
 </template>
 
 <script lang="ts">
@@ -166,11 +235,13 @@ import { useutf8Store } from '@/stores/counter';
 import { useToast } from 'vue-toastification';
 import { defineComponent } from 'vue';
 import type { User } from '@/models/user';
+import StripePayComponent from '@/components/features/stripe/StripePayComponent.vue';
 
 export default defineComponent({
     name: 'ProfileViews',
     components: {
         ButtonBasic,
+        StripePayComponent,
     },
     data() {
         return {
@@ -184,6 +255,7 @@ export default defineComponent({
             showModal: false,
             modalTitle: '',
             modalMessage: '',
+            showStripeModal: false,
             formData: {
                 username: '',
                 email: '',
@@ -324,6 +396,14 @@ export default defineComponent({
             } catch (error) {
                 console.error('Error al cerrar sesión:', error);
             }
+        },
+        handleSubscriptionSuccess() {
+            const toast = useToast();
+            toast.success(this.utf8.t('profile.subscription_success') || 'Subscription successful!');
+            this.showStripeModal = false;
+
+            // Here you would typically update the user's subscription status in your backend
+            // this.usersComposable.updateSubscriptionStatus(this.currentUser.id);
         },
     }
 });
