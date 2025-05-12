@@ -44,10 +44,10 @@
                 <!-- Imagen principal con zoom al hover -->
                 <div class="h-96 overflow-hidden bg-gray-50 flex items-center justify-center relative group">
                     <img :src="currentImage" :alt="product.titulo"
-                        class="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                        @error="onImageError" />
+                        class="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105 cursor-zoom-in"
+                        @error="onImageError" @click="showLightbox" />
 
-                    <!-- Botones de navegación para móviles -->
+                    <!-- Botones de navegación for móviles -->
                     <button v-if="product.imagenes.length > 1" @click="prevImage"
                         class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-md md:hidden z-10">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800" fill="none"
@@ -68,7 +68,7 @@
                 <div class="p-4 bg-gray-50 flex gap-3 overflow-x-auto scrollbar-hide"
                     v-if="product.imagenes.length > 1">
                     <button v-for="(imagen, index) in product.imagenes" :key="index" @click="selectImage(imagen)"
-                        class="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:shadow-md"
+                        class="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:shadow-md cursor-pointer"
                         :class="currentImage === imagen ? 'border-blue-500 shadow-md' : 'border-transparent hover:border-gray-300'">
                         <img :src="imagen" :alt="`${product.titulo} - ${index + 1}`"
                             class="w-full h-full object-cover hover:opacity-90" />
@@ -352,6 +352,9 @@
         <OfferModal v-if="showOfferModal && product" :product-title="product.titulo" :product-image="currentImage"
             :original-price="product.precioCentimos" :currency="product.moneda" @close="showOfferModal = false"
             @offer-submitted="handleOfferSubmitted" />
+
+        <vue-easy-lightbox :visible="lightboxVisible" :imgs="product?.imagenes || []" :index="currentImageIndex"
+            @hide="lightboxVisible = false" :scroll-disabled="true" />
     </div>
 </template>
 
@@ -373,6 +376,7 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import type { Producto } from '@/models/producto';
 import ProductoComponent from '@/components/layout/ProductoComponent.vue';
+import VueEasyLightbox from 'vue-easy-lightbox';
 
 export default defineComponent({
     name: 'ProductoDetailView',
@@ -381,7 +385,8 @@ export default defineComponent({
         DeleteButton,
         ChatBox,
         OfferModal,
-        ProductoComponent
+        ProductoComponent,
+        VueEasyLightbox
     },
     setup() {
         const mapContainer = ref(null);
@@ -407,6 +412,7 @@ export default defineComponent({
             isLoggedIn: false,
             isOwner: false,
             productosSimilares: [] as Producto[],
+            lightboxVisible: false,
         };
     },
     computed: {
@@ -789,7 +795,12 @@ export default defineComponent({
             } finally {
                 this.loading = false;
             }
-        }
+        },
+        showLightbox() {
+            if (this.product && this.product.imagenes && this.product.imagenes.length > 0) {
+                this.lightboxVisible = true;
+            }
+        },
     }
 });
 </script>
