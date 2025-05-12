@@ -61,14 +61,14 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.new_password')
-                                    }}</label>
+                                        }}</label>
                                     <input type="password" v-model="formData.password"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <p class="text-xs text-gray-500 mt-1">{{ utf8.t('profile.password_note') }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.confirm_password')
-                                    }}</label>
+                                        }}</label>
                                     <input type="password" v-model="formData.confirmPassword"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
@@ -96,7 +96,6 @@
                                         class="text-blue-600 hover:text-blue-800 block py-1">
                                         {{ utf8.t('profile.add_product') }}
                                     </router-link>
-                                    <!-- Aquí podrías agregar un enlace a "Mis productos" en el futuro -->
                                 </div>
 
                                 <div v-if="isAdmin" class="border-b pb-4">
@@ -118,8 +117,8 @@
                                     </router-link>
                                 </div>
 
-                                <!-- New Subscription Section -->
-                                <div class="border-b pb-4">
+                                <!-- Subscription Section -->
+                                <div v-if="isComprador || isAdmin || isTrabajador" class="border-b pb-4">
                                     <h3 class="font-medium mb-2">{{ utf8.t('profile.subscription') || 'Subscription' }}
                                     </h3>
                                     <ButtonBasic variant="success" size="md" @click="showStripeModal = true"
