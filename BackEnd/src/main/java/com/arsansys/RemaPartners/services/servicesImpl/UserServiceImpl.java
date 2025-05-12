@@ -75,4 +75,23 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
+    @Override
+    public void updateUser(UserEntity userEntity) {
+        try {
+            // Check if the user exists
+            if (!userRepository.existsById(userEntity.getId())) {
+                throw new RuntimeException("User not found");
+            }
+            if (userEntity.getPassword() != null) {
+                // Hash the password before saving
+                String hashedPassword = passwordEncoder.encode(userEntity.getPassword());
+                userEntity.setPassword(hashedPassword);
+            }
+
+            userRepository.save(userEntity);
+        } catch (Exception e) {
+            throw new RuntimeException("Error updating user: " + e.getMessage());
+        }
+    }
+
 }

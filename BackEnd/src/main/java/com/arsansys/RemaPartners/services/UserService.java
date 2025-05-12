@@ -20,4 +20,6 @@ public interface UserService {
 
     abstract UserEntity getByEmail(String email);
 
+    abstract void updateUser(UserEntity userEntity);
+
 }

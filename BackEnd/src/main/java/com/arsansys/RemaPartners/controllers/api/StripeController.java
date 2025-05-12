@@ -34,10 +34,10 @@ public class StripeController {
     @Value("${stripe.api.secret}")
     private String stripeApiKey;
 
-    @GetMapping("/suscripciones")
-    public ResponseEntity<?> getAllSuscripciones() {
+    @GetMapping("/suscripciones/{idUsuario}")
+    public ResponseEntity<?> getSuscripcionesByIdUsuario(@PathVariable String idUsuario) {
         try {
-            return ResponseEntity.ok(suscripcionService.getAllSuscripciones());
+            return ResponseEntity.ok(suscripcionService.getSuscripcionesByIdUsuario(idUsuario));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
         }

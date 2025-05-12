@@ -1,5 +1,7 @@
 package com.arsansys.RemaPartners.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.arsansys.RemaPartners.controllers.dto.CreateUserDTO;
 import com.arsansys.RemaPartners.models.entities.RolEntity;
+import com.arsansys.RemaPartners.models.entities.Suscripcion;
 import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.models.enums.ERol;
 import com.arsansys.RemaPartners.models.jwt.JwtRequest;
@@ -22,6 +25,7 @@ import com.arsansys.RemaPartners.models.jwt.JwtResponse;
 import com.arsansys.RemaPartners.security.jwt.JwtUtils;
 import com.arsansys.RemaPartners.services.UserService;
 import com.arsansys.RemaPartners.services.servicesImpl.UserDetailsServiceImpl;
+import com.arsansys.RemaPartners.services.stripe.SuscripcionService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,6 +50,9 @@ public class JwtController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private SuscripcionService suscripcionService;
 
     @PostMapping("/login")
     public ResponseEntity<?> generateToken(@RequestBody JwtRequest jwtRequest, HttpServletResponse res)
