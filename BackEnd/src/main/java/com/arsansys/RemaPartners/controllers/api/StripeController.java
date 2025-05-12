@@ -12,6 +12,8 @@ import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.models.enums.ERol;
 import com.arsansys.RemaPartners.services.UserService;
 import com.arsansys.RemaPartners.services.stripe.SuscripcionService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.stripe.model.Customer;
 import com.stripe.model.CustomerSearchResult;
@@ -235,53 +237,53 @@ public class StripeController {
     public ResponseEntity<Map<String, Object>> createFreeTrial(@RequestBody Map<String, Object> requestData) {
         try {
             String userId = (String) requestData.get("userId");
-            
+
             if (userId == null || userId.isEmpty()) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("success", false);
                 error.put("message", "User ID is required");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
-            
+
             // Obtener el usuario
             UserEntity user = userService.getUserById(userId);
-            
+
             if (user == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("success", false);
                 error.put("message", "User not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
             }
-            
+
             // Verificar si ya ha tenido alguna suscripción (activa o no)
             List<Suscripcion> todasLasSuscripciones = suscripcionService.getSuscripcionesByIdUsuario(userId);
-            
+
             if (!todasLasSuscripciones.isEmpty()) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("success", false);
                 error.put("message", "Ya has utilizado tu prueba gratuita. Por favor, elige la suscripción premium.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
-            
+
             // Crear nueva suscripción
             Suscripcion suscripcion = suscripcionService.createSuscripcion(userId);
-            
+
             // Actualizar rol del usuario a VENDEDOR
             RolEntity rolVendedor = new RolEntity();
             rolVendedor.setName(ERol.VENDEDOR);
             user.setRol(rolVendedor);
             userService.updateUser(user);
-            
+
             // Preparar respuesta
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Free trial activated successfully");
             response.put("subscription", suscripcion);
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
-            
+
             Map<String, Object> error = new HashMap<>();
             error.put("success", false);
             error.put("message", e.getMessage());
@@ -294,22 +296,78 @@ public class StripeController {
         try {
             // Verificar si el usuario existe
             UserEntity user = userService.getUserById(userId);
-            
+
             if (user == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("success", false);
                 error.put("message", "User not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
             }
-            
+
             // Verificar si ha tenido alguna suscripción
             List<Suscripcion> todasLasSuscripciones = suscripcionService.getSuscripcionesByIdUsuario(userId);
             boolean hasHadSubscription = !todasLasSuscripciones.isEmpty();
-            
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("hasHadSubscription", hasHadSubscription);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @PostMapping("/update-user-payment")
+    public ResponseEntity<Map<String, Object>> updateUserPayment(@RequestBody Map<String, Object> requestData) {
+        try {
+            String userId = (String) requestData.get("userId");
+            Boolean hasPaid = (Boolean) requestData.get("hasPaid");
             
+            if (userId == null || hasPaid == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("success", false);
+                error.put("message", "User ID and payment status are required");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            }
+            
+            if (hasPaid) {
+                // Obtener el usuario
+                UserEntity user = userService.getUserById(userId);
+                
+                if (user == null) {
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("success", false);
+                    error.put("message", "User not found");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+                }
+                
+                // Crear nueva suscripción
+                Suscripcion suscripcion = suscripcionService.createSuscripcion(userId);
+                
+                // Actualizar rol del usuario a VENDEDOR
+                RolEntity rolVendedor = new RolEntity();
+                rolVendedor.setName(ERol.VENDEDOR);
+                user.setRol(rolVendedor);
+                userService.updateUser(user);
+                
+                // Preparar respuesta
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "Premium subscription activated successfully");
+                response.put("subscription", suscripcion);
+                
+                return ResponseEntity.ok(response);
+            }
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "No action taken");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();

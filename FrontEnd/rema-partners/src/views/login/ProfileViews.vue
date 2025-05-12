@@ -489,33 +489,76 @@ export default defineComponent({
         async handleSubscriptionSuccess() {
             this.showStripeModal = false;
 
-            // Mostrar SweetAlert2 para el pago exitoso - primero mostrar la alerta
-            Swal.fire({
-                icon: 'success',
-                title: this.utf8.t('profile.subscription_success') || 'Pago realizado con éxito',
-                text: this.utf8.t('profile.subscription_success_message') || 'Tu cuenta ha sido actualizada a Premium',
-                confirmButtonText: this.utf8.t('common.ok') || 'OK'
-            });
-
             try {
-                // Actualizar estado premium en el backend - esto puede complementar el webhook
-                // TO-DO: Descomentar y ajustar según la lógica de tu aplicación
-                // if (this.currentUser && this.currentUser.id) {
-                //     await axios.post(`/api/stripe/update-user-payment`, {
-                //         userId: this.currentUser.id,
-                //         hasPaid: true
-                //     });
+                // Mostrar indicador de carga
+                Swal.fire({
+                    title: this.utf8.t('profile.processing') || 'Procesando...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
 
-                //     // Actualizar el usuario actual en el frontend
-                //     this.currentUser.premium = true;
-                // }
-            } catch (error) {
+                // Asegurarse de que el usuario esté autenticado
+                await this.checkLoginStatus();
+
+                if (!this.currentUser || !this.currentUser.id) {
+                    console.error('No hay usuario autenticado o falta el ID de usuario');
+                    throw new Error('Usuario no identificado');
+                }
+                
+                // Obtener el token de auth
+                const token = document.cookie
+                    .split('; ')
+                    .find(row => row.startsWith('token='))
+                    ?.split('=')[1];
+                    
+                console.log('ID del usuario:', this.currentUser.id);
+                console.log('Token disponible:', !!token);
+                
+                // Intentar con axios directamente con headers mejorados
+                const response = await axios.post('/api/stripe/update-user-payment', {
+                    userId: this.currentUser.id,
+                    hasPaid: true
+                }, {
+                    timeout: 30000, // Extender timeout a 30 segundos
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token ? `Bearer ${token}` : '',
+                    }
+                });
+                
+                console.log('Respuesta del servidor:', response.data);
+                
+                // El resto del código sigue igual
+                if (response.data && response.data.success) {
+                    // Actualizar el usuario en el frontend para reflejar el nuevo rol
+                    await this.usersComposable.refreshUser();
+                    
+                    // Cerrar el modal de carga
+                    Swal.close();
+                    
+                    // Mostrar mensaje de éxito
+                    Swal.fire({
+                        icon: 'success',
+                        title: this.utf8.t('profile.subscription_success') || 'Pago realizado con éxito',
+                        text: this.utf8.t('profile.subscription_success_message') || 'Tu cuenta ha sido actualizada a Premium',
+                        confirmButtonText: this.utf8.t('common.ok') || 'OK'
+                    });
+                } else {
+                    throw new Error(response.data?.message || 'Error en la respuesta del servidor');
+                }
+            } catch (error: any) {
                 console.error('Error al actualizar estado premium:', error);
-
+                console.error('Detalles del error:', error.response?.data || 'No hay detalles adicionales');
+                
+                // Cerrar el modal de carga si está abierto
+                Swal.close();
+                
                 Swal.fire({
                     icon: 'error',
                     title: this.utf8.t('common.error') || 'Error',
-                    text: this.utf8.t('profile.subscription_update_error') || 'No se pudo actualizar tu estado Premium',
+                    text: error.response?.data?.message || error.message || this.utf8.t('profile.subscription_update_error'),
                     confirmButtonText: this.utf8.t('common.ok') || 'OK'
                 });
             }
