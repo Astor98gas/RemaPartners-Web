@@ -44,18 +44,19 @@
                 <div class="flex flex-col">
                     <label class="text-sm text-gray-600 mb-1 font-medium">{{ t('producto.filters.category') }}</label>
                     <v-select v-model="filtros.categoria" :options="categoriaOptions"
+                        :reduce="(option: any) => option.value"
                         class="rounded-lg bg-gray-50 transition-all duration-200"
                         :placeholder="t('producto.filters.allCategories')" :searchable="true" :clearable="true"
-                        @input="aplicarFiltros" />
+                        @update:modelValue="aplicarFiltros" />
                 </div>
 
                 <!-- Filtro por estado -->
                 <div class="flex flex-col">
                     <label class="text-sm text-gray-600 mb-1 font-medium">{{ t('producto.filters.state') }}</label>
-                    <v-select v-model="filtros.estado" :options="estadoOptions"
-                        class=" rounded-lg bg-gray-50 transition-all duration-200"
+                    <v-select v-model="filtros.estado" :options="estadoOptions" :reduce="(option: any) => option.value"
+                        class="rounded-lg bg-gray-50 transition-all duration-200"
                         :placeholder="t('producto.filters.allStates')" :searchable="true" :clearable="true"
-                        @input="aplicarFiltros" />
+                        @update:modelValue="aplicarFiltros" />
                 </div>
 
                 <!-- Filtro por ubicación -->
@@ -64,7 +65,7 @@
                     <v-select v-model="filtros.ubicacion" :options="ubicacionesDisponibles"
                         class="rounded-lg bg-gray-50 transition-all duration-200"
                         :placeholder="t('producto.filters.allLocations')" :searchable="true" :clearable="true"
-                        @input="aplicarFiltros" />
+                        @update:modelValue="aplicarFiltros" />
                 </div>
 
                 <!-- Filtro por rango de precio -->
@@ -179,16 +180,14 @@ export default defineComponent({
                 this.filtros.precioMax !== null;
         },
         categoriaOptions() {
-            // Format categories for v-select (label/value pairs)
-            return [
-                ...this.categorias.map(cat => ({
-                    label: cat.titulo,
-                    value: cat.id
-                }))
-            ];
+            // Make sure we return objects with label/value that match the actual data structure
+            return this.categorias.map(cat => ({
+                label: cat.titulo,
+                value: cat.id
+            }));
         },
         estadoOptions() {
-            // Format estado options for v-select (label/value pairs)
+            // Return the actual estado values without wrapping them in objects
             return this.estadosProducto.map(estado => ({
                 label: this.t(`producto.estados.${estado}`),
                 value: estado
@@ -313,14 +312,14 @@ export default defineComponent({
                     );
                 }
 
-                // Filtrar por categoría
+                // Filtrar por categoría - make sure we're comparing with the correct value
                 if (this.filtros.categoria) {
                     productosFiltrados = productosFiltrados.filter(producto =>
                         producto.idCategoria === this.filtros.categoria
                     );
                 }
 
-                // Filtrar por estado
+                // Filtrar por estado - make sure we're comparing with the correct value
                 if (this.filtros.estado) {
                     productosFiltrados = productosFiltrados.filter(producto =>
                         producto.estado === this.filtros.estado
