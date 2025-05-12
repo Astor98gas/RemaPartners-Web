@@ -82,11 +82,6 @@ public class UserServiceImpl implements UserService {
             if (!userRepository.existsById(userEntity.getId())) {
                 throw new RuntimeException("User not found");
             }
-            if (userEntity.getPassword() != null) {
-                // Hash the password before saving
-                String hashedPassword = passwordEncoder.encode(userEntity.getPassword());
-                userEntity.setPassword(hashedPassword);
-            }
 
             userRepository.save(userEntity);
         } catch (Exception e) {

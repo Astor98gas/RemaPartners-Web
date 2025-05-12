@@ -121,7 +121,7 @@
                                 <div v-if="isComprador || isAdmin || isTrabajador" class="border-b pb-4">
                                     <h3 class="font-medium mb-2">{{ utf8.t('profile.subscription') || 'Subscription' }}
                                     </h3>
-                                    <ButtonBasic variant="success" size="md" @click="showStripeModal = true"
+                                    <ButtonBasic variant="success" size="md" @click="showSubscriptionOptions = true"
                                         class="flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
@@ -225,6 +225,56 @@
             </div>
         </div>
     </transition>
+
+    <!-- Modal para elección de suscripción -->
+    <transition name="fade">
+        <div v-if="showSubscriptionOptions"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">{{ utf8.t('profile.subscription_options') ||
+                        'Opciones de Suscripción' }}</h2>
+                    <button @click="showSubscriptionOptions = false" class="text-gray-500 hover:text-gray-700">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="mb-6">
+                    <p class="text-gray-600 mb-4">
+                        {{ utf8.t('profile.subscription_options_desc') ||
+                            'Elige una opción de suscripción para convertirte en vendedor.' }}
+                    </p>
+
+                    <div class="space-y-4">
+                        <div v-if="!hasHadSubscription" 
+                            class="border border-blue-200 rounded-lg p-4 hover:bg-blue-50 transition cursor-pointer"
+                            @click="createFreeTrial">
+                            <h3 class="font-semibold text-blue-800 mb-1">
+                                {{ utf8.t('profile.free_trial') || 'Prueba Gratuita' }}
+                            </h3>
+                            <p class="text-sm text-gray-600">
+                                {{ utf8.t('profile.free_trial_desc') ||
+                                    'Obtén acceso a funciones de vendedor durante 30 días sin costo.' }}
+                            </p>
+                        </div>
+
+                        <div class="border border-blue-200 rounded-lg p-4 hover:bg-blue-50 transition cursor-pointer"
+                            @click="startPremiumSubscription">
+                            <h3 class="font-semibold text-blue-800 mb-1">
+                                {{ utf8.t('profile.premium_subscription') || 'Suscripción Premium' }}
+                            </h3>
+                            <p class="text-sm text-gray-600">
+                                {{ utf8.t('profile.premium_desc') ||
+                                    'Suscríbete para obtener todas las funciones premium y renovación automática.' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </transition>
 </template>
 
 <script lang="ts">
@@ -257,6 +307,8 @@ export default defineComponent({
             modalTitle: '',
             modalMessage: '',
             showStripeModal: false,
+            showSubscriptionOptions: false,
+            hasHadSubscription: false,
             formData: {
                 username: '',
                 email: '',
@@ -311,11 +363,22 @@ export default defineComponent({
                     this.loading = false;
                     return;
                 }
+                await this.checkSubscriptionHistory();
             } catch (error: any) {
                 console.error('Error checking login status:', error);
                 this.error = error.message || this.utf8.t('profile.login_error');
             } finally {
                 this.loading = false;
+            }
+        },
+        async checkSubscriptionHistory() {
+            try {
+                if (!this.currentUser || !this.currentUser.id) return;
+                
+                const response = await axios.get(`/api/stripe/check-subscription-history/${this.currentUser.id}`);
+                this.hasHadSubscription = response.data.hasHadSubscription;
+            } catch (error) {
+                console.error('Error checking subscription history:', error);
             }
         },
         resetFormData() {
@@ -467,6 +530,61 @@ export default defineComponent({
                 text: this.utf8.t('profile.subscription_cancelled_message') || 'Has cancelado el proceso de pago',
                 confirmButtonText: this.utf8.t('common.ok') || 'OK'
             });
+        },
+        async createFreeTrial() {
+            try {
+                this.showSubscriptionOptions = false;
+
+                // Mostrar indicador de carga
+                Swal.fire({
+                    title: this.utf8.t('profile.processing') || 'Procesando...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                if (!this.currentUser || !this.currentUser.id) {
+                    throw new Error('User not authenticated');
+                }
+
+                // Llamada a la API para crear suscripción gratuita
+                const response = await axios.post('/api/stripe/create-free-trial', {
+                    userId: this.currentUser.id
+                });
+
+                if (response.data && response.data.success) {
+                    // Actualizar el usuario en el frontend para reflejar el nuevo rol
+                    await this.usersComposable.refreshUser();
+
+                    // Mostrar mensaje de éxito
+                    Swal.fire({
+                        icon: 'success',
+                        title: this.utf8.t('profile.free_trial_success') || '¡Prueba activada!',
+                        text: this.utf8.t('profile.free_trial_success_message') || 'Tu cuenta ha sido actualizada a vendedor por 30 días.',
+                        confirmButtonText: this.utf8.t('common.ok') || 'OK'
+                    });
+                } else {
+                    throw new Error(response.data?.message || 'Error activando la prueba gratuita');
+                }
+            } catch (error: any) {
+                console.error('Error creating free trial:', error);
+
+                Swal.fire({
+                    icon: 'error',
+                    title: this.utf8.t('common.error') || 'Error',
+                    text: error.response?.data?.message || error.message || this.utf8.t('profile.subscription_update_error'),
+                    confirmButtonText: this.utf8.t('common.ok') || 'OK'
+                });
+            }
+        },
+        startPremiumSubscription() {
+            console.log('Starting premium subscription'); // Añadir log para depuración
+            this.showSubscriptionOptions = false;
+            this.showStripeModal = true;
+        },
+        toggleSubscriptionOption() {
+            this.showSubscriptionOptions = true;
         }
     }
 });

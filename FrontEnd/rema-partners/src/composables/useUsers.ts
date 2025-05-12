@@ -204,6 +204,26 @@ export function useUsers() {
         }
     };
 
+    /**
+     * Refresca la información del usuario actual desde el servidor
+     */
+    const refreshUser = async () => {
+        try {
+            loading.value = true;
+            error.value = null;
+            const response = await userService.isLoggedIn();
+            currentUser.value = response.data;
+            return currentUser.value;
+        } catch (err: any) {
+            console.error("Error refreshing user:", err);
+            error.value = err.response?.data?.message || "Error refreshing user data";
+            success.value = null;
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     return {
         users,
         error,
@@ -216,6 +236,7 @@ export function useUsers() {
         isLoggedIn,
         logout,
         checkUserIfExist,
-        updateProfile
+        updateProfile,
+        refreshUser
     }
 }

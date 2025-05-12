@@ -335,6 +335,13 @@ export const useutf8Store = defineStore('utf8', {
           'profile.promo_code_empty': 'Please enter a promo code',
           'profile.promo_code_error': 'Error validating promo code',
           'common.apply': 'Apply',
+          'profile.subscription_options': 'Subscription Options',
+          'profile.subscription_options_desc': 'Choose a subscription option to become a seller.',
+          'profile.free_trial': 'Free Trial',
+          'profile.free_trial_desc': 'Get access to seller features for 30 days at no cost.',
+          'profile.free_trial_success': 'Free Trial Activated',
+          'profile.free_trial_success_message': 'Your account has been upgraded to seller for 30 days.',
+          'profile.premium_desc': 'Subscribe to get all premium features.',
         },
         es: {
           'producto.add.title': 'Añadir Nuevo Producto',
@@ -656,6 +663,13 @@ export const useutf8Store = defineStore('utf8', {
           'profile.promo_code_empty': 'Por favor, introduce un código promocional',
           'profile.promo_code_error': 'Error al validar el código promocional',
           'common.apply': 'Aplicar',
+          'profile.subscription_options': 'Opciones de Suscripción',
+          'profile.subscription_options_desc': 'Elige una opción de suscripción para convertirte en vendedor.',
+          'profile.free_trial': 'Prueba Gratuita',
+          'profile.free_trial_desc': 'Obtén acceso a funciones de vendedor durante 30 días sin costo.',
+          'profile.free_trial_success': 'Prueba Gratuita Activada',
+          'profile.free_trial_success_message': 'Tu cuenta ha sido actualizada a vendedor por 30 días.',
+          'profile.premium_desc': 'Suscríbete para obtener todas las funciones premium.',
         },
         cat: {
           'producto.add.title': 'Afegir Nou Producte',
@@ -977,6 +991,13 @@ export const useutf8Store = defineStore('utf8', {
           'profile.promo_code_empty': 'Si us plau, introdueix un codi promocional',
           'profile.promo_code_error': 'Error en validar el codi promocional',
           'common.apply': 'Aplicar',
+          'profile.subscription_options': 'Opcions de Subscripció',
+          'profile.subscription_options_desc': 'Tria una opció de subscripció per convertir-te en venedor.',
+          'profile.free_trial': 'Prova Gratuïta',
+          'profile.free_trial_desc': 'Obtén accés a funcions de venedor durant 30 dies sense cost.',
+          'profile.free_trial_success': 'Prova Gratuïta Activada',
+          'profile.free_trial_success_message': 'El teu compte ha estat actualitzat a venedor per 30 dies.',
+          'profile.premium_desc': 'Subscriu-te per obtenir totes les funcions premium.',
         }
       } as Translations
     };

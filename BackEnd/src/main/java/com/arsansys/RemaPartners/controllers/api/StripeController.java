@@ -6,7 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.arsansys.RemaPartners.models.entities.RolEntity;
+import com.arsansys.RemaPartners.models.entities.Suscripcion;
 import com.arsansys.RemaPartners.models.entities.UserEntity;
+import com.arsansys.RemaPartners.models.enums.ERol;
 import com.arsansys.RemaPartners.services.UserService;
 import com.arsansys.RemaPartners.services.stripe.SuscripcionService;
 import com.stripe.Stripe;
@@ -17,7 +20,9 @@ import com.stripe.model.PromotionCodeCollection;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -222,6 +227,96 @@ public class StripeController {
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());
             error.put("stackTrace", e.getStackTrace().toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @PostMapping("/create-free-trial")
+    public ResponseEntity<Map<String, Object>> createFreeTrial(@RequestBody Map<String, Object> requestData) {
+        try {
+            String userId = (String) requestData.get("userId");
+            
+            if (userId == null || userId.isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("success", false);
+                error.put("message", "User ID is required");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            }
+            
+            // Obtener el usuario
+            UserEntity user = userService.getUserById(userId);
+            
+            if (user == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("success", false);
+                error.put("message", "User not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            }
+            
+            // Verificar si ya ha tenido alguna suscripción (activa o no)
+            List<Suscripcion> todasLasSuscripciones = suscripcionService.getSuscripcionesByIdUsuario(userId);
+            
+            if (!todasLasSuscripciones.isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("success", false);
+                error.put("message", "Ya has utilizado tu prueba gratuita. Por favor, elige la suscripción premium.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            }
+            
+            // Crear nueva suscripción
+            Suscripcion suscripcion = suscripcionService.createSuscripcion(userId);
+            
+            // Actualizar rol del usuario a VENDEDOR
+            RolEntity rolVendedor = new RolEntity();
+            rolVendedor.setName(ERol.VENDEDOR);
+            user.setRol(rolVendedor);
+            userService.updateUser(user);
+            
+            // Preparar respuesta
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Free trial activated successfully");
+            response.put("subscription", suscripcion);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @GetMapping("/check-subscription-history/{userId}")
+    public ResponseEntity<Map<String, Object>> checkSubscriptionHistory(@PathVariable String userId) {
+        try {
+            // Verificar si el usuario existe
+            UserEntity user = userService.getUserById(userId);
+            
+            if (user == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("success", false);
+                error.put("message", "User not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            }
+            
+            // Verificar si ha tenido alguna suscripción
+            List<Suscripcion> todasLasSuscripciones = suscripcionService.getSuscripcionesByIdUsuario(userId);
+            boolean hasHadSubscription = !todasLasSuscripciones.isEmpty();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("hasHadSubscription", hasHadSubscription);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
