@@ -62,7 +62,7 @@
         <!-- Message input -->
         <div class="p-3 bg-white border-t border-gray-200">
             <form @submit.prevent="sendMessage" class="flex">
-                <input v-model="newMessage" type="text"
+                <input ref="messageInput" v-model="newMessage" type="text"
                     class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
                     :placeholder="t('chat.typePlaceholder')" :disabled="isLoading" />
                 <button type="button" @click="sendMessage"
@@ -172,6 +172,9 @@ export default defineComponent({
                 }
 
                 this.setupAutoRefresh();
+
+                // Focus the input field after chat is initialized
+                this.focusInput();
             } catch (err) {
                 console.error('Error initializing chat:', err);
                 this.error = (err instanceof Error ? err.message : 'Error loading chat messages');
@@ -180,25 +183,34 @@ export default defineComponent({
                 this.scrollToBottom();
             }
         },
+        focusInput() {
+            setTimeout(() => {
+                if (this.$refs.messageInput) {
+                    (this.$refs.messageInput as HTMLInputElement).focus();
+                }
+            }, 100);
+        },
         setupAutoRefresh() {
             if (this.refreshInterval) {
                 clearInterval(this.refreshInterval);
             }
 
             this.refreshInterval = window.setInterval(async () => {
-                if (this.currentChat?.id) {
+                if (this.currentChat?.id && !this.newMessage.trim()) {
                     try {
                         const response = await this.chatComposable.getChatById(this.currentChat.id);
 
                         if (response && response.mensajes &&
                             (!this.currentChat.mensajes || response.mensajes.length > this.currentChat.mensajes.length)) {
                             this.chat = response;
+                            this.focusInput();
                         }
                     } catch (err) {
                         console.error('Error al actualizar mensajes:', err);
                     } finally {
                         this.loading = false;
                         await this.scrollToBottom();
+                        await this.focusInput();
                     }
                 }
             }, 10000);
@@ -218,6 +230,9 @@ export default defineComponent({
 
                 this.chat = updatedChat;
                 this.newMessage = '';
+
+                // Focus back on input after sending
+                this.focusInput();
             } catch (err) {
                 console.error('Error enviando mensaje:', err);
                 this.error = (err instanceof Error ? err.message : 'Error sending message');
