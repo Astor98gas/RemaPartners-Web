@@ -64,9 +64,12 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(config -> config.disable())
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/login", "/logout", "/", "/api", "/createUser").permitAll();
-                    // auth.anyRequest().authenticated();
-                    auth.anyRequest().permitAll();
+                    auth.requestMatchers("/login", "/logout", "/", "/api", "/createUser", "/vendedor/producto/getAll",
+                            "/vendedor/producto/getById/*", "/api/binary-image/*",
+                            "/api/images/*", "resorces/static/**", "/api/stripe/**")
+                            .permitAll();
+                    auth.anyRequest().authenticated();
+                    // auth.anyRequest().permitAll();
                 })
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
