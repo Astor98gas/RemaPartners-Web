@@ -67,7 +67,14 @@ public class ProductoController {
     @GetMapping("vendedor/producto/getById/{id}")
     public ResponseEntity<?> getProductoById(@PathVariable String id) {
         try {
-            return ResponseEntity.ok(productoService.getProductoById(id));
+            ProductoEntity producto = productoService.getProductoById(id);
+            Long visitas = producto.getVisitas();
+            if (visitas == null) {
+                visitas = 0L;
+            }
+            producto.setVisitas(visitas + 1);
+            productoService.updateProducto(producto);
+            return ResponseEntity.ok(producto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Error retrieving producto by ID: " + e.getMessage());

@@ -91,4 +91,8 @@ public class ProductoEntity {
     @NotBlank
     private CampoCategoriaEntity[] camposCategoria;
 
+    @NotBlank
+    @Default
+    private Long visitas = 0L;
+
 }
