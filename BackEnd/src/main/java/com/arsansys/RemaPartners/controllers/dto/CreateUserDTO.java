@@ -25,6 +25,6 @@ public class CreateUserDTO {
 
     private String rol;
 
-    private Set<String> googleToken;
+    private String googleToken;
 
 }

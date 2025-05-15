@@ -1,13 +1,8 @@
 package com.arsansys.RemaPartners.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,15 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.arsansys.RemaPartners.controllers.dto.CreateUserDTO;
 import com.arsansys.RemaPartners.models.entities.RolEntity;
-import com.arsansys.RemaPartners.models.entities.Suscripcion;
 import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.models.enums.ERol;
-import com.arsansys.RemaPartners.models.jwt.JwtRequest;
 import com.arsansys.RemaPartners.models.jwt.JwtResponse;
 import com.arsansys.RemaPartners.security.jwt.JwtUtils;
 import com.arsansys.RemaPartners.services.UserService;
 import com.arsansys.RemaPartners.services.servicesImpl.UserDetailsServiceImpl;
-import com.arsansys.RemaPartners.services.stripe.SuscripcionService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,12 +39,6 @@ public class JwtController {
 
     @Autowired
     private JwtUtils jwtUtil;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private SuscripcionService suscripcionService;
 
     @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO createUserDTO, HttpServletResponse response) {
@@ -78,9 +64,7 @@ public class JwtController {
                     .username(createUserDTO.getUsername())
                     .password(createUserDTO.getPassword()) // El servicio se encargará de codificarlo
                     .email(createUserDTO.getEmail())
-                    // .nombre(createUserDTO.getNom())
-                    // .apellidos(createUserDTO.getCognoms())
-                    // .dni(createUserDTO.getDni())
+                    .googleToken(createUserDTO.getGoogleToken())
                     .rol(rolEntity)
                     .build();
 
