@@ -80,6 +80,18 @@ const router = createRouter({
             component: () => import('@/views/chat/ChatsListView.vue'),
             meta: { requiresAuth: true, roles: ['COMPRADOR', 'ADMIN', 'VENDEDOR'] }
         },
+        {
+            path: '/dashboard',
+            name: 'dashboard',
+            component: () => import('@/views/dashboard/DashboardView.vue'),
+            meta: { requiresAuth: true, roles: ['ADMIN', 'VENDEDOR', 'TRABAJADOR'] }
+        },
+        {
+            path: '/dashboard/producto/:id',
+            name: 'producto-estadisticas',
+            component: () => import('@/views/dashboard/ProductoEstadisticasView.vue'),
+            meta: { requiresAuth: true, roles: ['ADMIN', 'VENDEDOR', 'TRABAJADOR'] }
+        },
     ],
 })
 

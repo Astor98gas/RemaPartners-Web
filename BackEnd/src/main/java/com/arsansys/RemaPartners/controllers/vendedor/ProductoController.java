@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.arsansys.RemaPartners.models.entities.ProductoEntity;
 import com.arsansys.RemaPartners.services.ProductoService;
+import com.arsansys.RemaPartners.services.ProductoVisitaService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -18,6 +19,9 @@ public class ProductoController {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private ProductoVisitaService productoVisitaService;
 
     @PostMapping("vendedor/producto/create")
     public ResponseEntity<?> createProducto(@RequestBody ProductoEntity productoEntity) {
@@ -74,6 +78,10 @@ public class ProductoController {
             }
             producto.setVisitas(visitas + 1);
             productoService.updateProducto(producto);
+
+            // Registrar la visita en las estadísticas mensuales
+            productoVisitaService.registrarVisita(id, producto.getIdUsuario());
+
             return ResponseEntity.ok(producto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

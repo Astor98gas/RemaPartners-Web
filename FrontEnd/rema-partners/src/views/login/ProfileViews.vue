@@ -61,14 +61,14 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.new_password')
-                                        }}</label>
+                                    }}</label>
                                     <input type="password" v-model="formData.password"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <p class="text-xs text-gray-500 mt-1">{{ utf8.t('profile.password_note') }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.confirm_password')
-                                        }}</label>
+                                    }}</label>
                                     <input type="password" v-model="formData.confirmPassword"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
@@ -95,6 +95,10 @@
                                     <router-link to="/producto/create"
                                         class="text-blue-600 hover:text-blue-800 block py-1">
                                         {{ utf8.t('profile.add_product') }}
+                                    </router-link>
+                                    <router-link v-if="isVendedor || isAdmin || isTrabajador" to="/dashboard"
+                                        class="text-blue-600 hover:text-blue-800 block py-1">
+                                        Dashboard - Estadísticas de Visitas
                                     </router-link>
                                 </div>
 
@@ -248,7 +252,7 @@
                     </p>
 
                     <div class="space-y-4">
-                        <div v-if="!hasHadSubscription" 
+                        <div v-if="!hasHadSubscription"
                             class="border border-blue-200 rounded-lg p-4 hover:bg-blue-50 transition cursor-pointer"
                             @click="createFreeTrial">
                             <h3 class="font-semibold text-blue-800 mb-1">
@@ -374,7 +378,7 @@ export default defineComponent({
         async checkSubscriptionHistory() {
             try {
                 if (!this.currentUser || !this.currentUser.id) return;
-                
+
                 const response = await axios.get(`/api/stripe/check-subscription-history/${this.currentUser.id}`);
                 this.hasHadSubscription = response.data.hasHadSubscription;
             } catch (error) {
@@ -506,16 +510,16 @@ export default defineComponent({
                     console.error('No hay usuario autenticado o falta el ID de usuario');
                     throw new Error('Usuario no identificado');
                 }
-                
+
                 // Obtener el token de auth
                 const token = document.cookie
                     .split('; ')
                     .find(row => row.startsWith('token='))
                     ?.split('=')[1];
-                    
+
                 console.log('ID del usuario:', this.currentUser.id);
                 console.log('Token disponible:', !!token);
-                
+
                 // Intentar con axios directamente con headers mejorados
                 const response = await axios.post('/api/stripe/update-user-payment', {
                     userId: this.currentUser.id,
@@ -527,17 +531,17 @@ export default defineComponent({
                         'Authorization': token ? `Bearer ${token}` : '',
                     }
                 });
-                
+
                 console.log('Respuesta del servidor:', response.data);
-                
+
                 // El resto del código sigue igual
                 if (response.data && response.data.success) {
                     // Actualizar el usuario en el frontend para reflejar el nuevo rol
                     await this.usersComposable.refreshUser();
-                    
+
                     // Cerrar el modal de carga
                     Swal.close();
-                    
+
                     // Mostrar mensaje de éxito
                     Swal.fire({
                         icon: 'success',
@@ -551,10 +555,10 @@ export default defineComponent({
             } catch (error: any) {
                 console.error('Error al actualizar estado premium:', error);
                 console.error('Detalles del error:', error.response?.data || 'No hay detalles adicionales');
-                
+
                 // Cerrar el modal de carga si está abierto
                 Swal.close();
-                
+
                 Swal.fire({
                     icon: 'error',
                     title: this.utf8.t('common.error') || 'Error',

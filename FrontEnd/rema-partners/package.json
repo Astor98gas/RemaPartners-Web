@@ -21,6 +21,7 @@
     "@vue-stripe/vue-stripe": "^4.5.0",
     "@vueform/multiselect": "^2.6.11",
     "axios": "^1.8.4",
+    "chart.js": "^4.4.9",
     "js-cookies": "^1.0.4",
     "leaflet": "^1.9.4",
     "leaflet-geosearch": "^4.2.0",
