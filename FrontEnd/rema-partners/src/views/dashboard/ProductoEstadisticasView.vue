@@ -34,9 +34,9 @@
                 <!-- Info básica -->
                 <div class="bg-white overflow-hidden shadow rounded-lg mb-6">
                     <div class="px-4 py-5 sm:p-6">
-                        <div class="flex flex-col md:flex-row">
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                             <!-- Imagen -->
-                            <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                            <div class="lg:col-span-3 flex justify-center lg:justify-start">
                                 <img v-if="productoInfo?.imagenes?.length > 0" :src="productoInfo.imagenes[0]"
                                     :alt="productoInfo.titulo"
                                     class="w-40 h-40 object-cover rounded-lg border border-gray-200"
@@ -48,7 +48,7 @@
                             </div>
 
                             <!-- Detalles -->
-                            <div class="flex-1">
+                            <div class="lg:col-span-6">
                                 <h4 class="text-lg font-semibold text-gray-900 mb-2">
                                     {{ productoInfo?.titulo || t('common.notAvailable') }}
                                 </h4>
@@ -74,8 +74,10 @@
                             </div>
 
                             <!-- Estadísticas principales -->
-                            <EstadisticasCard :titulo="t('estadisticas.totalVisits')"
-                                :valor="estadisticas?.totalVisitas || 0" tipo="visitas" />
+                            <div class="lg:col-span-3 flex justify-center items-center">
+                                <EstadisticasCard :titulo="t('estadisticas.totalVisits')"
+                                    :valor="estadisticas?.totalVisitas || 0" tipo="visitas" class="w-full" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -119,19 +121,22 @@
                                         {{ t('estadisticas.noData') }}
                                     </td>
                                 </tr>
-                                <tr v-for="(visita, index) in visitasDetalle" :key="index">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="text-sm text-gray-900">{{ getNombreMes(visita.mes) }}</span>
+                                <tr v-for="(visita, index) in visitasDetalle" :key="index"
+                                    class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900">{{ getNombreMes(visita.mes) }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="text-sm text-gray-900">{{ visita.año }}</span>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900">{{ visita.año }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="text-sm font-medium text-indigo-600">{{ visita.cantidadVisitas
-                                            }}</span>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm font-medium text-indigo-600">
+                                            {{ visita.cantidadVisitas }}
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ formatDate(visita.ultimaActualizacion) }}
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-500">{{ formatDate(visita.ultimaActualizacion) }}
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -171,10 +176,20 @@ export default {
         const estadisticas = ref(null);
         const visitasDetalle = ref([]);
 
-        const meses = [
-            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        // Meses traducidos
+        const mesesTraducidos = [
+            t('months.january'), t('months.february'), t('months.march'),
+            t('months.april'), t('months.may'), t('months.june'),
+            t('months.july'), t('months.august'), t('months.september'),
+            t('months.october'), t('months.november'), t('months.december')
         ];
+
+        const getNombreMes = (numeroMes) => {
+            if (numeroMes >= 1 && numeroMes <= 12) {
+                return mesesTraducidos[numeroMes - 1];
+            }
+            return t('common.unknown');
+        };
 
         // Función para cargar los datos del producto y sus estadísticas
         const loadProductoStats = async () => {
@@ -267,13 +282,6 @@ export default {
             if (!dateString) return '-';
             const date = new Date(dateString);
             return date.toLocaleString('es-ES');
-        };
-
-        const getNombreMes = (numeroMes) => {
-            if (numeroMes >= 1 && numeroMes <= 12) {
-                return meses[numeroMes - 1];
-            }
-            return 'Desconocido';
         };
 
         // Cargar datos al montar el componente
