@@ -6,11 +6,34 @@
                 <h3 class="text-2xl leading-6 font-medium text-gray-900">
                     {{ t('dashboard.title') }}
                 </h3>
-                <div class="mt-3 sm:mt-0 sm:ml-4">
+                <div class="mt-3 sm:mt-0 flex items-center space-x-3">
+                    <!-- Selector de año -->
                     <select v-model="selectedYear" @change="loadDashboardData"
                         class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                         <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
                     </select>
+
+                    <!-- Botón para recargar dashboard -->
+                    <button @click="refreshDashboard"
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        {{ t('dashboard.refresh') }}
+                    </button>
+
+                    <!-- Botón para ir al perfil -->
+                    <button @click="goToProfile"
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        {{ t('dashboard.profile') }}
+                    </button>
                 </div>
             </div>
 
@@ -216,6 +239,14 @@ export default {
             router.push({ name: 'producto-estadisticas', params: { id: productId } });
         };
 
+        const refreshDashboard = () => {
+            loadDashboardData();
+        };
+
+        const goToProfile = () => {
+            router.push({ name: 'profile' });
+        };
+
         // Cargar datos al montar el componente
         onMounted(() => {
             loadDashboardData();
@@ -236,6 +267,8 @@ export default {
             prepareChartData,
             calculateMonthlyAverage,
             goToProductDetail,
+            refreshDashboard,
+            goToProfile,
             t
         };
     }
