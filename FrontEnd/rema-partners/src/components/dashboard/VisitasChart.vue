@@ -10,6 +10,7 @@
 <script>
 import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue';
 import Chart from 'chart.js/auto';
+import { useutf8Store } from '@/stores/counter';
 
 export default {
     name: 'VisitasChart',
@@ -33,16 +34,22 @@ export default {
         },
         etiquetas: {
             type: Array,
-            default: () => [
-                'Enero', 'Febrero', 'Marzo', 'Abril',
-                'Mayo', 'Junio', 'Julio', 'Agosto',
-                'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-            ]
+            default: null
         }
     },
     setup(props) {
         const chartCanvas = ref(null);
         const chartInstance = ref(null);
+        const store = useutf8Store();
+        const t = (key) => store.t(key);
+
+        // Obtener las traducciones de los meses
+        const mesesTraducidos = [
+            t('months.january'), t('months.february'), t('months.march'),
+            t('months.april'), t('months.may'), t('months.june'),
+            t('months.july'), t('months.august'), t('months.september'),
+            t('months.october'), t('months.november'), t('months.december')
+        ];
 
         // Altura fija (corregida para que funcione con Tailwind)
         const containerClass = computed(() => `h-[${props.altura}px] relative`);
@@ -100,7 +107,7 @@ export default {
                         callbacks: {
                             label: function (context) {
                                 const label = context.dataset.label || '';
-                                return `${label}: ${context.raw} visitas`;
+                                return `${label}: ${context.raw} ${t('dashboard.visits')}`;
                             }
                         }
                     }
@@ -115,9 +122,9 @@ export default {
                     chartInstance.value = new Chart(ctx, {
                         type: props.tipoGrafico,
                         data: {
-                            labels: props.etiquetas,
+                            labels: props.etiquetas || mesesTraducidos,
                             datasets: [{
-                                label: 'Visitas',
+                                label: t('dashboard.visits'),
                                 data: Array(12).fill(0),
                                 backgroundColor: 'rgba(79, 70, 229, 0.6)',
                                 borderColor: 'rgba(79, 70, 229, 1)',
@@ -134,7 +141,7 @@ export default {
                 chartInstance.value = new Chart(ctx, {
                     type: props.tipoGrafico,
                     data: {
-                        labels: props.datos.labels || props.etiquetas,
+                        labels: props.datos.labels || props.etiquetas || mesesTraducidos,
                         datasets: props.datos.datasets.map(dataset => ({
                             ...dataset,
                             ...configs[props.tipoGrafico]
@@ -149,9 +156,9 @@ export default {
             }
         };
 
-        // Recrear el gráfico cuando cambian los datos
-        watch(() => props.datos, () => {
-            console.log("Datos actualizados, recreando gráfico");
+        // Recrear el gráfico cuando cambian los datos o el idioma
+        watch([() => props.datos, () => store.getCurrentLanguage], () => {
+            console.log("Datos o idioma actualizados, recreando gráfico");
             // Usar setTimeout para asegurar que el DOM esté actualizado
             setTimeout(() => {
                 createChart();

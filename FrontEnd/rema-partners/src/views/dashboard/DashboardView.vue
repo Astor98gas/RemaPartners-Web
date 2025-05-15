@@ -117,14 +117,14 @@ export default {
         const selectedYear = ref(new Date().getFullYear());
         const availableYears = ref([]);
 
-        // Generar años disponibles (actual y 2 anteriores)
-        for (let i = 0; i < 3; i++) {
-            availableYears.value.push(new Date().getFullYear() - i);
-        }
+        availableYears.value.push(new Date().getFullYear());
 
+        // Replace hardcoded months with translations
         const meses = [
-            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            t('months.january'), t('months.february'), t('months.march'),
+            t('months.april'), t('months.may'), t('months.june'),
+            t('months.july'), t('months.august'), t('months.september'),
+            t('months.october'), t('months.november'), t('months.december')
         ];
 
         // Función para cargar los datos del dashboard
