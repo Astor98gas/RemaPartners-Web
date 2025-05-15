@@ -61,14 +61,14 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.new_password')
-                                    }}</label>
+                                        }}</label>
                                     <input type="password" v-model="formData.password"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <p class="text-xs text-gray-500 mt-1">{{ utf8.t('profile.password_note') }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.confirm_password')
-                                    }}</label>
+                                        }}</label>
                                     <input type="password" v-model="formData.confirmPassword"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
@@ -98,7 +98,7 @@
                                     </router-link>
                                     <router-link v-if="isVendedor || isAdmin || isTrabajador" to="/dashboard"
                                         class="text-blue-600 hover:text-blue-800 block py-1">
-                                        Dashboard - Estadísticas de Visitas
+                                        {{ utf8.t('profile.dashboard') }}
                                     </router-link>
                                 </div>
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.arsansys.RemaPartners.models.entities.ProductoEntity;
@@ -49,8 +50,15 @@ public class DashboardController {
      */
     @GetMapping("/stats")
     @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR', 'TRABAJADOR')")
-    public ResponseEntity<?> getDashboardStats() {
+    public ResponseEntity<?> getDashboardStats(@RequestParam(required = false) Integer year) {
         try {
+            // Si no se proporciona un año, usar el año actual
+            if (year == null) {
+                year = LocalDateTime.now().getYear();
+            }
+
+            System.out.println("Año solicitado: " + year); // Depuración
+
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
             UserEntity user = userService.getUserByUsername(username);
@@ -86,13 +94,9 @@ public class DashboardController {
             }
             stats.put("totalVisitas", totalVisitas);
 
-            // Obtener año y mes actual
-            LocalDateTime now = LocalDateTime.now();
-            int año = now.getYear();
-            int mes = now.getMonthValue();
-
-            // Estadísticas de visitas por mes para el año actual
-            Map<String, Long> visitasPorMes = productoVisitaService.obtenerEstadisticasVisitasPorMes(user.getId(), año);
+            // Estadísticas de visitas por mes para el año proporcionado
+            Map<String, Long> visitasPorMes = productoVisitaService.obtenerEstadisticasVisitasPorMes(user.getId(),
+                    year);
             stats.put("visitasPorMes", visitasPorMes);
 
             // Productos más visitados (top 5)

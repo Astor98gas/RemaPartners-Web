@@ -3,16 +3,21 @@ import axios from 'axios';
 export const dashboardService = {
     /**
      * Obtiene las estadísticas generales del dashboard
+     * @param {number} year - Año a consultar
      * @returns {Promise} Promesa con los datos del dashboard
      */
-    getStats: async () => {
+    getStats: async (year: number) => {
         try {
-            const response = await axios.get('/dashboard/stats', {
+            // Asegurarse de que el año se envía como un parámetro de consulta
+            const response = await axios.get(`/dashboard/stats`, {
+                params: {
+                    year: year  // Esto asegura que se envíe correctamente como ?year=2023
+                },
                 withCredentials: true
             });
             return response.data;
         } catch (error) {
-            console.error('Error obteniendo estadísticas del dashboard:', error);
+            console.error('Error al obtener estadísticas del dashboard:', error);
             throw error;
         }
     },

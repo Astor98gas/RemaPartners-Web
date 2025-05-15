@@ -4,7 +4,7 @@
             <!-- Encabezado del Dashboard -->
             <div class="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
                 <h3 class="text-2xl leading-6 font-medium text-gray-900">
-                    Dashboard - Estadísticas de Visitas
+                    {{ t('dashboard.title') }}
                 </h3>
                 <div class="mt-3 sm:mt-0 sm:ml-4">
                     <select v-model="selectedYear" @change="loadDashboardData"
@@ -27,28 +27,29 @@
                 <!-- Tarjetas de resumen -->
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     <!-- Total de Productos -->
-                    <EstadisticasCard titulo="Total de Productos" :valor="dashboardData.totalProductos || 0"
+                    <EstadisticasCard :titulo="t('dashboard.totalProducts')" :valor="dashboardData.totalProductos || 0"
                         tipo="productos" />
 
                     <!-- Total de Visitas -->
-                    <EstadisticasCard titulo="Total de Visitas" :valor="dashboardData.totalVisitas || 0"
+                    <EstadisticasCard :titulo="t('dashboard.totalVisits')" :valor="dashboardData.totalVisitas || 0"
                         tipo="visitas" />
 
                     <!-- Promedio de Visitas Mensual -->
-                    <EstadisticasCard titulo="Promedio Mensual" :valor="calculateMonthlyAverage()" tipo="promedio" />
+                    <EstadisticasCard :titulo="t('dashboard.monthlyAverage')" :valor="calculateMonthlyAverage()"
+                        tipo="promedio" />
                 </div>
 
                 <!-- Gráfico de visitas mensuales -->
                 <div class="mt-8">
-                    <VisitasChart titulo="Visitas Mensuales ({{ selectedYear }})" :datos="prepareChartData()"
-                        tipoGrafico="bar" :altura="300" />
+                    <VisitasChart :titulo="t('dashboard.monthlyVisits') + ' (' + selectedYear + ')'"
+                        :datos="prepareChartData()" tipoGrafico="bar" :altura="300" />
                 </div>
 
                 <!-- Tabla de productos más visitados -->
                 <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-md">
                     <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
                         <h3 class="text-lg leading-6 font-medium text-gray-900">
-                            Productos más visitados
+                            {{ t('dashboard.topProducts') }}
                         </h3>
                     </div>
                     <ul class="divide-y divide-gray-200">
@@ -70,14 +71,14 @@
                                     </div>
                                     <button @click="goToProductDetail(producto.id)"
                                         class="ml-4 inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                        Ver Producto
+                                        {{ t('dashboard.viewProduct') }}
                                     </button>
                                 </div>
                             </div>
                         </li>
                         <li v-if="!dashboardData.productosTopVisitas || dashboardData.productosTopVisitas.length === 0"
                             class="px-4 py-4 sm:px-6">
-                            <div class="text-center text-gray-500">No hay productos con visitas registradas</div>
+                            <div class="text-center text-gray-500">{{ t('dashboard.noProducts') }}</div>
                         </li>
                     </ul>
                 </div>
@@ -87,11 +88,12 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import dashboardService from '@/services/dashboardService';
 import EstadisticasCard from '@/components/dashboard/EstadisticasCard.vue';
 import VisitasChart from '@/components/dashboard/VisitasChart.vue';
+import { useutf8Store } from '@/stores/counter';
 
 export default {
     name: 'DashboardView',
@@ -109,6 +111,8 @@ export default {
             visitasPorMes: {},
             productosTopVisitas: []
         });
+        const store = useutf8Store();
+        const t = (key) => store.t(key);
 
         const selectedYear = ref(new Date().getFullYear());
         const availableYears = ref([]);
@@ -129,7 +133,8 @@ export default {
             error.value = null;
 
             try {
-                const response = await dashboardService.getStats();
+                // Modificar para enviar el año seleccionado
+                const response = await dashboardService.getStats(selectedYear.value);
 
                 if (response) {
                     dashboardData.value = response;
@@ -144,15 +149,49 @@ export default {
 
         // Preparar datos para el gráfico
         const prepareChartData = () => {
-            const visitasPorMes = dashboardData.value.visitasPorMes || {};
-            const dataValues = meses.map((_, index) => {
-                const mesKey = (index + 1).toString();
-                return visitasPorMes[mesKey] || 0;
-            });
+            // Verificar si hay datos para no causar errores
+            if (!dashboardData.value || !dashboardData.value.visitasPorMes) {
+                console.warn("No hay datos de visitas por mes disponibles");
+                return {
+                    labels: meses,
+                    datasets: [{
+                        label: t('dashboard.visits'),
+                        data: Array(12).fill(0),
+                        backgroundColor: 'rgba(79, 70, 229, 0.6)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1
+                    }]
+                };
+            }
+
+            const visitasPorMes = dashboardData.value.visitasPorMes;
+            console.log("Datos recibidos visitasPorMes:", visitasPorMes); // Debugging
+
+            // Crear un array con 12 posiciones (una para cada mes)
+            const dataValues = Array(12).fill(0);
+
+            // Procesar los datos según su formato
+            if (typeof visitasPorMes === 'object' && !Array.isArray(visitasPorMes)) {
+                // Si es un objeto con claves como {"1": 10, "2": 20}
+                Object.keys(visitasPorMes).forEach(mes => {
+                    const mesIndex = parseInt(mes) - 1;
+                    if (mesIndex >= 0 && mesIndex < 12) {
+                        dataValues[mesIndex] = visitasPorMes[mes];
+                    }
+                });
+            } else if (Array.isArray(visitasPorMes)) {
+                // Si es un array de objetos como [{mes: 1, cantidadVisitas: 10}]
+                visitasPorMes.forEach(visita => {
+                    if (visita.mes && visita.mes >= 1 && visita.mes <= 12) {
+                        dataValues[visita.mes - 1] = visita.cantidadVisitas;
+                    }
+                });
+            }
 
             return {
+                labels: meses,
                 datasets: [{
-                    label: 'Visitas',
+                    label: t('dashboard.visits'),
                     data: dataValues,
                     backgroundColor: 'rgba(79, 70, 229, 0.6)',
                     borderColor: 'rgba(79, 70, 229, 1)',
@@ -182,6 +221,11 @@ export default {
             loadDashboardData();
         });
 
+        // Agregar esta parte después de onMounted
+        watch(selectedYear, (newYear) => {
+            loadDashboardData();
+        });
+
         return {
             loading,
             error,
@@ -191,7 +235,8 @@ export default {
             loadDashboardData,
             prepareChartData,
             calculateMonthlyAverage,
-            goToProductDetail
+            goToProductDetail,
+            t
         };
     }
 };

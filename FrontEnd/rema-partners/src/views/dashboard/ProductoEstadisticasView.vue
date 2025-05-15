@@ -1,7 +1,7 @@
 <template>
     <div class="min-h-screen bg-gray-100 py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Encabezado del Dashboard -->
+            <!-- Encabezado -->
             <div class="flex items-center justify-between pb-5 border-b border-gray-200">
                 <div>
                     <router-link to="/dashboard"
@@ -9,10 +9,10 @@
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
-                        Volver al Dashboard
+                        {{ t('estadisticas.backToDashboard') }}
                     </router-link>
                     <h3 class="text-2xl leading-6 font-medium text-gray-900">
-                        Estadísticas del Producto
+                        {{ t('estadisticas.title') }}
                     </h3>
                     <p v-if="productoInfo" class="mt-1 text-sm text-gray-500">
                         {{ productoInfo.titulo }}
@@ -20,76 +20,75 @@
                 </div>
             </div>
 
-            <!-- Contenido principal -->
+            <!-- Loading state -->
             <div v-if="loading" class="mt-6 flex justify-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
             </div>
 
+            <!-- Error state -->
             <div v-else-if="error" class="mt-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
                 <p>{{ error }}</p>
             </div>
 
             <div v-else class="mt-6">
-                <!-- Info básica del producto -->
+                <!-- Info básica -->
                 <div class="bg-white overflow-hidden shadow rounded-lg mb-6">
                     <div class="px-4 py-5 sm:p-6">
                         <div class="flex flex-col md:flex-row">
-                            <!-- Imagen del producto -->
+                            <!-- Imagen -->
                             <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
-                                <img v-if="productoInfo && productoInfo.imagenes && productoInfo.imagenes.length > 0"
-                                    :src="'/api/images/' + productoInfo.imagenes[0]" alt="Imagen del producto"
-                                    class="w-40 h-40 object-cover rounded-lg border border-gray-200">
+                                <img v-if="productoInfo?.imagenes?.length > 0" :src="productoInfo.imagenes[0]"
+                                    :alt="productoInfo.titulo"
+                                    class="w-40 h-40 object-cover rounded-lg border border-gray-200"
+                                    @error="onImageError">
                                 <div v-else
                                     class="w-40 h-40 flex items-center justify-center bg-gray-200 rounded-lg text-gray-400">
-                                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
+                                    <!-- SVG placeholder -->
                                 </div>
                             </div>
 
-                            <!-- Información del producto -->
+                            <!-- Detalles -->
                             <div class="flex-1">
-                                <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ productoInfo?.titulo ||
-                                    'Producto' }}</h4>
-
+                                <h4 class="text-lg font-semibold text-gray-900 mb-2">
+                                    {{ productoInfo?.titulo || t('common.notAvailable') }}
+                                </h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <p class="text-sm text-gray-500">Marca</p>
+                                        <p class="text-sm text-gray-500">{{ t('estadisticas.brand') }}</p>
                                         <p class="font-medium">{{ productoInfo?.marca || '-' }}</p>
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-500">Modelo</p>
+                                        <p class="text-sm text-gray-500">{{ t('estadisticas.model') }}</p>
                                         <p class="font-medium">{{ productoInfo?.modelo || '-' }}</p>
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-500">Estado</p>
+                                        <p class="text-sm text-gray-500">{{ t('estadisticas.condition') }}</p>
                                         <p class="font-medium">{{ productoInfo?.estado || '-' }}</p>
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-500">Precio</p>
-                                        <p class="font-medium">
-                                            {{ formatPrecio(productoInfo?.precioCentimos, productoInfo?.moneda) }}
-                                        </p>
+                                        <p class="text-sm text-gray-500">{{ t('estadisticas.price') }}</p>
+                                        <p class="font-medium">{{ formatPrecio(productoInfo?.precioCentimos,
+                                            productoInfo?.moneda) }}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Estadísticas principales -->
-                            <EstadisticasCard titulo="Visitas Totales" :valor="estadisticas?.totalVisitas || 0"
-                                tipo="visitas" />
+                            <EstadisticasCard :titulo="t('estadisticas.totalVisits')"
+                                :valor="estadisticas?.totalVisitas || 0" tipo="visitas" />
                         </div>
                     </div>
                 </div>
 
-                <!-- Gráfico de visitas por mes -->
-                <VisitasChart titulo="Visitas por Mes" :datos="prepareChartData()" tipoGrafico="bar" :altura="300" />
+                <!-- Gráfico de visitas -->
+                <VisitasChart :titulo="t('estadisticas.monthlyVisits')" :datos="prepareChartData()" tipoGrafico="bar"
+                    :altura="300" />
 
-                <!-- Tabla de visitas mensuales -->
+                <!-- Tabla de visitas -->
                 <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-md mb-6">
                     <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
                         <h3 class="text-lg leading-6 font-medium text-gray-900">
-                            Detalles de Visitas por Mes
+                            {{ t('estadisticas.visitDetails') }}
                         </h3>
                     </div>
                     <div class="overflow-x-auto">
@@ -98,23 +97,28 @@
                                 <tr>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Mes
+                                        {{ t('estadisticas.table.month') }}
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Año
+                                        {{ t('estadisticas.table.year') }}
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Visitas
+                                        {{ t('estadisticas.table.visits') }}
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Última Actualización
+                                        {{ t('estadisticas.table.lastUpdate') }}
                                     </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
+                                <tr v-if="!visitasDetalle || visitasDetalle.length === 0">
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+                                        {{ t('estadisticas.noData') }}
+                                    </td>
+                                </tr>
                                 <tr v-for="(visita, index) in visitasDetalle" :key="index">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="text-sm text-gray-900">{{ getNombreMes(visita.mes) }}</span>
@@ -124,15 +128,10 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="text-sm font-medium text-indigo-600">{{ visita.cantidadVisitas
-                                        }}</span>
+                                            }}</span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ formatDate(visita.ultimaActualizacion) }}
-                                    </td>
-                                </tr>
-                                <tr v-if="!visitasDetalle || visitasDetalle.length === 0">
-                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
-                                        No hay datos de visitas registrados
                                     </td>
                                 </tr>
                             </tbody>
@@ -147,6 +146,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useutf8Store } from '@/stores/counter';
 import dashboardService from '@/services/dashboardService';
 import EstadisticasCard from '@/components/dashboard/EstadisticasCard.vue';
 import VisitasChart from '@/components/dashboard/VisitasChart.vue';
@@ -158,6 +158,9 @@ export default {
         VisitasChart
     },
     setup() {
+        const store = useutf8Store();
+        const t = (key) => store.t(key);
+
         const route = useRoute();
         const router = useRouter();
         const productoId = route.params.id;
@@ -285,6 +288,7 @@ export default {
         });
 
         return {
+            t,
             loading,
             error,
             productoInfo,

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue';
 import Chart from 'chart.js/auto';
 
 export default {
@@ -44,15 +44,21 @@ export default {
         const chartCanvas = ref(null);
         const chartInstance = ref(null);
 
-        // Aseguramos una altura fija utilizando el valor proporcionado
-        const containerClass = `h-[${props.altura}px] relative`;
+        // Altura fija (corregida para que funcione con Tailwind)
+        const containerClass = computed(() => `h-[${props.altura}px] relative`);
 
         const createChart = () => {
-            if (!chartCanvas.value) return;
+            console.log("Datos recibidos en VisitasChart:", props.datos);
+
+            if (!chartCanvas.value) {
+                console.warn("Canvas no encontrado");
+                return;
+            }
 
             // Limpiar gráfico anterior si existe
             if (chartInstance.value) {
                 chartInstance.value.destroy();
+                chartInstance.value = null;
             }
 
             const ctx = chartCanvas.value.getContext('2d');
@@ -101,32 +107,64 @@ export default {
                 }
             };
 
-            // Crear el gráfico
-            chartInstance.value = new Chart(ctx, {
-                type: props.tipoGrafico,
-                data: {
-                    labels: props.etiquetas,
-                    datasets: props.datos.datasets || [{
-                        label: 'Visitas',
-                        data: Array.isArray(props.datos) ? props.datos : [props.datos],
-                        backgroundColor: 'rgba(79, 70, 229, 0.6)',
-                        borderColor: 'rgba(79, 70, 229, 1)',
-                        borderWidth: 1,
-                        ...configs[props.tipoGrafico]
-                    }]
-                },
-                options: options
-            });
+            try {
+                // Asegurarse de que tenemos datos válidos
+                if (!props.datos || !props.datos.datasets || !Array.isArray(props.datos.datasets)) {
+                    console.error("Formato de datos incorrecto:", props.datos);
+                    // Crear un gráfico vacío para evitar errores
+                    chartInstance.value = new Chart(ctx, {
+                        type: props.tipoGrafico,
+                        data: {
+                            labels: props.etiquetas,
+                            datasets: [{
+                                label: 'Visitas',
+                                data: Array(12).fill(0),
+                                backgroundColor: 'rgba(79, 70, 229, 0.6)',
+                                borderColor: 'rgba(79, 70, 229, 1)',
+                                borderWidth: 1,
+                                ...configs[props.tipoGrafico]
+                            }]
+                        },
+                        options: options
+                    });
+                    return;
+                }
+
+                // Crear el gráfico con los datos proporcionados
+                chartInstance.value = new Chart(ctx, {
+                    type: props.tipoGrafico,
+                    data: {
+                        labels: props.datos.labels || props.etiquetas,
+                        datasets: props.datos.datasets.map(dataset => ({
+                            ...dataset,
+                            ...configs[props.tipoGrafico]
+                        }))
+                    },
+                    options: options
+                });
+
+                console.log("Gráfico creado exitosamente:", chartInstance.value);
+            } catch (error) {
+                console.error("Error al crear el gráfico:", error);
+            }
         };
 
         // Recrear el gráfico cuando cambian los datos
         watch(() => props.datos, () => {
-            createChart();
+            console.log("Datos actualizados, recreando gráfico");
+            // Usar setTimeout para asegurar que el DOM esté actualizado
+            setTimeout(() => {
+                createChart();
+            }, 0);
         }, { deep: true });
 
         // Inicializar gráfico al montar el componente
         onMounted(() => {
-            createChart();
+            console.log("Componente montado, creando gráfico inicial");
+            // Usar setTimeout para asegurar que el canvas esté renderizado
+            setTimeout(() => {
+                createChart();
+            }, 0);
         });
 
         // Limpiar gráfico al desmontar
