@@ -28,6 +28,7 @@ public class LoginSuccessListener implements ApplicationListener<AuthenticationS
     @Override
     public void onApplicationEvent(@NonNull AuthenticationSuccessEvent event) {
         try {
+
             UserDetails userDetails = (UserDetails) event.getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
 

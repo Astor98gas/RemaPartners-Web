@@ -44,5 +44,5 @@ public class UserEntity {
 
     private RolEntity rol;
 
-    private Set<String> googleTokens;
+    private String googleToken;
 }

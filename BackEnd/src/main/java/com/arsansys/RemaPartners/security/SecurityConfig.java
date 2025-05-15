@@ -3,6 +3,7 @@ package com.arsansys.RemaPartners.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -20,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.arsansys.RemaPartners.security.filters.JwtAuthenticationFilter;
 import com.arsansys.RemaPartners.security.filters.JwtAutorizationFilter;
 import com.arsansys.RemaPartners.security.jwt.JwtUtils;
+import com.arsansys.RemaPartners.services.UserService;
 
 import java.util.Arrays;
 
@@ -39,6 +41,10 @@ public class SecurityConfig {
     @Autowired
     JwtAutorizationFilter jwtAutorizationFilter;
 
+    @Autowired
+    @Lazy
+    UserService userService;
+
     /**
      * Configura la cadena de filtres de seguretat.
      *
@@ -51,7 +57,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationManager authenticationManager)
             throws Exception {
 
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils);
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils, userService);
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
         jwtAuthenticationFilter.setFilterProcessesUrl("/login");
 
@@ -66,10 +72,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/login", "/logout", "/", "/api", "/createUser", "/vendedor/producto/getAll",
                             "/vendedor/producto/getById/*", "/api/binary-image/*",
-                            "/api/images/*", "resorces/static/**", "/api/stripe/**")
+                            "/api/images/*", "/resorces/static/**", "/api/stripe/**")
                             .permitAll();
-                    auth.anyRequest().authenticated();
-                    // auth.anyRequest().permitAll();
+                    // auth.anyRequest().authenticated();
+                    auth.anyRequest().permitAll();
                 })
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);

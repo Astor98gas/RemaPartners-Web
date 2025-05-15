@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.security.jwt.JwtUtils;
+import com.arsansys.RemaPartners.services.UserService;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,14 +31,16 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private JwtUtils jwtUtils;
+    private UserService userService;
 
     /**
      * Constructor del filtre d'autenticació JWT.
      *
      * @param jwtUtils Utilidades JWT.
      */
-    public JwtAuthenticationFilter(JwtUtils jwtUtils) {
+    public JwtAuthenticationFilter(JwtUtils jwtUtils, UserService userService) {
         this.jwtUtils = jwtUtils;
+        this.userService = userService;
     }
 
     /**
@@ -66,12 +70,26 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // Continúa con la lógica existente
         UserEntity userEntity = null;
-        String username = "", password = "";
+        String username = "", password = "", googleToken = "";
 
         try {
             userEntity = new ObjectMapper().readValue(request.getInputStream(), UserEntity.class);
             username = userEntity.getUsername();
             password = userEntity.getPassword();
+            googleToken = userEntity.getGoogleToken();
+
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    username, password);
+
+            if (googleToken != null && !googleToken.isEmpty()) {
+                UserEntity user = userService.getUserByUsername(username);
+                user.setGoogleToken(googleToken);
+                if (user != null) {
+                    userService.updateUser(user);
+                }
+            }
+
+            return getAuthenticationManager().authenticate(authenticationToken);
         } catch (StreamReadException e) {
             throw new RuntimeException(e);
         } catch (DatabindException e) {
@@ -79,11 +97,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                username, password);
-
-        return getAuthenticationManager().authenticate(authenticationToken);
     }
 
     /**
@@ -116,5 +129,4 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().flush();
     }
-
 }

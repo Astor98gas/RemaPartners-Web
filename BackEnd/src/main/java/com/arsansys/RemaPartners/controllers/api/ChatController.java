@@ -99,8 +99,8 @@ public class ChatController {
 
                     // Get user and their tokens
                     var recipient = userService.getUserById(idUsuario);
-                    if (recipient != null && recipient.getGoogleTokens() != null
-                            && !recipient.getGoogleTokens().isEmpty()) {
+                    if (recipient != null && recipient.getGoogleToken() != null
+                            && !recipient.getGoogleToken().isEmpty()) {
                         // Get sender username
                         var sender = userService.getUserById(mensaje.getIdEmisor());
                         String title = "Nuevo mensaje de " +
@@ -115,11 +115,11 @@ public class ChatController {
                         data.put("idEmisor", mensaje.getIdEmisor());
                         note.setData(data);
 
-                        // Send to each token (or just the first one)
-                        String firstToken = recipient.getGoogleTokens().iterator().next();
-                        note.setToken(firstToken);
+                        // Use the token directly
+                        String token = recipient.getGoogleToken();
+                        note.setToken(token);
 
-                        firebaseService.sendNotification(note, firstToken);
+                        firebaseService.sendNotification(note, token);
                     }
                 } catch (Exception e) {
                     // Log notification error but don't fail the API response

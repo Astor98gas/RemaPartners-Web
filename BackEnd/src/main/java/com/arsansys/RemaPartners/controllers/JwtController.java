@@ -54,33 +54,6 @@ public class JwtController {
     @Autowired
     private SuscripcionService suscripcionService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> generateToken(@RequestBody JwtRequest jwtRequest, HttpServletResponse res)
-            throws Exception {
-        try {
-            // Authenticate the user
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(jwtRequest.getUsername(), jwtRequest.getPassword()));
-
-            // Get user details
-            final UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(jwtRequest.getUsername());
-
-            // Generate token
-            final String token = jwtUtil.generateAccesToken(userDetails.getUsername());
-
-            // Set cookie if needed
-            Cookie cookie = new Cookie("token", token);
-            cookie.setMaxAge(Integer.MAX_VALUE);
-            cookie.setPath("/");
-            res.addCookie(cookie);
-
-            // Return the token in the response body
-            return ResponseEntity.ok(new JwtResponse(token));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-        }
-    }
-
     @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO createUserDTO, HttpServletResponse response) {
         try {
