@@ -1,6 +1,7 @@
 package com.arsansys.RemaPartners.models.entities;
 
 import java.util.Set;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -45,4 +46,12 @@ public class UserEntity {
     private RolEntity rol;
 
     private String googleToken;
+
+    @Size(max = 1000)
+    private String description;
+
+    private String profileImage;
+
+    @Builder.Default
+    private List<SocialLinkEntity> socialLinks = null;
 }

@@ -7,7 +7,21 @@
             </div>
 
             <!-- Sección de error -->
-            <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div v-else-if="error" class="bg-red-100 border border-red-400 text-re        resetFormData() {
+            if (this.currentUser) {
+                this.formData = {
+                    username: this.currentUser.username || '',
+                    email: this.currentUser.email || '',
+                    password: '',
+                    confirmPassword: '',
+                    description: this.currentUser.description || '',
+                    profileImage: this.currentUser.profileImage || '',
+                    socialLinks: this.currentUser.socialLinks ? 
+                        [...this.currentUser.socialLinks] : []
+                };
+                this.previewImage = this.currentUser.profileImage || null;
+            }
+        }, py-3 rounded-lg mb-6">
                 <p>{{ error }}</p>
                 <ButtonBasic variant="primary" size="sm" class="mt-2" @click="$router.push({ name: 'login' })">
                     {{ utf8.t('profile.back_to_login') }}
@@ -29,35 +43,150 @@
                             </h2>
 
                             <div v-if="!editMode" class="space-y-4">
-                                <div>
-                                    <p class="text-sm text-gray-500">{{ utf8.t('profile.username') }}</p>
-                                    <p class="text-lg font-medium">{{ currentUser.username }}</p>
+                                <!-- Imagen de perfil y nombre de usuario -->
+                                <div class="flex flex-col items-center mb-6">
+                                    <div
+                                        class="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500 mb-3 bg-white">
+                                        <img v-if="currentUser.profileImage" :src="currentUser.profileImage"
+                                            :alt="currentUser.username" class="w-full h-full object-cover"
+                                            @error="onImageError">
+                                        <div v-else
+                                            class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-gray-800">{{ currentUser.username }}</h3>
+                                    <span class="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full mt-1">
+                                        {{ currentUser.rol?.name || 'N/A' }}
+                                    </span>
                                 </div>
+
+                                <!-- Email -->
                                 <div>
                                     <p class="text-sm text-gray-500">{{ utf8.t('profile.email') }}</p>
                                     <p class="text-lg font-medium">{{ currentUser.email }}</p>
                                 </div>
+
+                                <!-- Descripción del perfil -->
                                 <div>
-                                    <p class="text-sm text-gray-500">{{ utf8.t('profile.role') }}</p>
-                                    <p class="text-lg font-medium">{{ currentUser.rol?.name || 'N/A' }}</p>
+                                    <p class="text-sm text-gray-500">{{ utf8.t('profile.description') }}</p>
+                                    <p class="text-lg font-medium whitespace-pre-line">{{ currentUser.description ||
+                                        utf8.t('profile.no_description') }}</p>
                                 </div>
+
+                                <!-- Enlaces a redes sociales -->
+                                <div v-if="currentUser.socialLinks && currentUser.socialLinks.length > 0">
+                                    <p class="text-sm text-gray-500 mb-2">{{ utf8.t('profile.social_links') }}</p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <a v-for="(link, index) in currentUser.socialLinks" :key="index"
+                                            :href="link.url" target="_blank" rel="noopener noreferrer"
+                                            class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg flex items-center transition-colors">
+                                            <i v-if="link.icon" :class="link.icon" class="mr-2"></i>
+                                            <span>{{ link.platform }}</span>
+                                        </a>
+                                    </div>
+                                </div>
+
                                 <ButtonBasic variant="primary" size="md" @click="toggleEditMode">
                                     {{ utf8.t('profile.edit_profile') }}
                                 </ButtonBasic>
                             </div>
 
                             <form v-else @submit.prevent="updateProfile" class="space-y-4">
+                                <!-- Imagen de perfil -->
+                                <div class="flex flex-col items-center mb-4">
+                                    <div
+                                        class="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500 mb-3 bg-white relative group">
+                                        <img v-if="previewImage || currentUser.profileImage"
+                                            :src="previewImage || currentUser.profileImage" :alt="formData.username"
+                                            class="w-full h-full object-cover" @error="onImageError">
+                                        <div v-else
+                                            class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
+                                        <div
+                                            class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
+                                            <label for="profile-image-upload"
+                                                class="text-white cursor-pointer px-3 py-1 bg-blue-600 rounded-lg text-sm hover:bg-blue-700">
+                                                Cambiar
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <input type="file" id="profile-image-upload" @change="handleImageUpload"
+                                        class="hidden" accept="image/*">
+                                </div>
+
+                                <!-- Nombre de usuario -->
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.username') }}</label>
                                     <input type="text" v-model="formData.username"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         required>
                                 </div>
+
+                                <!-- Email -->
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.email') }}</label>
                                     <input type="email" v-model="formData.email"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         required>
+                                </div>
+
+                                <!-- Descripción -->
+                                <div>
+                                    <label class="block text-sm text-gray-500">{{ utf8.t('profile.description')
+                                    }}</label>
+                                    <textarea v-model="formData.description" rows="4"
+                                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                        :placeholder="utf8.t('profile.description_placeholder')">
+                                    </textarea>
+                                </div>
+
+                                <!-- Redes sociales -->
+                                <div>
+                                    <label class="block text-sm text-gray-500 mb-2">{{ utf8.t('profile.social_links')
+                                    }}</label>
+
+                                    <div v-for="(link, index) in formData.socialLinks" :key="index"
+                                        class="flex gap-2 mb-2">
+                                        <select v-model="link.platform"
+                                            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="Facebook">Facebook</option>
+                                            <option value="Twitter">Twitter</option>
+                                            <option value="Instagram">Instagram</option>
+                                            <option value="LinkedIn">LinkedIn</option>
+                                            <option value="GitHub">GitHub</option>
+                                            <option value="Website">Website</option>
+                                        </select>
+                                        <input type="url" v-model="link.url" placeholder="https://..."
+                                            class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <button type="button" @click="removeLink(index)"
+                                            class="px-2 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <button type="button" @click="addLink"
+                                        class="mt-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4" />
+                                        </svg>
+                                        {{ utf8.t('profile.add_social_link') }}
+                                    </button>
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.new_password')
@@ -287,7 +416,7 @@ import { useUsers } from '@/composables/useUsers';
 import { useutf8Store } from '@/stores/counter';
 import { useToast } from 'vue-toastification';
 import { defineComponent } from 'vue';
-import type { User } from '@/models/user';
+import type { User, SocialLink } from '@/models/user';
 import StripePayComponent from '@/components/features/stripe/StripePayComponent.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -318,7 +447,11 @@ export default defineComponent({
                 email: '',
                 password: '',
                 confirmPassword: '',
+                description: '',
+                profileImage: '',
+                socialLinks: [] as SocialLink[],
             },
+            previewImage: null as string | null,
         };
     },
     computed: {
@@ -392,7 +525,12 @@ export default defineComponent({
                     email: this.currentUser.email || '',
                     password: '',
                     confirmPassword: '',
+                    description: this.currentUser.description || '',
+                    profileImage: this.currentUser.profileImage || '',
+                    socialLinks: this.currentUser.socialLinks ?
+                        [...this.currentUser.socialLinks] : []
                 };
+                this.previewImage = this.currentUser.profileImage || null;
             }
         },
         toggleEditMode() {
@@ -431,6 +569,9 @@ export default defineComponent({
                 const updateData: Partial<User> = {
                     username: this.formData.username,
                     email: this.formData.email,
+                    description: this.formData.description,
+                    profileImage: this.formData.profileImage,
+                    socialLinks: this.formData.socialLinks
                 };
 
                 // Solo incluir la contraseña si se ha proporcionado una nueva
@@ -632,7 +773,53 @@ export default defineComponent({
         },
         toggleSubscriptionOption() {
             this.showSubscriptionOptions = true;
-        }
+        },
+        onImageError(event: Event) {
+            // Fallback image for profile image loading errors
+            (event.target as HTMLImageElement).src = new URL('@/assets/logoCuadrado.jpeg', import.meta.url).href;
+        },
+
+        handleImageUpload(event: Event) {
+            const file = (event.target as HTMLInputElement).files?.[0];
+            if (!file) return;
+
+            // Verify it's an image
+            if (!file.type.startsWith('image/')) {
+                const toast = useToast();
+                toast.error(this.utf8.t('profile.image_type_error') || 'Please select an image file');
+                return;
+            }
+
+            // Create a preview URL
+            this.previewImage = URL.createObjectURL(file);
+
+            // Convert to base64 for storing
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (e.target) {
+                    this.formData.profileImage = e.target.result as string;
+                }
+            };
+            reader.readAsDataURL(file);
+        },
+
+        addLink() {
+            if (!this.formData.socialLinks) {
+                this.formData.socialLinks = [];
+            }
+
+            this.formData.socialLinks.push({
+                platform: '',
+                url: '',
+                icon: ''
+            });
+        },
+
+        removeLink(index: number) {
+            if (this.formData.socialLinks && this.formData.socialLinks.length > index) {
+                this.formData.socialLinks.splice(index, 1);
+            }
+        },
     }
 });
 </script>

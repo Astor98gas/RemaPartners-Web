@@ -224,6 +224,27 @@ export function useUsers() {
         }
     };
 
+    /**
+     * Obtiene el perfil de un usuario por su ID (perfil público)
+     * 
+     * @param userId - ID del usuario
+     */
+    const getUserProfileById = async (userId: string) => {
+        try {
+            loading.value = true;
+            error.value = null;
+
+            const response = await userService.getUserProfileById(userId);
+            return response.data;
+        } catch (err: any) {
+            console.error("Error fetching user profile:", err);
+            error.value = err.response?.data?.message || "Error fetching user profile";
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     return {
         users,
         error,
@@ -237,6 +258,7 @@ export function useUsers() {
         logout,
         checkUserIfExist,
         updateProfile,
-        refreshUser
+        refreshUser,
+        getUserProfileById
     }
 }

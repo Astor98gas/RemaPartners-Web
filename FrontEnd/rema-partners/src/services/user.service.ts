@@ -71,6 +71,10 @@ export const userService = {
             withCredentials: true, // Asegúrate de enviar las cookies si es necesario
         });
     },
+
+    async getUserProfileById(id: string) {
+        return axios.get(`${API_BASE_URL}/getUserProfileById/${id}`)
+    },
 }
 
 // Inicializa la autenticación al importar el servicio

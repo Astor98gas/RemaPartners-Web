@@ -1,6 +1,8 @@
 package com.arsansys.RemaPartners.controllers.dto;
 
-import java.util.Set;
+import java.util.List;
+
+import com.arsansys.RemaPartners.models.entities.SocialLinkEntity;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -23,8 +25,11 @@ public class CreateUserDTO {
     @NotBlank
     private String password;
 
-    private String rol;
-
     private String googleToken;
 
+    private String description;
+
+    private String profileImage;
+
+    private List<SocialLinkEntity> socialLinks;
 }

@@ -53,12 +53,10 @@ public class JwtController {
             if (createUserDTO.getPassword() == null || createUserDTO.getPassword().isEmpty()) {
                 return ResponseEntity.badRequest().body("Password is required");
             }
-            if (createUserDTO.getRol() == null || createUserDTO.getRol().isEmpty()) {
-                createUserDTO.setRol(ERol.COMPRADOR.name());
-            }
+
             // Create RolEntity from the role string
             RolEntity rolEntity = new RolEntity();
-            rolEntity.setName(ERol.valueOf(createUserDTO.getRol()));
+            rolEntity.setName(ERol.COMPRADOR);
 
             UserEntity userEntity = UserEntity.builder()
                     .username(createUserDTO.getUsername())

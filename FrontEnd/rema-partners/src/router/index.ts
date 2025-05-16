@@ -92,6 +92,12 @@ const router = createRouter({
             component: () => import('@/views/dashboard/ProductoEstadisticasView.vue'),
             meta: { requiresAuth: true, roles: ['ADMIN', 'VENDEDOR', 'TRABAJADOR'] }
         },
+        {
+            path: '/user/:id',
+            name: 'public-profile',
+            component: () => import('@/views/user/PublicProfileView.vue'),
+            meta: { requiresAuth: false }
+        },
     ],
 })
 

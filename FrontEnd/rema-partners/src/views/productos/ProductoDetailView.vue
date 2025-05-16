@@ -183,6 +183,9 @@
                     <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ product.descripcion }}</p>
                 </div>
 
+                <!-- Seller Profile -->
+                <SellerProfileCard v-if="seller" :seller="seller" class="mb-8" />
+
                 <!-- Información del producto -->
                 <div class="mb-8">
                     <h2 class="text-xl font-semibold mb-6 text-gray-900 flex items-center">
@@ -236,7 +239,7 @@
                             class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow col-span-1 md:col-span-2 lg:col-span-3">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.direccion') }}</p>
                             <p class="text-gray-900 font-semibold mb-2">{{ product.direccion || t('common.notAvailable')
-                            }}</p>
+                                }}</p>
 
                             <div v-if="product.direccion"
                                 class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden shadow-sm mt-2 hover:shadow-md transition-shadow"
@@ -368,6 +371,7 @@ import EditButton from '@/components/ui/EditButton.vue';
 import DeleteButton from '@/components/ui/DeleteButton.vue';
 import ChatBox from '@/components/chat/ChatBox.vue';
 import OfferModal from '@/components/features/productos/OfferModal.vue';
+import SellerProfileCard from '@/components/profile/SellerProfileCard.vue';
 import Swal from 'sweetalert2';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
@@ -375,6 +379,7 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import type { Producto } from '@/models/producto';
+import type { User } from '@/models/user';
 import ProductoComponent from '@/components/layout/ProductoComponent.vue';
 import VueEasyLightbox from 'vue-easy-lightbox';
 
@@ -386,7 +391,8 @@ export default defineComponent({
         ChatBox,
         OfferModal,
         ProductoComponent,
-        VueEasyLightbox
+        VueEasyLightbox,
+        SellerProfileCard
     },
     setup() {
         const mapContainer = ref(null);
@@ -413,6 +419,7 @@ export default defineComponent({
             isOwner: false,
             productosSimilares: [] as Producto[],
             lightboxVisible: false,
+            seller: null as User | null,
         };
     },
     computed: {
@@ -781,6 +788,15 @@ export default defineComponent({
                     this.$nextTick(() => {
                         setTimeout(() => this.initMap(), 300);
                     });
+                }
+
+                // Fetch seller data if the product has a user ID
+                if (this.product && this.product.idUsuario) {
+                    try {
+                        this.seller = await usersComposable.getUserProfileById(this.product.idUsuario);
+                    } catch (error) {
+                        console.error('Error fetching seller profile:', error);
+                    }
                 }
             } catch (err: any) {
                 console.error('Error al cargar el producto:', err);

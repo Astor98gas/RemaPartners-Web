@@ -82,10 +82,26 @@ public class HomeController {
             UserEntity user = userRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
+            // Actualizar datos básicos
             user.setUsername(updateUserDTO.getUsername());
             user.setEmail(updateUserDTO.getEmail());
-            if (updateUserDTO.getPassword() != user.getPassword()) {
+
+            // Comprueba si la contraseña ha cambiado para encriptarla
+            if (updateUserDTO.getPassword() != null && !updateUserDTO.getPassword().equals(user.getPassword())) {
                 user.setPassword(passwordEncoder.encode(updateUserDTO.getPassword()));
+            }
+
+            // Actualizar los nuevos campos de perfil
+            if (updateUserDTO.getDescription() != null) {
+                user.setDescription(updateUserDTO.getDescription());
+            }
+
+            if (updateUserDTO.getProfileImage() != null) {
+                user.setProfileImage(updateUserDTO.getProfileImage());
+            }
+
+            if (updateUserDTO.getSocialLinks() != null) {
+                user.setSocialLinks(updateUserDTO.getSocialLinks());
             }
 
             userRepository.save(user);
@@ -95,4 +111,20 @@ public class HomeController {
         }
     }
 
+    @GetMapping("/getUserProfileById/{id}")
+    public ResponseEntity<?> getUserProfileById(@PathVariable String id) {
+        try {
+            UserEntity user = userRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // For security reasons, we don't want to expose passwords and other sensitive
+            // data in public profiles
+            user.setPassword(null);
+            user.setGoogleToken(null);
+
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error getting user profile: " + e.getMessage());
+        }
+    }
 }
