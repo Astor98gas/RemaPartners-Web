@@ -349,35 +349,64 @@ export default defineComponent({
             }
         },
         confirmMarkAsSold() {
-            if (!this.currentChat?.idProducto || !this.isSeller) return;
+            if (!this.currentChat?.idProducto || !this.isSeller || !this.currentProduct) return;
+
+            const availableStock = this.currentProduct.stock;
+
+            if (availableStock <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: this.t('common.error'),
+                    text: this.t('producto.stock.unavailable'),
+                    confirmButtonText: this.t('common.ok')
+                });
+                return;
+            }
+
+            // Create select options for quantity
+            const inputOptions: Record<string, string> = {};
+            for (let i = 1; i <= availableStock; i++) {
+                inputOptions[i.toString()] = i.toString();
+            }
 
             Swal.fire({
                 title: this.t('chat.markAsSold'),
                 text: this.t('chat.markAsSold.confirm'),
-                icon: 'question',
+                input: 'select',
+                inputOptions: inputOptions,
+                inputLabel: this.t('chat.markAsSold.quantity'),
+                inputValue: '1', // Default value
                 showCancelButton: true,
                 confirmButtonText: this.t('common.yes'),
                 cancelButtonText: this.t('common.cancel'),
-                reverseButtons: true
+                reverseButtons: true,
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'You need to select a quantity!';
+                    }
+                }
             }).then(async (result) => {
-                if (result.isConfirmed) {
-                    await this.markProductAsSold();
+                if (result.isConfirmed && result.value) {
+                    const quantity = parseInt(result.value);
+                    if (!isNaN(quantity) && quantity > 0) {
+                        await this.markProductAsSold(quantity);
+                    }
                 }
             });
         },
-        async markProductAsSold() {
+        async markProductAsSold(quantity = 1) {
             if (!this.currentChat?.idProducto || !this.isSeller) return;
 
             try {
                 this.loading = true;
-                await this.productoComposable.markAsSold(this.currentChat.idProducto);
+                await this.productoComposable.markAsSold(this.currentChat.idProducto, quantity);
 
                 // Refresh product info
                 await this.loadProductInfo();
 
                 // Notify the buyer that the product has been sold by sending a system message
                 if (this.currentProduct) {
-                    const message = `[${this.t('chat.markAsSold')}] ${this.currentProduct.titulo}`;
+                    const message = `[${this.t('chat.markAsSold')}] ${quantity} - ${this.currentProduct.titulo}`;
                     await this.chatComposable.addMessage(
                         this.currentChat.id!,
                         this.userId,

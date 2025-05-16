@@ -152,23 +152,34 @@ export function useProducto() {
             loading.value = false;
         }
     }
-    const markAsSold = async (id: string) => {
+    const markAsSold = async (id: string, quantity: number) => {
         try {
             loading.value = true;
             error.value = null;
-            const response = await productoService.markAsSold(id);
+
+            // Get current product to know current stock
+            await getProductoById(id);
+            if (!currentProducto.value) {
+                throw new Error("Product not found");
+            }
+
+            // Ensure quantity is valid
+            const validQuantity = Math.min(quantity, currentProducto.value.stock);
+            const newStock = Math.max(0, currentProducto.value.stock - validQuantity);
+
+            const response = await productoService.markAsSold(id, validQuantity);
             success.value = "Product marked as sold successfully!";
             error.value = null;
 
             // Update the current product if it matches
             if (currentProducto.value && currentProducto.value.id === id) {
-                currentProducto.value.stock = 0;
+                currentProducto.value.stock = newStock;
             }
 
             // Update products list if it includes this product
             const productIndex = productos.value.findIndex(p => p.id === id);
             if (productIndex !== -1) {
-                productos.value[productIndex].stock = 0;
+                productos.value[productIndex].stock = newStock;
             }
 
             return response.data;

@@ -30,12 +30,12 @@ export const productoService = {
     async getProductosByIdCategoria(id: string) {
         return axios.get(`${CATEGORIA_API_URL}/getByIdCategoria/${id}`);
     },
-    async markAsSold(id: string) {
+    async markAsSold(id: string, quantity: number) {
         const response = await axios.get(`${CATEGORIA_API_URL}/getById/${id}`);
         const productData = response.data;
 
-        // Update the product stock to 0 and update
-        productData.stock = 0;
+        // Update the product stock by reducing the quantity sold
+        productData.stock = Math.max(0, productData.stock - quantity);
         return axios.post(`${CATEGORIA_API_URL}/update/${id}`, productData);
     }
 }
