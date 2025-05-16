@@ -436,6 +436,7 @@ export const useutf8Store = defineStore('utf8', {
           'invoice.status.emitida': 'Issued',
           'invoice.title': 'My Invoices',
           'profile.view_invoices': 'View My Invoices',
+          'common.close': 'Close',
         },
         es: {
           'profile.dashboard': 'Dashboard - Estadísticas de Visitas',
@@ -858,6 +859,7 @@ export const useutf8Store = defineStore('utf8', {
           'invoice.status.pagada': 'Pagada',
           'invoice.status.cancelada': 'Cancelada',
           'invoice.status.emitida': 'Emitida',
+          'common.close': 'Cerrar',
         },
         cat: {
           'profile.dashboard': 'Tauler - Estadístiques de Visites',
@@ -1280,6 +1282,7 @@ export const useutf8Store = defineStore('utf8', {
           'invoice.status.pagada': 'Pagada',
           'invoice.status.cancelada': 'Cancel·lada',
           'invoice.status.emitida': 'Emesa',
+          'common.close': 'Tancar',
         }
       } as Translations
     };

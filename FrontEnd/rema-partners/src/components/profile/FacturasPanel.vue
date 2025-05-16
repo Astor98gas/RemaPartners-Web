@@ -123,7 +123,7 @@
                         <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                             <div>
                                 <dt class="text-sm font-medium text-gray-500">{{ t('invoice.product') }}</dt>
-                                <dd class="mt-1 text-sm text-gray-900">{{ selectedInvoice.nombreProducto || 'N/A' }}
+                                <dd class="mt-1 text-sm text-gray-900">{{ selectedInvoice.tituloProducto || 'N/A' }}
                                 </dd>
                             </div>
                             <div>
@@ -132,7 +132,7 @@
                             </div>
                             <div>
                                 <dt class="text-sm font-medium text-gray-500">{{ t('invoice.date') }}</dt>
-                                <dd class="mt-1 text-sm text-gray-900">{{ formatDate(selectedInvoice.fechaCreacion) }}
+                                <dd class="mt-1 text-sm text-gray-900">{{ formatDate(selectedInvoice.fechaEmision) }}
                                 </dd>
                             </div>
                             <div>
@@ -140,9 +140,9 @@
                                 <dd class="mt-1 text-sm text-gray-900">
                                     <span :class="[
                                         'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                                        statusClasses[selectedInvoice.estadoFactura] || 'bg-gray-100 text-gray-800'
+                                        statusClasses[selectedInvoice.estado] || 'bg-gray-100 text-gray-800'
                                     ]">
-                                        {{ t(`invoice.status.${selectedInvoice.estadoFactura.toLowerCase()}`) }}
+                                        {{ t(`invoice.status.${selectedInvoice.estado.toLowerCase()}`) }}
                                     </span>
                                 </dd>
                             </div>
@@ -174,17 +174,17 @@
                                             <tbody>
                                                 <tr>
                                                     <td class="px-3 py-2 text-xs text-gray-900">
-                                                        {{ selectedInvoice.nombreProducto || 'N/A' }}
+                                                        {{ selectedInvoice.tituloProducto || 'N/A' }}
                                                     </td>
                                                     <td class="px-3 py-2 text-xs text-gray-900">
                                                         {{ selectedInvoice.cantidad }}
                                                     </td>
                                                     <td class="px-3 py-2 text-xs text-gray-900">
-                                                        {{ formatCurrency(selectedInvoice.precioUnitarioCentimos / 100)
+                                                        {{ formatCurrency(selectedInvoice.precioCentimos / 100)
                                                         }} {{ selectedInvoice.moneda }}
                                                     </td>
                                                     <td class="px-3 py-2 text-xs text-gray-900 text-right">
-                                                        {{ formatCurrency((selectedInvoice.precioUnitarioCentimos *
+                                                        {{ formatCurrency((selectedInvoice.precioCentimos *
                                                             selectedInvoice.cantidad) / 100) }} {{ selectedInvoice.moneda }}
                                                     </td>
                                                 </tr>
@@ -315,13 +315,29 @@ export default defineComponent({
                 console.log(`Loaded ${this.facturas.length} invoices`);
             }
         },
-        viewInvoiceDetails(invoiceId: string | undefined) {
+        async viewInvoiceDetails(invoiceId: string | undefined) {
             if (!invoiceId) return;
 
-            const invoice = this.facturas.find(f => f.id === invoiceId);
-            if (invoice) {
-                this.selectedInvoice = invoice;
-                this.showDetailsModal = true;
+            try {
+                // Option 1: Use the invoice from the list, but map the fields if needed
+                const invoice = this.facturas.find(f => f.id === invoiceId);
+                if (invoice) {
+                    console.log("Selected invoice:", invoice); // Debug
+                    // Map the fields to ensure consistency
+                    this.selectedInvoice = {
+                        ...invoice,
+                        // Use only properties that exist in the type
+                        tituloProducto: invoice.tituloProducto,
+                        estado: invoice.estado,
+                        precioCentimos: invoice.precioCentimos,
+                        fechaEmision: invoice.fechaEmision || new Date().toISOString()
+                    };
+                    this.showDetailsModal = true;
+                } else {
+                    console.error("Invoice not found with ID:", invoiceId);
+                }
+            } catch (err) {
+                console.error("Error displaying invoice details:", err);
             }
         },
         calculateIVA(factura: FacturaEntity) {

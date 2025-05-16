@@ -6,15 +6,15 @@ export interface FacturaEntity {
     idComprador: string;
     idVendedor: string;
     cantidad: number;
-    precioUnitarioCentimos: number;
+    precioCentimos: number;
     iva: number;
     moneda: string;
-    estadoFactura: EstadoFactura;
-    fechaCreacion?: string;
+    estado: EstadoFactura;
+    fechaEmision?: string;
     fechaPago?: string;
     notasAdicionales?: string;
     idChat?: string;
-    nombreProducto?: string;
+    tituloProducto?: string;
 }
 
 export enum EstadoFactura {
