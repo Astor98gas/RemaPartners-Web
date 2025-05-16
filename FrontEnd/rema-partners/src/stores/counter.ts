@@ -400,6 +400,15 @@ export const useutf8Store = defineStore('utf8', {
           'months.october': 'October',
           'months.november': 'November',
           'months.december': 'December',
+          'chat.delete': 'Delete Chat',
+          'chat.delete.confirm': 'Are you sure you want to delete this chat? This action cannot be undone.',
+          'chat.delete.success': 'Chat deleted successfully',
+          'chat.delete.error': 'Error deleting chat',
+          'chat.markAsSold': 'Mark as Sold',
+          'chat.markAsSold.confirm': 'Are you sure you want to mark this product as sold? This action cannot be undone.',
+          'chat.markAsSold.success': 'Product marked as sold successfully',
+          'chat.markAsSold.error': 'Error marking product as sold',
+          'chat.productNotFound': 'Product not found',
         },
         es: {
           'profile.dashboard': 'Dashboard - Estadísticas de Visitas',
@@ -786,6 +795,15 @@ export const useutf8Store = defineStore('utf8', {
           'months.october': 'Octubre',
           'months.november': 'Noviembre',
           'months.december': 'Diciembre',
+          'chat.delete': 'Eliminar Chat',
+          'chat.delete.confirm': '¿Estás seguro de que quieres eliminar este chat?',
+          'chat.delete.success': 'Chat eliminado con éxito',
+          'chat.delete.error': 'Error al eliminar el chat',
+          'chat.markAsSold': 'Marcar como Vendido',
+          'chat.markAsSold.confirm': '¿Estás seguro de que quieres marcar este producto como vendido? Esto establecerá el stock del producto en 0.',
+          'chat.markAsSold.success': 'Producto marcado como vendido con éxito',
+          'chat.markAsSold.error': 'Error al marcar el producto como vendido',
+          'chat.productNotFound': 'Producto no encontrado o ya no disponible',
         },
         cat: {
           'profile.dashboard': 'Tauler - Estadístiques de Visites',
@@ -1172,6 +1190,15 @@ export const useutf8Store = defineStore('utf8', {
           'months.october': 'Octubre',
           'months.november': 'Novembre',
           'months.december': 'Desembre',
+          'chat.delete': 'Eliminar Xat',
+          'chat.delete.confirm': 'Estàs segur que vols eliminar aquest xat?',
+          'chat.delete.success': 'Xat eliminat amb èxit',
+          'chat.delete.error': 'Error en eliminar el xat',
+          'chat.markAsSold': 'Marcar com Venut',
+          'chat.markAsSold.confirm': 'Estàs segur que vols marcar aquest producte com venut? Això establirà l\'estoc del producte a 0.',
+          'chat.markAsSold.success': 'Producte marcat com venut amb èxit',
+          'chat.markAsSold.error': 'Error en marcar el producte com venut',
+          'chat.productNotFound': 'Producte no trobat o ja no disponible'
         }
       } as Translations
     };

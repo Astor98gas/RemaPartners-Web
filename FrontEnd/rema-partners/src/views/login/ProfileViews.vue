@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-[80%] mx-auto">
             <!-- Sección de carga -->
             <div v-if="loading" class="flex justify-center items-center h-64">
                 <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -143,7 +143,7 @@
                                 <!-- Descripción -->
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.description')
-                                    }}</label>
+                                        }}</label>
                                     <textarea v-model="formData.description" rows="4"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                                         :placeholder="utf8.t('profile.description_placeholder')">
@@ -153,7 +153,7 @@
                                 <!-- Redes sociales -->
                                 <div>
                                     <label class="block text-sm text-gray-500 mb-2">{{ utf8.t('profile.social_links')
-                                    }}</label>
+                                        }}</label>
 
                                     <div v-for="(link, index) in formData.socialLinks" :key="index"
                                         class="flex gap-2 mb-2">
@@ -190,14 +190,14 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.new_password')
-                                        }}</label>
+                                    }}</label>
                                     <input type="password" v-model="formData.password"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <p class="text-xs text-gray-500 mt-1">{{ utf8.t('profile.password_note') }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.confirm_password')
-                                        }}</label>
+                                    }}</label>
                                     <input type="password" v-model="formData.confirmPassword"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>

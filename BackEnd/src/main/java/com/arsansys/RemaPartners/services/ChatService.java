@@ -25,4 +25,6 @@ public interface ChatService {
     abstract ChatEntity getChatByIdProductoAndIdCompradorAndIdVendedor(String idProducto, String idComprador,
             String idVendedor);
 
+    abstract void deleteChat(String id);
+
 }

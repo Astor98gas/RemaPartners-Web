@@ -29,5 +29,13 @@ export const productoService = {
     },
     async getProductosByIdCategoria(id: string) {
         return axios.get(`${CATEGORIA_API_URL}/getByIdCategoria/${id}`);
+    },
+    async markAsSold(id: string) {
+        const response = await axios.get(`${CATEGORIA_API_URL}/getById/${id}`);
+        const productData = response.data;
+
+        // Update the product stock to 0 and update
+        productData.stock = 0;
+        return axios.post(`${CATEGORIA_API_URL}/update/${id}`, productData);
     }
 }

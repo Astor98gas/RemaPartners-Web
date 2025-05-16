@@ -88,4 +88,15 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
+    @Override
+    public void deleteChat(String id) {
+        try {
+            // Verificar que el chat existe antes de eliminarlo
+            ChatEntity chat = getChatById(id);
+            chatRepository.delete(chat);
+        } catch (Exception e) {
+            throw new RuntimeException("Error deleting chat: " + e.getMessage());
+        }
+    }
+
 }

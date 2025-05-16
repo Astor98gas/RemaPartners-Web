@@ -51,5 +51,10 @@ export const chatService = {
     // Add message to existing chat
     async addMessage(chatId: string, mensaje: MensajeEntity) {
         return axios.post(`${CHAT_API_URL}/addMessage/${chatId}`, mensaje);
+    },
+
+    // Delete a chat
+    async deleteChat(chatId: string) {
+        return axios.delete(`${CHAT_API_URL}/delete/${chatId}`);
     }
 };

@@ -152,6 +152,36 @@ export function useProducto() {
             loading.value = false;
         }
     }
+    const markAsSold = async (id: string) => {
+        try {
+            loading.value = true;
+            error.value = null;
+            const response = await productoService.markAsSold(id);
+            success.value = "Product marked as sold successfully!";
+            error.value = null;
+
+            // Update the current product if it matches
+            if (currentProducto.value && currentProducto.value.id === id) {
+                currentProducto.value.stock = 0;
+            }
+
+            // Update products list if it includes this product
+            const productIndex = productos.value.findIndex(p => p.id === id);
+            if (productIndex !== -1) {
+                productos.value[productIndex].stock = 0;
+            }
+
+            return response.data;
+        } catch (err: any) {
+            console.error("Error marking product as sold:", err);
+            error.value = err.response?.data?.message || "Error marking product as sold";
+            success.value = null;
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     return {
         productos,
         error,
@@ -166,7 +196,8 @@ export function useProducto() {
         getProductosByUsuario,
         toggleStatus,
         getProductosActivos,
-        getProductosByIdCategoria
+        getProductosByIdCategoria,
+        markAsSold
     }
 
 }

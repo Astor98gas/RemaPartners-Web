@@ -165,6 +165,42 @@ export function useChat() {
         }
     };
 
+    /**
+     * Elimina un chat existente por su ID
+     * 
+     * @param chatId - El ID del chat a eliminar
+     * @returns Respuesta de la operación
+     * @throws Error si hay problemas al eliminar el chat
+     */
+    const deleteChat = async (chatId: string) => {
+        try {
+            loading.value = true;
+            error.value = null;
+            const response = await chatService.deleteChat(chatId);
+            success.value = "Chat deleted successfully";
+
+            // Remove the chat from the chat list if it exists
+            const index = chats.value.findIndex(chat => chat.id === chatId);
+            if (index !== -1) {
+                chats.value.splice(index, 1);
+            }
+
+            // Clear current chat if it was the deleted one
+            if (currentChat.value?.id === chatId) {
+                currentChat.value = null;
+            }
+
+            return response.data;
+        } catch (err: any) {
+            console.error("Error deleting chat:", err);
+            error.value = err.response?.data?.message || "Error deleting chat";
+            success.value = null;
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     const getUserNameById = async (userId: string): Promise<string> => {
         try {
             if (!userId) return '';
@@ -213,6 +249,7 @@ export function useChat() {
         getChatsBySellerId,
         getChatByParticipants,
         addMessage,
+        deleteChat,
         getUserNameById,
         getChatPartnerName
     };

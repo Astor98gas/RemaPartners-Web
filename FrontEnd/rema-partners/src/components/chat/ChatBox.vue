@@ -18,12 +18,50 @@
                     </p>
                 </div>
             </div>
-            <button @click="$emit('close')" class="text-white hover:text-gray-200 cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+            <div class="flex items-center space-x-2">
+                <!-- Delete Chat Button -->
+                <button v-if="productNotFound" @click="confirmDeleteChat"
+                    class="text-white bg-red-500 hover:bg-red-600 rounded-lg px-2 py-1 text-xs flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    {{ t('chat.delete') }}
+                </button>
+
+                <!-- Mark as Sold Button (Only for sellers) -->
+                <button v-if="isSeller && !productNotFound && currentProduct && currentProduct.stock > 0"
+                    @click="confirmMarkAsSold"
+                    class="text-white bg-green-500 hover:bg-green-600 rounded-lg px-2 py-1 text-xs flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    {{ t('chat.markAsSold') }}
+                </button>
+
+                <!-- Close Button -->
+                <button @click="$emit('close')" class="text-white hover:text-gray-200 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Product not found warning if applicable -->
+        <div v-if="productNotFound" class="bg-yellow-100 text-yellow-800 p-3 text-sm border-b border-yellow-200">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-            </button>
+                {{ t('chat.productNotFound') }}
+            </div>
         </div>
 
         <!-- Chat messages -->
@@ -83,8 +121,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useChat } from '@/composables/useChat';
+import { useProducto } from '@/composables/useProducto';
 import { useutf8Store } from '@/stores/counter';
 import type { ChatEntity } from '@/models/chat';
+import type { Producto } from '@/models/producto';
+import Swal from 'sweetalert2';
 
 export default defineComponent({
     name: 'ChatBox',
@@ -108,20 +149,26 @@ export default defineComponent({
     },
     emits: ['close'],
     data() {
+        const chatComposable = useChat();
+        const productoComposable = useProducto();
+
         return {
             newMessage: '',
-            messagesContainer: null,
-            chatComposable: useChat(),
+            messagesContainer: null as HTMLElement | null,
+            chatComposable,
+            productoComposable,
             loading: false,
             error: null as string | null,
             chat: null as ChatEntity | null,
             refreshInterval: null as number | null,
-            chatPartnerName: null as string | null
+            chatPartnerName: null as string | null,
+            currentProduct: null as Producto | null,
+            productNotFound: false
         };
     },
     computed: {
         isLoading(): boolean {
-            return this.loading || this.chatComposable.loading;
+            return this.loading || this.chatComposable.loading || this.productoComposable.loading;
         },
         errorMessage(): string | null {
             return this.error || this.chatComposable.error;
@@ -171,6 +218,9 @@ export default defineComponent({
                     this.chatPartnerName = userName;
                 }
 
+                // Load the product information 
+                await this.loadProductInfo();
+
                 this.setupAutoRefresh();
 
                 // Focus the input field after chat is initialized
@@ -181,6 +231,20 @@ export default defineComponent({
             } finally {
                 this.loading = false;
                 this.scrollToBottom();
+            }
+        },
+        async loadProductInfo() {
+            try {
+                if (!this.currentChat) return;
+
+                await this.productoComposable.getProductoById(this.currentChat.idProducto);
+                this.currentProduct = this.productoComposable.currentProducto;
+
+                // Set flag if product doesn't exist or is no longer active
+                this.productNotFound = !this.currentProduct || !this.currentProduct.activo;
+            } catch (err) {
+                console.error('Error loading product info:', err);
+                this.productNotFound = true;
             }
         },
         focusInput() {
@@ -239,6 +303,102 @@ export default defineComponent({
             } finally {
                 this.loading = false;
                 await this.scrollToBottom();
+            }
+        },
+        confirmDeleteChat() {
+            if (!this.currentChat?.id) return;
+
+            Swal.fire({
+                title: this.t('chat.delete'),
+                text: this.t('chat.delete.confirm'),
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: this.t('common.yes'),
+                cancelButtonText: this.t('common.cancel'),
+                reverseButtons: true
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await this.deleteChat();
+                }
+            });
+        },
+        async deleteChat() {
+            if (!this.currentChat?.id) return;
+
+            try {
+                this.loading = true;
+                await this.chatComposable.deleteChat(this.currentChat.id);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: this.t('chat.delete.success'),
+                    confirmButtonText: this.t('common.ok')
+                });
+
+                // Close the chat box
+                this.$emit('close');
+            } catch (err) {
+                console.error('Error deleting chat:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: this.t('chat.delete.error'),
+                    confirmButtonText: this.t('common.ok')
+                });
+            } finally {
+                this.loading = false;
+            }
+        },
+        confirmMarkAsSold() {
+            if (!this.currentChat?.idProducto || !this.isSeller) return;
+
+            Swal.fire({
+                title: this.t('chat.markAsSold'),
+                text: this.t('chat.markAsSold.confirm'),
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: this.t('common.yes'),
+                cancelButtonText: this.t('common.cancel'),
+                reverseButtons: true
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await this.markProductAsSold();
+                }
+            });
+        },
+        async markProductAsSold() {
+            if (!this.currentChat?.idProducto || !this.isSeller) return;
+
+            try {
+                this.loading = true;
+                await this.productoComposable.markAsSold(this.currentChat.idProducto);
+
+                // Refresh product info
+                await this.loadProductInfo();
+
+                // Notify the buyer that the product has been sold by sending a system message
+                if (this.currentProduct) {
+                    const message = `[${this.t('chat.markAsSold')}] ${this.currentProduct.titulo}`;
+                    await this.chatComposable.addMessage(
+                        this.currentChat.id!,
+                        this.userId,
+                        message
+                    );
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: this.t('chat.markAsSold.success'),
+                    confirmButtonText: this.t('common.ok')
+                });
+            } catch (err) {
+                console.error('Error marking product as sold:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: this.t('chat.markAsSold.error'),
+                    confirmButtonText: this.t('common.ok')
+                });
+            } finally {
+                this.loading = false;
             }
         },
         formatTime(dateStr: string) {
