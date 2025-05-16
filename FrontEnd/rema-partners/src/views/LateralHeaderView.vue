@@ -1,20 +1,19 @@
 <template>
     <div class="flex flex-col h-full sticky top-0 shadow-xl">
         <!-- Sidebar con clase dinámica para el ancho -->
-        <aside 
+        <aside
             class="bg-gradient-to-b from-gray-800 to-gray-900 text-white flex flex-col h-full transition-all duration-300"
-            :class="isCollapsed ? 'w-16' : 'w-64'"
-        >
+            :class="isCollapsed ? 'w-16' : 'w-64'">
             <!-- Header -->
-            <header class="px-6 py-8 border-b border-gray-700 flex justify-between items-center">                
+            <header class="px-6 py-8 border-b border-gray-700 flex justify-between items-center">
                 <!-- Botón para colapsar/expandir -->
-                <button 
-                    @click="toggleSidebar" 
+                <button @click="toggleSidebar"
                     class="text-gray-400 hover:text-white focus:outline-none transition-transform duration-300"
-                    :class="{ 'rotate-180': isCollapsed }"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                    :class="{ 'rotate-180': isCollapsed }">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
                     </svg>
                 </button>
             </header>
@@ -33,20 +32,21 @@
                                 'bg-gray-300 text-gray-700': currentPath === link.href && !isCollapsed,
                                 'hover:bg-gray-700 hover:text-white': currentPath !== link.href || isCollapsed,
                                 'justify-center': isCollapsed
-                            }"
-                            :title="link.text"
-                        >
+                            }" :title="link.text">
                             <!-- Icon placeholder (you can add specific icons for each link) -->
-                            <svg v-if="isCollapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                            <svg v-if="isCollapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h7" />
                             </svg>
-                            
+
                             <span class="flex-1 transition-opacity duration-300" :class="{ 'hidden': isCollapsed }">
                                 {{ link.text }}
                             </span>
-                            
-                            <svg v-if="currentPath === link.href && !isCollapsed" class="w-5 h-5" xmlns="http://www.w3.org/2000/svg"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                            <svg v-if="currentPath === link.href && !isCollapsed" class="w-5 h-5"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 5l7 7-7 7" />
                             </svg>
@@ -70,20 +70,21 @@
                                     'bg-gray-300 text-gray-700': currentPath === link.href && !isCollapsed,
                                     'hover:bg-gray-700 hover:text-white': currentPath !== link.href || isCollapsed,
                                     'justify-center': isCollapsed
-                                }"
-                                :title="link.text"
-                            >
+                                }" :title="link.text">
                                 <!-- Icon placeholder (you can add specific icons for each link) -->
-                                <svg v-if="isCollapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                                <svg v-if="isCollapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h7" />
                                 </svg>
-                                
+
                                 <span class="flex-1 transition-opacity duration-300" :class="{ 'hidden': isCollapsed }">
                                     {{ link.text }}
                                 </span>
-                                
-                                <svg v-if="currentPath === link.href && !isCollapsed" class="w-5 h-5" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                                <svg v-if="currentPath === link.href && !isCollapsed" class="w-5 h-5"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 5l7 7-7 7" />
                                 </svg>
@@ -189,7 +190,7 @@ export default defineComponent({
 
         // Check login status
         this.checkLoginStatus();
-        
+
         // Cargar estado de colapso del local storage si existe
         const savedState = localStorage.getItem('sidebarCollapsed');
         if (savedState) {
@@ -231,7 +232,7 @@ export default defineComponent({
             // Guardar estado en localStorage para persistencia
             localStorage.setItem('sidebarCollapsed', this.isCollapsed.toString());
         },
-        
+
         async checkLoginStatus() {
             try {
                 const usersComposable = useUsers();
@@ -251,7 +252,7 @@ export default defineComponent({
         loadLinks() {
             const utf8 = useutf8Store();
             this.links = [
-            {
+                {
                     text: utf8.t('route.home'),
                     href: '/',
                 },
@@ -289,6 +290,12 @@ export default defineComponent({
                 {
                     text: utf8.t('links.chat'),
                     href: '/chats',
+                    requiresAuth: true,
+                    roles: ['COMPRADOR', 'ADMIN', 'VENDEDOR']
+                },
+                {
+                    text: utf8.t('links.invoices'),
+                    href: '/facturas',
                     requiresAuth: true,
                     roles: ['COMPRADOR', 'ADMIN', 'VENDEDOR']
                 },

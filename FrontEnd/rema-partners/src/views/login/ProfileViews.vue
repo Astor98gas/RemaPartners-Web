@@ -143,7 +143,7 @@
                                 <!-- Descripción -->
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.description')
-                                        }}</label>
+                                    }}</label>
                                     <textarea v-model="formData.description" rows="4"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                                         :placeholder="utf8.t('profile.description_placeholder')">
@@ -153,7 +153,7 @@
                                 <!-- Redes sociales -->
                                 <div>
                                     <label class="block text-sm text-gray-500 mb-2">{{ utf8.t('profile.social_links')
-                                        }}</label>
+                                    }}</label>
 
                                     <div v-for="(link, index) in formData.socialLinks" :key="index"
                                         class="flex gap-2 mb-2">
@@ -190,14 +190,14 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.new_password')
-                                    }}</label>
+                                        }}</label>
                                     <input type="password" v-model="formData.password"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <p class="text-xs text-gray-500 mt-1">{{ utf8.t('profile.password_note') }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.confirm_password')
-                                    }}</label>
+                                        }}</label>
                                     <input type="password" v-model="formData.confirmPassword"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
@@ -247,6 +247,9 @@
                                     <h3 class="font-medium mb-2">{{ utf8.t('profile.communication') }}</h3>
                                     <router-link to="/chats" class="text-blue-600 hover:text-blue-800 block py-1">
                                         {{ utf8.t('profile.view_chats') }}
+                                    </router-link>
+                                    <router-link to="/facturas" class="text-blue-600 hover:text-blue-800 block py-1">
+                                        {{ utf8.t('profile.view_invoices') }}
                                     </router-link>
                                 </div>
 
@@ -377,7 +380,7 @@
                 <div class="mb-6">
                     <p class="text-gray-600 mb-4">
                         {{ utf8.t('profile.subscription_options_desc') ||
-                            'Elige una opción de suscripción para convertirte en vendedor.' }}
+                        'Elige una opción de suscripción para convertirte en vendedor.' }}
                     </p>
 
                     <div class="space-y-4">
@@ -389,7 +392,7 @@
                             </h3>
                             <p class="text-sm text-gray-600">
                                 {{ utf8.t('profile.free_trial_desc') ||
-                                    'Obtén acceso a funciones de vendedor durante 30 días sin costo.' }}
+                                'Obtén acceso a funciones de vendedor durante 30 días sin costo.' }}
                             </p>
                         </div>
 
@@ -400,7 +403,7 @@
                             </h3>
                             <p class="text-sm text-gray-600">
                                 {{ utf8.t('profile.premium_desc') ||
-                                    'Suscríbete para obtener todas las funciones premium y renovación automática.' }}
+                                'Suscríbete para obtener todas las funciones premium y renovación automática.' }}
                             </p>
                         </div>
                     </div>
@@ -418,6 +421,7 @@ import { useToast } from 'vue-toastification';
 import { defineComponent } from 'vue';
 import type { User, SocialLink } from '@/models/user';
 import StripePayComponent from '@/components/features/stripe/StripePayComponent.vue';
+import FacturasPanel from '@/components/profile/FacturasPanel.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -426,6 +430,7 @@ export default defineComponent({
     components: {
         ButtonBasic,
         StripePayComponent,
+        FacturasPanel,
     },
     data() {
         return {

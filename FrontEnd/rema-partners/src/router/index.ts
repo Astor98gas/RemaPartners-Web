@@ -98,6 +98,12 @@ const router = createRouter({
             component: () => import('@/views/user/PublicProfileView.vue'),
             meta: { requiresAuth: false }
         },
+        {
+            path: '/facturas',
+            name: 'facturas',
+            component: () => import('@/views/facturas/FacturasView.vue'),
+            meta: { requiresAuth: true, roles: ['COMPRADOR', 'ADMIN', 'VENDEDOR'] }
+        },
     ],
 })
 

@@ -122,6 +122,7 @@
 import { defineComponent } from 'vue';
 import { useChat } from '@/composables/useChat';
 import { useProducto } from '@/composables/useProducto';
+import { useFactura } from '@/composables/useFactura';
 import { useutf8Store } from '@/stores/counter';
 import type { ChatEntity } from '@/models/chat';
 import type { Producto } from '@/models/producto';
@@ -151,12 +152,14 @@ export default defineComponent({
     data() {
         const chatComposable = useChat();
         const productoComposable = useProducto();
+        const facturaComposable = useFactura();
 
         return {
             newMessage: '',
             messagesContainer: null as HTMLElement | null,
             chatComposable,
             productoComposable,
+            facturaComposable,
             loading: false,
             error: null as string | null,
             chat: null as ChatEntity | null,
@@ -403,6 +406,26 @@ export default defineComponent({
 
                 // Refresh product info
                 await this.loadProductInfo();
+
+                // Create an invoice for this sale
+                if (this.currentChat.id && this.currentProduct) {
+                    try {
+                        // Create invoice using the dedicated endpoint
+                        await this.facturaComposable.createFromSale(
+                            this.currentChat.idProducto,
+                            this.currentChat.idComprador,
+                            this.currentChat.idVendedor,
+                            quantity,
+                            this.currentChat.id
+                        );
+
+                        console.log('Invoice created successfully for the sale');
+                    } catch (invoiceErr) {
+                        console.error('Error creating invoice:', invoiceErr);
+                        // We don't want to fail the whole sale process if invoice creation fails
+                        // Just log the error and continue
+                    }
+                }
 
                 // Notify the buyer that the product has been sold by sending a system message
                 if (this.currentProduct) {
