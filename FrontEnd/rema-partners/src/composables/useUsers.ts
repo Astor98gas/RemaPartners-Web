@@ -126,7 +126,7 @@ export function useUsers() {
         }
     }
 
-    const logout = async () => {
+    const logout = async (redirect = true) => {
         try {
             loading.value = true
             await userService.logout() // Llama al backend para invalidar el token
@@ -135,8 +135,10 @@ export function useUsers() {
             success.value = 'Logout successful!'
             error.value = null
 
-            // Redirige al usuario a la página de login
-            window.location.href = '/login'
+            // Redirige al usuario a la página de login solo si redirect es true
+            if (redirect) {
+                window.location.href = '/login'
+            }
         } catch (err: any) {
             console.error('Logout error:', err)
             error.value = err.response?.data?.message || 'Error logging out'
@@ -181,6 +183,16 @@ export function useUsers() {
 
                 // Llamar al servicio para actualizar el usuario
                 const response = await userService.updateUser(userId, updatedUser);
+
+                // Check if username was changed (special response from backend)
+                if (response.data && response.data.usernameChanged) {
+                    // Need to log out and re-login
+                    success.value = 'Profile updated successfully. Please login again with your new username.';
+                    // Perform logout without redirect
+                    await logout(false);
+                    // Return special flag to indicate username change
+                    return { usernameChanged: true, message: response.data.message };
+                }
 
                 // Actualizar el estado local del usuario
                 currentUser.value = {

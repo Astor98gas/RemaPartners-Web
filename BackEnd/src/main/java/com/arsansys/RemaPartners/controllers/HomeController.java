@@ -1,6 +1,10 @@
 package com.arsansys.RemaPartners.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.arsansys.RemaPartners.controllers.dto.CreateUserDTO;
 import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.repositories.UserRepository;
+import com.arsansys.RemaPartners.security.jwt.JwtUtils;
 import com.arsansys.RemaPartners.services.UserService;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +33,9 @@ public class HomeController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @GetMapping("/")
     public String home() {
@@ -77,10 +85,14 @@ public class HomeController {
     }
 
     @PostMapping("/updateUser/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody CreateUserDTO updateUserDTO) {
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody CreateUserDTO updateUserDTO,
+            HttpServletRequest request) {
         try {
             UserEntity user = userRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Check if username is changing
+            boolean usernameChanged = !user.getUsername().equals(updateUserDTO.getUsername());
 
             // Actualizar datos básicos
             user.setUsername(updateUserDTO.getUsername());
@@ -100,14 +112,29 @@ public class HomeController {
                 user.setProfileImage(updateUserDTO.getProfileImage());
             }
 
-            if (updateUserDTO.getSocialLinks() != null) {
-                user.setSocialLinks(updateUserDTO.getSocialLinks());
+            // Save updated user
+            userRepository.save(user);
+
+            // If username changed, invalidate the JWT token
+            if (usernameChanged) {
+                // Extract JWT token from request
+                String authHeader = request.getHeader("Authorization");
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    String token = authHeader.substring(7);
+                    // Use the jwtUtils to invalidate the token
+                    jwtUtils.invalidateToken(token);
+
+                    // Return special response to indicate token invalidation
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("usernameChanged", true);
+                    response.put("message", "User updated successfully. Please login again with new username.");
+                    return ResponseEntity.ok(response);
+                }
             }
 
-            userRepository.save(user);
-            return ResponseEntity.ok().body("User updated successfully");
+            return ResponseEntity.ok("User updated successfully");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error updating user: " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

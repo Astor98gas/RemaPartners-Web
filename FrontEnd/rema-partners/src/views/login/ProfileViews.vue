@@ -380,7 +380,7 @@
                 <div class="mb-6">
                     <p class="text-gray-600 mb-4">
                         {{ utf8.t('profile.subscription_options_desc') ||
-                        'Elige una opción de suscripción para convertirte en vendedor.' }}
+                            'Elige una opción de suscripción para convertirte en vendedor.' }}
                     </p>
 
                     <div class="space-y-4">
@@ -392,7 +392,7 @@
                             </h3>
                             <p class="text-sm text-gray-600">
                                 {{ utf8.t('profile.free_trial_desc') ||
-                                'Obtén acceso a funciones de vendedor durante 30 días sin costo.' }}
+                                    'Obtén acceso a funciones de vendedor durante 30 días sin costo.' }}
                             </p>
                         </div>
 
@@ -403,7 +403,7 @@
                             </h3>
                             <p class="text-sm text-gray-600">
                                 {{ utf8.t('profile.premium_desc') ||
-                                'Suscríbete para obtener todas las funciones premium y renovación automática.' }}
+                                    'Suscríbete para obtener todas las funciones premium y renovación automática.' }}
                             </p>
                         </div>
                     </div>
@@ -570,6 +570,9 @@ export default defineComponent({
                     throw new Error('User not authenticated');
                 }
 
+                // Check if username is being changed
+                const isUsernameChanged = this.currentUser.username !== this.formData.username;
+
                 // Preparar datos para actualización
                 const updateData: Partial<User> = {
                     username: this.formData.username,
@@ -584,11 +587,67 @@ export default defineComponent({
                     updateData.password = this.formData.password;
                 }
 
+                // Save current password for re-login if needed
+                const currentPassword = this.formData.password || '';
+
                 // Llamar al método del composable para actualizar el perfil
                 await this.usersComposable.updateProfile(this.currentUser.id, updateData);
 
-                this.editMode = false;
-                toast.success(this.utf8.t('profile.update_success'));
+                // If username was changed, we need to logout and login again
+                if (isUsernameChanged) {
+                    toast.info(this.utf8.t('profile.username_changed_relogin') || 'Username changed. You will be logged in again.');
+
+                    // First logout to invalidate current token
+                    await this.usersComposable.logout(false); // Pass false to prevent redirect
+
+                    // Then login with new credentials
+                    if (this.formData.password) {
+                        // If password was also changed, use new password
+                        await this.usersComposable.loginUser({
+                            username: this.formData.username,
+                            password: this.formData.password
+                        });
+                    } else {
+                        // Show modal asking for password to re-login
+                        await Swal.fire({
+                            title: this.utf8.t('profile.relogin_required') || 'Re-login Required',
+                            text: this.utf8.t('profile.username_changed_enter_password') || 'Your username was changed. Please enter your password to log in with the new username.',
+                            input: 'password',
+                            inputAttributes: {
+                                autocapitalize: 'off',
+                                autocorrect: 'off'
+                            },
+                            showCancelButton: true,
+                            confirmButtonText: this.utf8.t('common.login') || 'Login',
+                            showLoaderOnConfirm: true,
+                            preConfirm: async (password) => {
+                                try {
+                                    await this.usersComposable.loginUser({
+                                        username: this.formData.username,
+                                        password: password
+                                    });
+                                    return true;
+                                } catch (error: any) {
+                                    Swal.showValidationMessage(
+                                        error.response?.data?.message || 'Login failed'
+                                    );
+                                    return false;
+                                }
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Refresh page after successful re-login
+                                window.location.reload();
+                            } else {
+                                // If canceled, redirect to login page
+                                this.$router.push({ name: 'login' });
+                            }
+                        });
+                    }
+                } else {
+                    this.editMode = false;
+                    toast.success(this.utf8.t('profile.update_success'));
+                }
             } catch (error: any) {
                 console.error('Error updating profile:', error);
                 toast.error(error.message || this.utf8.t('profile.update_error'));
