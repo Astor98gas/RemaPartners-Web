@@ -218,37 +218,86 @@
                             <h2 class="text-xl font-semibold border-b pb-2 mb-4">{{ utf8.t('profile.account_actions') }}
                             </h2>
                             <div class="space-y-4">
-                                <!-- Enlaces basados en el rol -->
-                                <div v-if="isVendedor || isAdmin" class="border-b pb-4">
-                                    <h3 class="font-medium mb-2">{{ utf8.t('profile.your_products') }}</h3>
+
+                                <!-- Premium Features Section -->
+                                <div v-if="isVendedor || isAdmin || isTrabajador" class="border-b pb-4">
+                                    <h3 class="font-medium mb-2 flex items-center">
+                                        {{ utf8.t('profile.premium_features') || 'Funciones Premium' }}
+                                        <span
+                                            class="ml-2 px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Premium</span>
+                                    </h3>
                                     <router-link to="/producto/create"
-                                        class="text-blue-600 hover:text-blue-800 block py-1">
+                                        class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                        </svg>
                                         {{ utf8.t('profile.add_product') }}
                                     </router-link>
                                     <router-link v-if="isVendedor || isAdmin || isTrabajador" to="/dashboard"
-                                        class="text-blue-600 hover:text-blue-800 block py-1">
+                                        class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                        </svg>
                                         {{ utf8.t('profile.dashboard') }}
+                                    </router-link>
+                                    <router-link :to="`/user/${currentUser.id}`"
+                                        class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        {{ utf8.t('profile.view_public_profile') ||
+                                            'Ver mi perfil público y valoraciones' }}
                                     </router-link>
                                 </div>
 
                                 <div v-if="isAdmin" class="border-b pb-4">
                                     <h3 class="font-medium mb-2">{{ utf8.t('profile.admin_actions') }}</h3>
                                     <router-link to="/admin/categoria/list"
-                                        class="text-blue-600 hover:text-blue-800 block py-1">
+                                        class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                        </svg>
                                         {{ utf8.t('profile.manage_categories') }}
                                     </router-link>
                                     <router-link to="/admin/categoria/create"
-                                        class="text-blue-600 hover:text-blue-800 block py-1">
+                                        class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4" />
+                                        </svg>
                                         {{ utf8.t('profile.create_category') }}
                                     </router-link>
                                 </div>
 
                                 <div v-if="isComprador || isVendedor || isAdmin" class="border-b pb-4">
                                     <h3 class="font-medium mb-2">{{ utf8.t('profile.communication') }}</h3>
-                                    <router-link to="/chats" class="text-blue-600 hover:text-blue-800 block py-1">
+                                    <router-link to="/chats"
+                                        class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                        </svg>
                                         {{ utf8.t('profile.view_chats') }}
                                     </router-link>
-                                    <router-link to="/facturas" class="text-blue-600 hover:text-blue-800 block py-1">
+                                    <router-link to="/facturas"
+                                        class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
                                         {{ utf8.t('profile.view_invoices') }}
                                     </router-link>
                                 </div>
