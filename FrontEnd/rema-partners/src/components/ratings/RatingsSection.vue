@@ -1,50 +1,56 @@
 <template>
-    <div class="ratings-section">
-        <div class="ratings-header">
-            <h2 class="section-title">Valoraciones</h2>
-            <div class="ratings-summary" v-if="!loading && ratings.length > 0">
-                <div class="average-rating">
+    <div class="mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">Valoraciones</h2>
+            <div v-if="!loading && ratings.length > 0" class="flex items-center">
+                <div class="flex items-center gap-2">
                     <StarRating :modelValue="averageRating" :showRatingText="true" />
-                    <span class="total-count">({{ ratings.length }} valoraciones)</span>
+                    <span class="text-sm text-gray-500">({{ ratings.length }} valoraciones)</span>
                 </div>
             </div>
         </div>
 
         <!-- Loading state -->
-        <div v-if="loading" class="loading-container">
-            <div class="loading-spinner"></div>
+        <div v-if="loading" class="flex flex-col items-center justify-center py-8">
+            <div class="w-8 h-8 rounded-full border-3 border-blue-300 border-t-blue-500 animate-spin mb-4"></div>
             <p>Cargando valoraciones...</p>
         </div>
 
         <!-- Error state -->
-        <div v-else-if="error" class="error-container">
-            <p class="error-message">{{ error }}</p>
-            <button @click="loadRatings" class="retry-btn">Reintentar</button>
+        <div v-else-if="error" class="bg-red-100 border border-red-200 rounded-lg p-4 text-center">
+            <p class="text-red-700 mb-3">{{ error }}</p>
+            <button @click="loadRatings"
+                class="py-1.5 px-3 text-sm text-white bg-red-500 hover:bg-red-600 rounded transition duration-200 border-none cursor-pointer">
+                Reintentar
+            </button>
         </div>
 
         <!-- No ratings yet -->
-        <div v-else-if="ratings.length === 0" class="empty-state">
-            <p class="empty-message">Este vendedor aún no tiene valoraciones.</p>
-            <button v-if="canAddRating" @click="showRatingForm = true" class="add-rating-btn">
+        <div v-else-if="ratings.length === 0"
+            class="text-center py-10 border border-dashed border-gray-300 rounded-lg bg-gray-50">
+            <p class="text-gray-500 mb-4">Este vendedor aún no tiene valoraciones.</p>
+            <button v-if="canAddRating" @click="showRatingForm = true"
+                class="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200">
                 Sé el primero en valorar
             </button>
         </div>
 
         <!-- Rating form for adding/editing -->
-        <div v-if="showRatingForm" class="rating-form-wrapper">
+        <div v-if="showRatingForm" class="mb-6">
             <RatingForm :sellerId="sellerId" :existingRating="userRating" :isEditing="userRating !== null"
                 @submit="handleRatingSubmit" @cancel="showRatingForm = false" />
         </div>
 
         <!-- Rating reply form -->
-        <div v-if="showReplyForm" class="rating-form-wrapper">
+        <div v-if="showReplyForm" class="mb-6">
             <RatingForm :sellerId="sellerId" :existingRating="selectedRating" :isReplying="true"
                 @submit="handleReplySubmit" @cancel="showReplyForm = false" />
         </div>
 
         <!-- Add rating button -->
-        <div v-if="canAddRating && !showRatingForm && ratings.length > 0" class="add-rating-container">
-            <button v-if="!userRating" @click="showRatingForm = true" class="add-rating-btn">
+        <div v-if="canAddRating && !showRatingForm && ratings.length > 0" class="mb-6 flex justify-end">
+            <button v-if="!userRating" @click="showRatingForm = true"
+                class="inline-flex items-center gap-1.5 py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 border-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
@@ -52,7 +58,8 @@
                 </svg>
                 <span>Añadir valoración</span>
             </button>
-            <button v-else @click="showRatingForm = true" class="edit-rating-btn">
+            <button v-else @click="showRatingForm = true"
+                class="inline-flex items-center gap-1.5 py-2 px-4 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition duration-200 border border-gray-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path
                         d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -62,7 +69,7 @@
         </div>
 
         <!-- Ratings list -->
-        <div v-if="!loading && ratings.length > 0" class="ratings-list">
+        <div v-if="!loading && ratings.length > 0" class="mt-6">
             <TransitionGroup name="rating-item">
                 <RatingItem v-for="rating in sortedRatings" :key="rating.id" :rating="rating"
                     :canEdit="canEditRating(rating)" :canReply="canReplyToRating(rating)"
@@ -300,18 +307,23 @@ export default defineComponent({
                 try {
                     await ratingsComposable.deleteRating(rating.id, props.sellerId);
 
-                    // Mostrar mensaje de éxito con SweetAlert2
+                    // Mostrar mensaje de éxito con SweetAlert2 con botón de confirmación
                     await Swal.fire({
                         title: 'Eliminada',
                         text: isOwnRating ?
                             'Tu valoración ha sido eliminada correctamente' :
                             'La valoración ha sido eliminada correctamente',
                         icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#3b82f6',
+                        // Eliminamos el timer para que no se cierre automáticamente
+                        // timer: 2000,
+                        showConfirmButton: true
                     });
 
-                    // La función deleteRating ya recarga las valoraciones internamente
+                    // Recargar las valoraciones al hacer clic en "Aceptar"
+                    await loadRatings();
+
                 } catch (err: any) {
                     // Mostrar error con SweetAlert2
                     await Swal.fire({
@@ -360,150 +372,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.ratings-section {
-    margin-bottom: 2rem;
-}
-
-.ratings-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.section-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin: 0;
-}
-
-.ratings-summary {
-    display: flex;
-    align-items: center;
-}
-
-.average-rating {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.total-count {
-    font-size: 0.875rem;
-    color: #6b7280;
-}
-
-.loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 0;
-}
-
-.loading-spinner {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    border: 3px solid rgba(59, 130, 246, 0.3);
-    border-top-color: #3b82f6;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-}
-
+/* Mantener sólo las transiciones que no son fáciles de lograr con Tailwind */
 @keyframes spin {
     to {
         transform: rotate(360deg);
     }
-}
-
-.error-container {
-    background-color: #fee2e2;
-    border: 1px solid #fecaca;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    text-align: center;
-}
-
-.error-message {
-    color: #b91c1c;
-    margin-bottom: 0.75rem;
-}
-
-.retry-btn {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-    color: white;
-    background-color: #ef4444;
-    border-radius: 0.25rem;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.retry-btn:hover {
-    background-color: #dc2626;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 2.5rem 0;
-    border: 1px dashed #d1d5db;
-    border-radius: 0.5rem;
-    background-color: #f9fafb;
-}
-
-.empty-message {
-    color: #6b7280;
-    margin-bottom: 1rem;
-}
-
-.rating-form-wrapper {
-    margin-bottom: 1.5rem;
-}
-
-.add-rating-container {
-    margin-bottom: 1.5rem;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.add-rating-btn,
-.edit-rating-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
-}
-
-.add-rating-btn {
-    background-color: #3b82f6;
-    color: white;
-}
-
-.add-rating-btn:hover {
-    background-color: #2563eb;
-}
-
-.edit-rating-btn {
-    background-color: #f3f4f6;
-    color: #4b5563;
-    border: 1px solid #e5e7eb;
-}
-
-.edit-rating-btn:hover {
-    background-color: #e5e7eb;
-}
-
-.ratings-list {
-    margin-top: 1.5rem;
 }
 
 /* Transitions */

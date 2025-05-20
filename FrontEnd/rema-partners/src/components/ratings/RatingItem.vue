@@ -1,17 +1,19 @@
 <template>
-    <div class="rating-card" :class="{ 'highlight': highlight }">
-        <div class="rating-header">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <div v-if="rating.username" class="avatar-text">
+    <div class="border border-gray-200 rounded-lg p-4 mb-4 bg-white transition-all duration-200"
+        :class="{ 'border-blue-500 shadow-sm shadow-blue-100': highlight }">
+        <div class="flex justify-between items-start mb-3">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center text-gray-700 font-semibold">
+                    <div v-if="rating.username" class="text-base">
                         {{ getInitials(rating.username) }}
                     </div>
                 </div>
-                <div class="user-details">
-                    <h4 class="username">{{ rating.username }}</h4>
-                    <div class="rating-date">
+                <div class="flex flex-col">
+                    <h4 class="font-semibold text-sm text-gray-900 m-0">{{ rating.username }}</h4>
+                    <div class="text-xs text-gray-500">
                         {{ formatDate(rating.updatedAt !== rating.createdAt ? rating.updatedAt : rating.createdAt) }}
-                        <span v-if="rating.updatedAt !== rating.createdAt" class="edited-badge">
+                        <span v-if="rating.updatedAt !== rating.createdAt" class="italic">
                             ({{ t('ratings.edited') }})
                         </span>
                     </div>
@@ -22,30 +24,32 @@
             </div>
         </div>
 
-        <div class="rating-content">
-            <p class="rating-comment">{{ rating.comment }}</p>
+        <div class="mb-4">
+            <p class="m-0 whitespace-pre-line leading-6">{{ rating.comment }}</p>
         </div>
 
         <!-- Reply section -->
-        <div v-if="rating.reply" class="rating-reply">
-            <div class="reply-header">
-                <div class="reply-icon">
+        <div v-if="rating.reply" class="bg-gray-100 rounded-md p-3 mt-3">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="text-gray-500 w-5 h-5">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd"
                             d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
                             clip-rule="evenodd" />
                     </svg>
                 </div>
-                <div class="reply-title">
+                <div class="text-sm text-gray-600">
                     <strong>{{ t('ratings.seller_response') }}</strong>
                 </div>
             </div>
-            <p class="reply-content">{{ rating.reply }}</p>
+            <p class="m-0 text-sm whitespace-pre-line leading-6 text-gray-800">{{ rating.reply }}</p>
         </div>
 
         <!-- Actions for editing/replying (if user has permissions) -->
-        <div class="rating-actions" v-if="canEdit || canReply || canDelete">
-            <button v-if="canEdit" @click="$emit('edit')" class="action-btn edit-btn" :title="t('ratings.edit')">
+        <div v-if="canEdit || canReply || canDelete" class="flex gap-2 mt-4 justify-end">
+            <button v-if="canEdit" @click="$emit('edit')"
+                class="flex items-center gap-1.5 py-1.5 px-2 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors duration-200 border-none"
+                :title="t('ratings.edit')">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -54,7 +58,9 @@
                 <span>{{ t('ratings.edit') }}</span>
             </button>
 
-            <button v-if="canReply" @click="$emit('reply')" class="action-btn reply-btn" :title="t('ratings.reply')">
+            <button v-if="canReply" @click="$emit('reply')"
+                class="flex items-center gap-1.5 py-1.5 px-2 text-xs bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors duration-200 border-none"
+                :title="t('ratings.reply')">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -63,7 +69,8 @@
                 <span>{{ t('ratings.reply') }}</span>
             </button>
 
-            <button v-if="canDelete" @click="$emit('delete')" class="action-btn delete-btn"
+            <button v-if="canDelete" @click="$emit('delete')"
+                class="flex items-center gap-1.5 py-1.5 px-2 text-xs bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors duration-200 border-none"
                 :title="t('ratings.delete')">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -134,158 +141,3 @@ export default defineComponent({
     }
 });
 </script>
-
-<style scoped>
-.rating-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    background-color: white;
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.rating-card.highlight {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
-}
-
-.rating-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 0.75rem;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.user-avatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    background-color: #e5e7eb;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #374151;
-    font-weight: 600;
-}
-
-.avatar-text {
-    font-size: 1rem;
-}
-
-.user-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.username {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: #111827;
-    margin: 0;
-}
-
-.rating-date {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
-
-.edited-badge {
-    font-style: italic;
-}
-
-.rating-content {
-    margin-bottom: 1rem;
-}
-
-.rating-comment {
-    margin: 0;
-    white-space: pre-line;
-    line-height: 1.5;
-}
-
-.rating-reply {
-    background-color: #f3f4f6;
-    border-radius: 0.375rem;
-    padding: 0.75rem;
-    margin-top: 0.75rem;
-}
-
-.reply-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.reply-icon {
-    color: #6b7280;
-    width: 1.25rem;
-    height: 1.25rem;
-}
-
-.reply-title {
-    font-size: 0.875rem;
-    color: #4b5563;
-}
-
-.reply-content {
-    margin: 0;
-    font-size: 0.9rem;
-    white-space: pre-line;
-    line-height: 1.5;
-    color: #1f2937;
-}
-
-.rating-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    justify-content: flex-end;
-}
-
-.action-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.375rem 0.5rem;
-    font-size: 0.75rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    border: none;
-}
-
-.edit-btn {
-    background-color: #eff6ff;
-    color: #2563eb;
-}
-
-.edit-btn:hover {
-    background-color: #dbeafe;
-}
-
-.reply-btn {
-    background-color: #f3f4f6;
-    color: #4b5563;
-}
-
-.reply-btn:hover {
-    background-color: #e5e7eb;
-}
-
-.delete-btn {
-    background-color: #fee2e2;
-    color: #dc2626;
-}
-
-.delete-btn:hover {
-    background-color: #fecaca;
-}
-</style>
