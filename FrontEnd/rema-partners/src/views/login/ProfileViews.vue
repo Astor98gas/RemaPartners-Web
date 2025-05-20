@@ -143,7 +143,7 @@
                                 <!-- Descripción -->
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.description')
-                                    }}</label>
+                                        }}</label>
                                     <textarea v-model="formData.description" rows="4"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                                         :placeholder="utf8.t('profile.description_placeholder')">
@@ -153,7 +153,7 @@
                                 <!-- Redes sociales -->
                                 <div>
                                     <label class="block text-sm text-gray-500 mb-2">{{ utf8.t('profile.social_links')
-                                    }}</label>
+                                        }}</label>
 
                                     <div v-for="(link, index) in formData.socialLinks" :key="index"
                                         class="flex gap-2 mb-2">
@@ -190,14 +190,14 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.new_password')
-                                        }}</label>
+                                    }}</label>
                                     <input type="password" v-model="formData.password"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <p class="text-xs text-gray-500 mt-1">{{ utf8.t('profile.password_note') }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.confirm_password')
-                                        }}</label>
+                                    }}</label>
                                     <input type="password" v-model="formData.confirmPassword"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
@@ -220,42 +220,84 @@
                             <div class="space-y-4">
 
                                 <!-- Premium Features Section -->
-                                <div v-if="isVendedor || isAdmin || isTrabajador" class="border-b pb-4">
+                                <div class="border-b pb-4">
                                     <h3 class="font-medium mb-2 flex items-center">
                                         {{ utf8.t('profile.premium_features') || 'Funciones Premium' }}
                                         <span
                                             class="ml-2 px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Premium</span>
                                     </h3>
-                                    <router-link to="/producto/create"
-                                        class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                        </svg>
-                                        {{ utf8.t('profile.add_product') }}
-                                    </router-link>
-                                    <router-link v-if="isVendedor || isAdmin || isTrabajador" to="/dashboard"
-                                        class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                        </svg>
-                                        {{ utf8.t('profile.dashboard') }}
-                                    </router-link>
-                                    <router-link :to="`/user/${currentUser.id}`"
-                                        class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                        </svg>
-                                        {{ utf8.t('profile.view_public_profile') ||
-                                            'Ver mi perfil público y valoraciones' }}
-                                    </router-link>
+
+                                    <!-- Links for premium users (VENDEDOR, ADMIN, TRABAJADOR) -->
+                                    <template v-if="isVendedor || isAdmin || isTrabajador">
+                                        <router-link to="/producto/create"
+                                            class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                            </svg>
+                                            {{ utf8.t('profile.add_product') }}
+                                        </router-link>
+                                        <router-link to="/dashboard"
+                                            class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                            {{ utf8.t('profile.dashboard') }}
+                                        </router-link>
+                                        <router-link :to="`/user/${currentUser.id}`"
+                                            class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            {{ utf8.t('profile.view_public_profile') ||
+                                                'Ver mi perfil público y valoraciones' }}
+                                        </router-link>
+                                    </template>
+
+                                    <!-- Disabled links for non-premium users -->
+                                    <template v-else>
+                                        <div v-for="(item, index) in premiumFeatures" :key="index"
+                                            class="text-gray-400 py-1 flex items-center relative group cursor-not-allowed">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    :d="item.icon" />
+                                            </svg>
+                                            {{ utf8.t(item.translationKey) || item.name }}
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-amber-500"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+
+                                            <!-- Tooltip -->
+                                            <div
+                                                class="absolute -top-2 left-full ml-2 w-60 transform -translate-y-full 
+                                                        bg-gray-800 text-white text-xs rounded py-1 px-2 
+                                                        opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                                                {{ utf8.t('profile.premium_feature_locked') ||
+                                                    'Esta función requiere una suscripción premium' }}
+                                            </div>
+                                        </div>
+
+                                        <!-- Subscribe button for non-premium users -->
+                                        <button @click="showSubscriptionOptions = true"
+                                            class="mt-2 text-sm bg-gradient-to-r from-amber-400 to-amber-600 text-white py-1 px-3 rounded-full hover:from-amber-500 hover:to-amber-700 transition-all flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                            </svg>
+                                            {{ utf8.t('profile.get_premium') || 'Obtener Premium' }}
+                                        </button>
+                                    </template>
                                 </div>
 
                                 <div v-if="isAdmin" class="border-b pb-4">
@@ -303,7 +345,7 @@
                                 </div>
 
                                 <!-- Subscription Section -->
-                                <div v-if="isComprador || isAdmin || isTrabajador" class="border-b pb-4">
+                                <!-- <div v-if="isComprador || isAdmin || isTrabajador" class="border-b pb-4">
                                     <h3 class="font-medium mb-2">{{ utf8.t('profile.subscription') || 'Subscription' }}
                                     </h3>
                                     <ButtonBasic variant="success" size="md" @click="showSubscriptionOptions = true"
@@ -315,7 +357,7 @@
                                         </svg>
                                         {{ utf8.t('profile.subscribe') || 'Subscribe Premium' }}
                                     </ButtonBasic>
-                                </div>
+                                </div> -->
 
                                 <div class="pt-2">
                                     <ButtonBasic variant="danger" size="md" @click="logout">
@@ -506,6 +548,23 @@ export default defineComponent({
                 socialLinks: [] as SocialLink[],
             },
             previewImage: null as string | null,
+            premiumFeatures: [
+                {
+                    name: 'Añadir producto',
+                    icon: 'M12 6v6m0 0v6m0-6h6m-6 0H6',
+                    translationKey: 'profile.add_product'
+                },
+                {
+                    name: 'Dashboard',
+                    icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+                    translationKey: 'profile.dashboard'
+                },
+                {
+                    name: 'Ver mi perfil público y valoraciones',
+                    icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z',
+                    translationKey: 'profile.view_public_profile'
+                }
+            ]
         };
     },
     computed: {
