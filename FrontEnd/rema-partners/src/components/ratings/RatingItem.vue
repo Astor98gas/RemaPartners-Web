@@ -12,7 +12,7 @@
                     <div class="rating-date">
                         {{ formatDate(rating.updatedAt !== rating.createdAt ? rating.updatedAt : rating.createdAt) }}
                         <span v-if="rating.updatedAt !== rating.createdAt" class="edited-badge">
-                            (editado)
+                            ({{ t('ratings.edited') }})
                         </span>
                     </div>
                 </div>
@@ -37,31 +37,40 @@
                     </svg>
                 </div>
                 <div class="reply-title">
-                    <strong>Respuesta del vendedor</strong>
+                    <strong>{{ t('ratings.seller_response') }}</strong>
                 </div>
             </div>
             <p class="reply-content">{{ rating.reply }}</p>
         </div>
 
         <!-- Actions for editing/replying (if user has permissions) -->
-        <div class="rating-actions" v-if="canEdit || canReply">
-            <button v-if="canEdit" @click="$emit('edit')" class="action-btn edit-btn" title="Editar valoración">
+        <div class="rating-actions" v-if="canEdit || canReply || canDelete">
+            <button v-if="canEdit" @click="$emit('edit')" class="action-btn edit-btn" :title="t('ratings.edit')">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                <span>Editar</span>
+                <span>{{ t('ratings.edit') }}</span>
             </button>
 
-            <button v-if="canReply" @click="$emit('reply')" class="action-btn reply-btn"
-                title="Responder a esta valoración">
+            <button v-if="canReply" @click="$emit('reply')" class="action-btn reply-btn" :title="t('ratings.reply')">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                 </svg>
-                <span>Responder</span>
+                <span>{{ t('ratings.reply') }}</span>
+            </button>
+
+            <button v-if="canDelete" @click="$emit('delete')" class="action-btn delete-btn"
+                :title="t('ratings.delete')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span>{{ t('ratings.delete') }}</span>
             </button>
         </div>
     </div>
@@ -71,6 +80,7 @@
 import { defineComponent } from 'vue';
 import type { Rating } from '@/models/rating';
 import StarRating from './StarRating.vue';
+import { useutf8Store } from '@/stores/counter';
 
 export default defineComponent({
     name: 'RatingItem',
@@ -87,6 +97,10 @@ export default defineComponent({
             default: false
         },
         canReply: {
+            type: Boolean,
+            default: false
+        },
+        canDelete: {
             type: Boolean,
             default: false
         },
@@ -112,6 +126,10 @@ export default defineComponent({
                 month: 'short',
                 day: 'numeric'
             });
+        },
+        t(key: string): string {
+            const store = useutf8Store();
+            return store.t(key);
         }
     }
 });
@@ -260,5 +278,14 @@ export default defineComponent({
 
 .reply-btn:hover {
     background-color: #e5e7eb;
+}
+
+.delete-btn {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.delete-btn:hover {
+    background-color: #fecaca;
 }
 </style>

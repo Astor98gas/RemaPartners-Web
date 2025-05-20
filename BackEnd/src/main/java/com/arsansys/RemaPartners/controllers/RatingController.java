@@ -206,7 +206,7 @@ public class RatingController {
 
             // Verificar que el usuario es quien creó la valoración o es un administrador
             if (!existingRating.getUserId().equals(currentUser.getId()) &&
-                    !"ADMIN".equals(currentUser.getRol().getName())) {
+                    !"ADMIN".equals(currentUser.getRol().getName().toString())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not authorized to delete this rating");
             }
 

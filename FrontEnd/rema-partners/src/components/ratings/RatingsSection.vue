@@ -66,8 +66,8 @@
             <TransitionGroup name="rating-item">
                 <RatingItem v-for="rating in sortedRatings" :key="rating.id" :rating="rating"
                     :canEdit="canEditRating(rating)" :canReply="canReplyToRating(rating)"
-                    :highlight="rating.id === userRating?.id" @edit="editRating(rating)"
-                    @reply="replyToRating(rating)" />
+                    :canDelete="canDeleteRating(rating)" :highlight="!!userRating && userRating.id === rating.id"
+                    @edit="editRating(rating)" @reply="replyToRating(rating)" @delete="confirmDeleteRating(rating)" />
             </TransitionGroup>
         </div>
     </div>
@@ -77,10 +77,12 @@
 import { defineComponent, ref, computed, onMounted, watch } from 'vue';
 import type { Rating, RatingFormData, RatingReplyData } from '@/models/rating';
 import { useRatings } from '@/composables/useRatings';
+import { useUsers } from '@/composables/useUsers';
 import StarRating from './StarRating.vue';
 import RatingItem from './RatingItem.vue';
 import RatingForm from './RatingForm.vue';
 import { useToast } from 'vue-toastification';
+import Swal from 'sweetalert2';
 
 export default defineComponent({
     name: 'RatingsSection',
@@ -105,6 +107,7 @@ export default defineComponent({
     },
     setup(props) {
         const ratingsComposable = useRatings();
+        const usersComposable = useUsers();
         const toast = useToast();
 
         // State
@@ -115,6 +118,7 @@ export default defineComponent({
         const showRatingForm = ref(false);
         const showReplyForm = ref(false);
         const selectedRating = ref<Rating | null>(null);
+        const userData = ref<any>(null); // Para almacenar información del usuario actual incluyendo rol
 
         // Computed
         const averageRating = computed(() => {
@@ -174,6 +178,18 @@ export default defineComponent({
                 // Si el error es 404, es que no hay valoración del usuario, lo cual no es un error
                 console.log('No user rating found or error fetching it');
                 userRating.value = null;
+            }
+        };
+
+        // Cargar información del usuario actual
+        const loadUserData = async () => {
+            if (props.currentUserId) {
+                try {
+                    const data = await usersComposable.isLoggedIn();
+                    userData.value = data;
+                } catch (error) {
+                    console.error('Error cargando información del usuario:', error);
+                }
             }
         };
 
@@ -239,6 +255,74 @@ export default defineComponent({
                 rating.userId !== props.currentUserId;
         };
 
+        // Comprobar si el usuario puede eliminar valoraciones
+        const canDeleteRating = (rating: Rating): boolean => {
+            // Un usuario puede eliminar una valoración si:
+            // 1. Es administrador (ADMIN)
+            // 2. Es trabajador (TRABAJADOR)
+            // 3. Es el autor de la valoración
+            return !!props.currentUserId && (
+                userData.value?.rol?.name === 'ADMIN' ||
+                userData.value?.rol?.name === 'TRABAJADOR' ||
+                props.currentUserId === rating.userId
+            );
+        };        // Manejar la eliminación de valoraciones
+        const confirmDeleteRating = async (rating: Rating) => {
+            // Determinar si el usuario actual es el propietario de la valoración
+            const isOwnRating = props.currentUserId === rating.userId;
+
+            // Crear un mensaje de confirmación más específico según el contexto
+            let title = '';
+            let text = '';
+            let confirmButtonText = 'Eliminar';
+
+            if (isOwnRating) {
+                title = 'Eliminar valoración';
+                text = '¿Estás seguro de que deseas eliminar tu valoración? Esta acción no se puede deshacer.';
+            } else {
+                title = 'Eliminar valoración de otro usuario';
+                text = `¿Estás seguro de que deseas eliminar esta valoración de ${rating.username}? Esta acción no se puede deshacer y se realiza con tu autoridad de administrador.`;
+            }
+
+            // Mostrar SweetAlert2 para confirmar
+            const result = await Swal.fire({
+                title: title,
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: confirmButtonText,
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    await ratingsComposable.deleteRating(rating.id, props.sellerId);
+
+                    // Mostrar mensaje de éxito con SweetAlert2
+                    await Swal.fire({
+                        title: 'Eliminada',
+                        text: isOwnRating ?
+                            'Tu valoración ha sido eliminada correctamente' :
+                            'La valoración ha sido eliminada correctamente',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    // La función deleteRating ya recarga las valoraciones internamente
+                } catch (err: any) {
+                    // Mostrar error con SweetAlert2
+                    await Swal.fire({
+                        title: 'Error',
+                        text: err.message || 'Ha ocurrido un error al eliminar la valoración',
+                        icon: 'error',
+                    });
+                }
+            }
+        };
+
         // Watch for changes in sellerId to reload ratings
         watch(() => props.sellerId, () => {
             loadRatings();
@@ -247,6 +331,7 @@ export default defineComponent({
         // Initial load
         onMounted(() => {
             loadRatings();
+            loadUserData();
         });
 
         return {
@@ -266,7 +351,9 @@ export default defineComponent({
             editRating,
             replyToRating,
             canEditRating,
-            canReplyToRating
+            canReplyToRating,
+            canDeleteRating,
+            confirmDeleteRating
         };
     }
 });
