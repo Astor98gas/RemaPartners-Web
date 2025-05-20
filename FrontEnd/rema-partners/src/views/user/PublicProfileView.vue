@@ -115,6 +115,12 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Valoraciones del vendedor -->
+                    <div v-if="isVendedor" class="mt-8">
+                        <RatingsSection :sellerId="userProfile.id" :currentUserId="currentUser?.id"
+                            :isCurrentUserSeller="currentUser?.rol?.name === 'VENDEDOR' || currentUser?.rol?.name === 'ADMIN'" />
+                    </div>
                 </div>
             </div>
 
@@ -139,9 +145,13 @@ import { useProducto } from '@/composables/useProducto';
 import type { User } from '@/models/user';
 import type { Producto } from '@/models/producto';
 import { useChat } from '@/composables/useChat';
+import RatingsSection from '@/components/ratings/RatingsSection.vue';
 
 export default defineComponent({
     name: 'PublicProfileView',
+    components: {
+        RatingsSection
+    },
     setup() {
         const route = useRoute();
         const router = useRouter();
