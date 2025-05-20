@@ -279,9 +279,9 @@
 
                                             <!-- Tooltip -->
                                             <div
-                                                class="absolute -top-2 left-full ml-2 w-60 transform -translate-y-full 
+                                                class="absolute top-full left-0 mt-1 w-60
                                                         bg-gray-800 text-white text-xs rounded py-1 px-2 
-                                                        opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                                                        opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                                 {{ utf8.t('profile.premium_feature_locked') ||
                                                     'Esta función requiere una suscripción premium' }}
                                             </div>

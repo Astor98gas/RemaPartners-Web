@@ -481,7 +481,11 @@ export const useutf8Store = defineStore('utf8', {
           'ratings.response_success': 'Response submitted successfully',
           'ratings.response_update_success': 'Response updated successfully',
           'ratings.response_delete_success': 'Response deleted successfully',
-          'ratings.max_length': 'Maximum {count} characters'
+          'ratings.max_length': 'Maximum {count} characters',
+          'ratings.review': 'review',
+          'ratings.reviews': 'reviews',
+          'ratings.no_reviews_yet': 'No reviews yet',
+          'ratings.see_all_reviews': 'See all reviews',
         },
         es: {
           'profile.dashboard': 'Dashboard - Estadísticas de Visitas',
@@ -950,6 +954,10 @@ export const useutf8Store = defineStore('utf8', {
           'ratings.response_update_success': 'Respuesta actualizada con éxito',
           'ratings.response_delete_success': 'Respuesta eliminada con éxito',
           'ratings.max_length': 'Máximo {count} caracteres',
+          'ratings.review': 'opinión',
+          'ratings.reviews': 'opiniones',
+          'ratings.no_reviews_yet': 'Aún no hay opiniones',
+          'ratings.see_all_reviews': 'Ver todas las opiniones',
         },
         cat: {
           'profile.dashboard': 'Tauler - Estadístiques de Visites',
@@ -1417,7 +1425,11 @@ export const useutf8Store = defineStore('utf8', {
           'ratings.response_success': 'Resposta enviada amb èxit',
           'ratings.response_update_success': 'Resposta actualitzada amb èxit',
           'ratings.response_delete_success': 'Resposta eliminada amb èxit',
-          'ratings.max_length': 'Màxim {count} caràcters'
+          'ratings.max_length': 'Màxim {count} caràcters',
+          'ratings.review': 'opinió',
+          'ratings.reviews': 'opinions',
+          'ratings.no_reviews_yet': 'Encara no hi ha opinions',
+          'ratings.see_all_reviews': 'Veure totes les opinions',
         }
       } as Translations
     };

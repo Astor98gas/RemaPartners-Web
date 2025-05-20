@@ -19,8 +19,27 @@
             <!-- Seller Info -->
             <div class="flex-1 text-center sm:text-left">
                 <h3 class="text-lg font-semibold text-gray-800">{{ seller.username }}</h3>
-                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-1">{{
-                    seller.rol?.name }}</span>
+
+                <!-- Seller Rating -->
+                <div v-if="ratings.length > 0" class="flex items-center mt-2">
+                    <div class="flex items-center">
+                        <div v-for="i in 5" :key="i">
+                            <svg :class="{ 'text-yellow-400': i <= averageRating, 'text-gray-300': i > averageRating }"
+                                xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="ml-2 text-sm text-gray-600">
+                        {{ averageRating.toFixed(1) }} ({{ ratings.length }} {{ ratings.length === 1 ?
+                            t('ratings.review') : t('ratings.reviews') }})
+                    </span>
+                </div>
+                <div v-else class="mt-2 text-sm text-gray-500">
+                    {{ t('ratings.no_reviews_yet') }}
+                </div>
 
                 <p v-if="seller.description" class="text-gray-600 mt-2 line-clamp-2">{{ seller.description }}</p>
 
@@ -35,7 +54,7 @@
                 </div>
 
                 <!-- Actions -->
-                <div class="mt-3">
+                <div class="mt-3 flex flex-wrap gap-2">
                     <router-link :to="`/user/${seller.id}`"
                         class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
@@ -47,6 +66,15 @@
                         </svg>
                         {{ t('profile.view_profile') }}
                     </router-link>
+                    <router-link :to="`/user/${seller.id}#ratings`"
+                        class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                        {{ t('ratings.see_all_reviews') }}
+                    </router-link>
                 </div>
             </div>
         </div>
@@ -54,9 +82,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
 import { useutf8Store } from '@/stores/counter';
 import type { User } from '@/models/user';
+import type { Rating } from '@/models/rating';
+import { useRatings } from '@/composables/useRatings';
 
 export default defineComponent({
     name: 'SellerProfileCard',
@@ -65,6 +95,44 @@ export default defineComponent({
             type: Object as () => User | null,
             required: true
         }
+    },
+    setup(props) {
+        const ratings = ref<Rating[]>([]);
+        const loading = ref(false);
+        const error = ref<string | null>(null);
+        const ratingsService = useRatings();
+
+        const averageRating = computed(() => {
+            if (ratings.value.length === 0) return 0;
+            const sum = ratings.value.reduce((acc, rating) => acc + rating.rating, 0);
+            return sum / ratings.value.length;
+        });
+
+        const loadRatings = async () => {
+            if (!props.seller?.id) return;
+
+            try {
+                loading.value = true;
+                const data = await ratingsService.getSellerRatings(props.seller.id);
+                ratings.value = data || [];
+            } catch (err) {
+                console.error('Error loading seller ratings:', err);
+                error.value = 'Error loading ratings';
+            } finally {
+                loading.value = false;
+            }
+        };
+
+        onMounted(() => {
+            loadRatings();
+        });
+
+        return {
+            ratings,
+            averageRating,
+            loading,
+            error
+        };
     },
     methods: {
         t(key: string): string {
