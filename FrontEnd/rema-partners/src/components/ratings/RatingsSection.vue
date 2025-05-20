@@ -1,6 +1,6 @@
 <template>
     <div class="mb-8">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center mb-6  border-b-1 border-gray-200 pb-2">
             <h2 class="text-2xl font-semibold text-gray-800">Valoraciones</h2>
             <div v-if="!loading && ratings.length > 0" class="flex items-center">
                 <div class="flex items-center gap-2">
