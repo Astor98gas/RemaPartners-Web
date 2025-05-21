@@ -74,8 +74,8 @@ public class SecurityConfig {
                             "/vendedor/producto/getById/*", "/api/binary-image/*",
                             "/api/images/*", "/resorces/static/**", "/api/stripe/**")
                             .permitAll();
-                    // auth.anyRequest().authenticated();
-                    auth.anyRequest().permitAll();
+                    auth.anyRequest().authenticated();
+                    // auth.anyRequest().permitAll();
                 })
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
