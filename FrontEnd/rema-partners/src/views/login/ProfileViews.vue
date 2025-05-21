@@ -247,6 +247,15 @@
                                             </svg>
                                             {{ utf8.t('profile.dashboard') }}
                                         </router-link>
+                                        <router-link to="/ventas-dashboard"
+                                            class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                            {{ utf8.t('profile.dashboard.ventas') }}
+                                        </router-link>
                                         <router-link :to="`/user/${currentUser.id}`"
                                             class="text-blue-600 hover:text-blue-800 py-1 flex items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
@@ -343,22 +352,6 @@
                                         {{ utf8.t('profile.view_invoices') }}
                                     </router-link>
                                 </div>
-
-                                <!-- Subscription Section -->
-                                <!-- <div v-if="isComprador || isAdmin || isTrabajador" class="border-b pb-4">
-                                    <h3 class="font-medium mb-2">{{ utf8.t('profile.subscription') || 'Subscription' }}
-                                    </h3>
-                                    <ButtonBasic variant="success" size="md" @click="showSubscriptionOptions = true"
-                                        class="flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                                        </svg>
-                                        {{ utf8.t('profile.subscribe') || 'Subscribe Premium' }}
-                                    </ButtonBasic>
-                                </div> -->
-
                                 <div class="pt-2">
                                     <ButtonBasic variant="danger" size="md" @click="logout">
                                         {{ utf8.t('profile.logout') }}
@@ -558,6 +551,11 @@ export default defineComponent({
                     name: 'Dashboard',
                     icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
                     translationKey: 'profile.dashboard'
+                },
+                {
+                    name: 'Dashboard Ventas',
+                    icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+                    translationKey: 'profile.dashboard.ventas'
                 },
                 {
                     name: 'Ver mi perfil público y valoraciones',

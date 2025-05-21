@@ -57,8 +57,6 @@ public class DashboardController {
                 year = LocalDateTime.now().getYear();
             }
 
-            System.out.println("Año solicitado: " + year); // Depuración
-
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
             UserEntity user = userService.getUserByUsername(username);

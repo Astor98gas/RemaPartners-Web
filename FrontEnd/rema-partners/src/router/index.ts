@@ -93,6 +93,18 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ['ADMIN', 'VENDEDOR', 'TRABAJADOR'] }
         },
         {
+            path: '/ventas-dashboard',
+            name: 'ventas-dashboard',
+            component: () => import('@/views/dashboard/VentasDashboardView.vue'),
+            meta: { requiresAuth: true, roles: ['ADMIN', 'VENDEDOR', 'TRABAJADOR'] }
+        },
+        {
+            path: '/ventas-dashboard/producto/:id',
+            name: 'producto-ventas',
+            component: () => import('@/views/dashboard/ProductoVentasView.vue'),
+            meta: { requiresAuth: true, roles: ['ADMIN', 'VENDEDOR', 'TRABAJADOR'] }
+        },
+        {
             path: '/user/:id',
             name: 'public-profile',
             component: () => import('@/views/user/PublicProfileView.vue'),
