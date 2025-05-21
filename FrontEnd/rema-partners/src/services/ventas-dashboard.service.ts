@@ -77,14 +77,21 @@ export const ventasDashboardService = {
      */
     getProductoVentas: async (productoId: string) => {
         try {
-            try {
-                const response = await axios.get(`/dashboard/ventas/producto/${productoId}`, {
-                    withCredentials: true
-                });
-                return response.data;
-            } catch (backendError) {
-                console.warn(`Backend endpoint no disponible para ventas del producto ${productoId}, usando datos de prueba:`, backendError);
-                // Generar datos de prueba específicos para un producto
+            console.log(`Fetching sales data for product ${productoId}`);
+            const response = await axios.get(`/dashboard/ventas/producto/${productoId}`, {
+                withCredentials: true
+            });
+            console.log("Backend response:", response.data);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching product sales data:`, error);
+
+            // Use import.meta.env instead of process.env
+            if (import.meta.env.DEV) {
+                console.warn(`Using test data for product ${productoId}`);
+                // Generar datos de prueba aquí...
+
+                // Código restante para la generación de datos de prueba
                 const currentYear = new Date().getFullYear();
                 const ventasPorMes = [] as Array<{ mes: number, año: number, cantidad: number, importe: number, ultimaActualizacion: string }>;
 
@@ -142,10 +149,10 @@ export const ventasDashboardService = {
                     importeTotal: ventasPorMes.reduce((total, item) => total + item.importe, 0),
                     ventasPorMes: ventasPorMes
                 };
+            } else {
+                // En producción, lanzar realmente el error
+                throw error;
             }
-        } catch (error) {
-            console.error(`Error obteniendo ventas del producto ${productoId}:`, error);
-            throw error;
         }
     },
 

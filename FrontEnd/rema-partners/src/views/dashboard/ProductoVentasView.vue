@@ -262,7 +262,7 @@ export default {
             // Si solo hay un año o ninguno, mostrar datos simples
             if (yearLabels.length <= 1) {
                 datasets.push({
-                    label: t('sales.stats.sales'),
+                    label: t('sales.dashboard.monthlySales'),
                     data: ventasCantidadData,
                     backgroundColor: 'rgba(16, 185, 129, 0.6)', // Verde
                     borderColor: 'rgba(16, 185, 129, 1)',
