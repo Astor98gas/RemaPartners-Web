@@ -382,7 +382,7 @@ export default {
 
         // Navegación
         const goToProductDetail = (productId) => {
-            router.push({ name: 'producto-estadisticas', params: { id: productId } });
+            router.push({ name: 'producto-ventas', params: { id: productId } });
         };
 
         const refreshDashboard = () => {

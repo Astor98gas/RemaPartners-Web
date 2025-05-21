@@ -1031,6 +1031,7 @@ export const useutf8Store = defineStore('utf8', {
           'ratings.response_update_success': 'Respuesta actualizada con éxito',
           'ratings.response_delete_success': 'Respuesta eliminada con éxito',
           'ratings.max_length': 'Máximo {count} caracteres',
+          'sales.stats.amount': 'Importe',
         },
         cat: {
           'profile.dashboard': 'Tauler - Estadístiques de Visites',
