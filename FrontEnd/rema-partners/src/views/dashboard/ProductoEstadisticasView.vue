@@ -167,7 +167,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useutf8Store } from '@/stores/counter';
-import dashboardService from '@/services/dashboardService';
+import dashboardService from '@/services/dashboard.service';
 import EstadisticasCard from '@/components/dashboard/EstadisticasCard.vue';
 import VisitasChart from '@/components/dashboard/VisitasChart.vue';
 

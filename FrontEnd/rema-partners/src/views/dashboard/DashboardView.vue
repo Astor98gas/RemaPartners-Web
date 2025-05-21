@@ -113,7 +113,7 @@
 <script>
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import dashboardService from '@/services/dashboardService';
+import dashboardService from '@/services/dashboard.service';
 import EstadisticasCard from '@/components/dashboard/EstadisticasCard.vue';
 import VisitasChart from '@/components/dashboard/VisitasChart.vue';
 import { useutf8Store } from '@/stores/counter';
