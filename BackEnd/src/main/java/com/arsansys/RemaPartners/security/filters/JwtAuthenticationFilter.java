@@ -123,6 +123,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         httpResponse.put("token", token);
         httpResponse.put("message", "Autenticacion Correcta");
         httpResponse.put("username", user.getUsername());
+        httpResponse.put("idUser", userService.getUserByUsername(user.getUsername()).getId());
 
         response.getWriter().write(new ObjectMapper().writeValueAsString(httpResponse));
         response.setStatus(HttpStatus.OK.value());

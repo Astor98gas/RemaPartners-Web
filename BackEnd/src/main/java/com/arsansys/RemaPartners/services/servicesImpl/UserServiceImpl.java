@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             // Return token in response
-            return new JwtResponse(token);
+            return new JwtResponse(token, userEntity.getId());
         } catch (Exception e) {
             throw new RuntimeException("Error creating user: " + e.getMessage());
         }
