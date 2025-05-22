@@ -51,11 +51,11 @@
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                     <!-- Total de Ventas -->
                     <VentasEstadisticasCard :titulo="t('sales.dashboard.totalSales')"
-                        :valor="(dashboardData.totalVentas || 0) / 100" tipo="ventas" />
+                        :valor="dashboardData.totalVentas || 0" tipo="ventas" />
 
                     <!-- Total de Compras -->
                     <VentasEstadisticasCard :titulo="t('sales.dashboard.totalPurchases')"
-                        :valor="(dashboardData.totalCompras || 0) / 100" tipo="compras" />
+                        :valor="dashboardData.totalCompras || 0" tipo="compras" />
 
                     <!-- Importe Total de Ventas -->
                     <VentasEstadisticasCard :titulo="t('sales.stats.table.amount')"

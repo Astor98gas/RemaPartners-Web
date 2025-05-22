@@ -8,7 +8,8 @@
                 class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 transition-colors aspect-square flex flex-col justify-center items-center"
                 @click="triggerFileInput(index - 1)">
                 <div v-if="imagePreview[index - 1]" class="relative w-full h-full">
-                    <img :src="imagePreview[index - 1]" class="w-full h-full object-cover rounded" />
+                    <img :src="t('link.servidor') + imagePreview[index - 1]"
+                        class="w-full h-full object-cover rounded" />
                     <button @click.stop="removeImage(index - 1)"
                         class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 shadow-md transition-colors">
                         <span class="sr-only">Remove</span>
@@ -107,7 +108,7 @@ export default {
                     }
 
                     const data = await response.json();
-                    const imageUrl = "http://localhost:8080" + data.url;
+                    const imageUrl = data.url;
 
                     // Actualizar array de imágenes con la URL
                     const updatedImagesArray = [...this.imagePreview];

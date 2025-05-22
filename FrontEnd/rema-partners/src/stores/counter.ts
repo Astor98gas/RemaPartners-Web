@@ -16,6 +16,8 @@ export const useutf8Store = defineStore('utf8', {
       currentLanguage: savedLanguage,
       translations: {
         en: {
+          'link.servidor': 'http://localhost:8080/api/images/',
+          'link.servidor.low': 'http://localhost:8080/api/images/lowRes/',
           'profile.dashboard': 'Dashboard - Visit Statistics',
           'profile.dashboard.ventas': 'Dashboard - Sales Statistics',
           'sales.dashboard.title': 'Dashboard - Sales & Purchases',
@@ -31,7 +33,7 @@ export const useutf8Store = defineStore('utf8', {
           'sales.dashboard.viewDetails': 'View Details',
           'sales.dashboard.year': 'Year',
           'sales.dashboard.refresh': 'Refresh',
-          'dashboard.sales': 'Sales',
+          'dashboard.sales': 'Qty Sales',
           'dashboard.purchases': 'Purchases',
           'producto.add.title': 'Add New Product',
           'producto.add.step1': 'Title',
@@ -525,6 +527,8 @@ export const useutf8Store = defineStore('utf8', {
           'ratings.max_length': 'Maximum {count} characters',
         },
         es: {
+          'link.servidor': 'http://localhost:8080/api/images/',
+          'link.servidor.low': 'http://localhost:8080/api/images/lowRes/',
           'profile.dashboard': 'Dashboard - Estadísticas de Visitas',
           'profile.dashboard.ventas': 'Dashboard - Estadísticas de Ventas',
           'producto.add.title': 'Añadir Nuevo Producto',
@@ -847,7 +851,7 @@ export const useutf8Store = defineStore('utf8', {
           'sales.dashboard.viewDetails': 'Ver Detalles',
           'sales.dashboard.year': 'Año',
           'sales.dashboard.refresh': 'Actualizar',
-          'dashboard.sales': 'Ventas',
+          'dashboard.sales': 'Num Ventas',
           'dashboard.purchases': 'Compras',
           'sales.stats.title': 'Estadísticas de Ventas',
           'sales.stats.backToDashboard': 'Volver al Dashboard',
@@ -1034,6 +1038,9 @@ export const useutf8Store = defineStore('utf8', {
           'sales.stats.amount': 'Importe',
         },
         cat: {
+          'link.servidor': 'http://localhost:8080/api/images/',
+          'link.servidor.low': 'http://localhost:8080/api/images/lowRes/',
+          'dashboard.sales': 'Num Ventas',
           'profile.dashboard': 'Tauler - Estadístiques de Visites',
           'profile.sales_dashboard': 'Tauler - Vendes i Compras',
           'producto.add.title': 'Afegir Nou Producte',

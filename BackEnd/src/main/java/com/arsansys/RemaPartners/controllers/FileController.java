@@ -44,7 +44,7 @@ public class FileController {
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
             // Devolver URL del archivo
-            String fileUrl = "/api/images/" + fileName;
+            String fileUrl = fileName;
             return ResponseEntity.ok().body(Map.of("url", fileUrl));
 
         } catch (IOException e) {
@@ -72,6 +72,70 @@ public class FileController {
             }
         } catch (MalformedURLException e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/images/lowRes/{fileName}")
+    public ResponseEntity<Resource> getLowResImage(@PathVariable String fileName) {
+        try {
+            Path filePath = Path.of(uploadDir, fileName);
+
+            if (Files.exists(filePath)) {
+                // Determinar el tipo de contenido
+                String contentType = determineContentType(fileName);
+
+                // Convertir a versión de baja resolución
+                byte[] lowResImageData = createLowResVersion(filePath.toFile());
+
+                // Crear recurso a partir de los bytes
+                ByteArrayResource resource = new ByteArrayResource(lowResImageData);
+
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(contentType))
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * Crea una versión de baja resolución de la imagen
+     * 
+     * @param originalImage archivo de imagen original
+     * @return array de bytes de la imagen en baja resolución
+     */
+    private byte[] createLowResVersion(File originalImage) throws IOException {
+        java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
+
+        // Usar Thumbnailator para crear una versión reducida
+        // - Escalar a un máximo de 800px de ancho o alto
+        // - Comprimir con calidad 0.7 (70%)
+        net.coobird.thumbnailator.Thumbnails.of(originalImage)
+                .size(800, 800) // Tamaño máximo
+                .keepAspectRatio(true) // Mantener proporciones
+                .outputQuality(0.7) // Calidad de compresión (0.0-1.0)
+                .outputFormat(getImageFormatName(originalImage.getName()))
+                .toOutputStream(outputStream);
+
+        return outputStream.toByteArray();
+    }
+
+    /**
+     * Obtiene el formato de la imagen a partir del nombre del archivo
+     */
+    private String getImageFormatName(String fileName) {
+        String extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+        // Para compatibilidad con thumbnailator
+        if (extension.equals("jpg") || extension.equals("jpeg")) {
+            return "JPEG";
+        } else if (extension.equals("png")) {
+            return "PNG";
+        } else {
+            return extension.toUpperCase();
         }
     }
 

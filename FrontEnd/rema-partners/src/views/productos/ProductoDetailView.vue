@@ -43,7 +43,7 @@
             <div class="relative">
                 <!-- Imagen principal con zoom al hover -->
                 <div class="h-96 overflow-hidden bg-gray-50 flex items-center justify-center relative group">
-                    <img :src="currentImage" :alt="product.titulo"
+                    <img :src="t('link.servidor') + currentImage" :alt="product.titulo"
                         class="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105 cursor-zoom-in"
                         @error="onImageError" @click="showLightbox" />
 
@@ -70,7 +70,7 @@
                     <button v-for="(imagen, index) in product.imagenes" :key="index" @click="selectImage(imagen)"
                         class="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:shadow-md cursor-pointer"
                         :class="currentImage === imagen ? 'border-blue-500 shadow-md' : 'border-transparent hover:border-gray-300'">
-                        <img :src="imagen" :alt="`${product.titulo} - ${index + 1}`"
+                        <img :src="t('link.servidor') + imagen" :alt="`${product.titulo} - ${index + 1}`"
                             class="w-full h-full object-cover hover:opacity-90" />
                     </button>
                 </div>
@@ -239,7 +239,7 @@
                             class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow col-span-1 md:col-span-2 lg:col-span-3">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.direccion') }}</p>
                             <p class="text-gray-900 font-semibold mb-2">{{ product.direccion || t('common.notAvailable')
-                                }}</p>
+                            }}</p>
 
                             <div v-if="product.direccion"
                                 class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden shadow-sm mt-2 hover:shadow-md transition-shadow"

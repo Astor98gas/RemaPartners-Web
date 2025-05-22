@@ -5,7 +5,7 @@
         <div class="relative h-56 overflow-hidden">
             <!-- Imagen del producto con efecto de zoom suave -->
             <img class="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                :src="producto.imagenes[0]" :alt="producto.titulo" @error="onImageError" />
+                :src="t('link.servidor.low') + producto.imagenes[0]" :alt="producto.titulo" @error="onImageError" />
 
             <!-- Badge de stock movido dentro del contenedor de imagen -->
             <div class="absolute top-3 right-3">
