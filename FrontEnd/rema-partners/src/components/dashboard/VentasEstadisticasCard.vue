@@ -86,7 +86,8 @@ export default {
         },
         moneda: {
             type: String,
-            default: 'EUR'
+            default: 'EUR',
+            required: true
         }
     },
     computed: {

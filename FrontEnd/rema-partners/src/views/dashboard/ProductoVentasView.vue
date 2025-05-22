@@ -93,7 +93,7 @@
                                 <VentasEstadisticasCard :titulo="t('sales.stats.totalSales')"
                                     :valor="estadisticas?.totalVentas || 0" tipo="ventas" class="w-full" />
                                 <VentasEstadisticasCard :titulo="t('sales.stats.totalAmount')"
-                                    :valor="estadisticas?.importeTotal || 0" tipo="importe" formatoMoneda="true"
+                                    :valor="(estadisticas?.importeTotal || 0) / 100" tipo="importe" formatoMoneda="true"
                                     class="w-full" />
                             </div>
                         </div>
@@ -158,7 +158,7 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="text-sm font-medium text-purple-600">
-                                            {{ formatCurrency(venta.importe) }}
+                                            {{ formatCurrency(venta.importe / 100) }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
@@ -251,7 +251,7 @@ export default {
             ventasDetalle.value.forEach(venta => {
                 if (venta.mes >= 1 && venta.mes <= 12) {
                     ventasCantidadData[venta.mes - 1] = venta.cantidad;
-                    ventasImporteData[venta.mes - 1] = venta.importe;
+                    ventasImporteData[venta.mes - 1] = (venta.importe / 100);
                     años.add(venta.año);
                 }
             });

@@ -51,19 +51,20 @@
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                     <!-- Total de Ventas -->
                     <VentasEstadisticasCard :titulo="t('sales.dashboard.totalSales')"
-                        :valor="dashboardData.totalVentas || 0" tipo="ventas" />
+                        :valor="(dashboardData.totalVentas || 0) / 100" tipo="ventas" />
 
                     <!-- Total de Compras -->
                     <VentasEstadisticasCard :titulo="t('sales.dashboard.totalPurchases')"
-                        :valor="dashboardData.totalCompras || 0" tipo="compras" />
+                        :valor="(dashboardData.totalCompras || 0) / 100" tipo="compras" />
 
                     <!-- Importe Total de Ventas -->
-                    <VentasEstadisticasCard :titulo="t('sales.dashboard.totalAmount')"
-                        :valor="dashboardData.importeTotalVentas || 0" tipo="importe" formatoMoneda="true" />
+                    <VentasEstadisticasCard :titulo="t('sales.stats.table.amount')"
+                        :valor="(dashboardData.importeTotalVentas || 0) / 100" tipo="importe" formatoMoneda="true"
+                        :moneda="dashboardData.moneda" />
 
                     <!-- Importe Promedio por Venta -->
                     <VentasEstadisticasCard :titulo="t('sales.dashboard.averageAmount')"
-                        :valor="calculateAverageAmount()" tipo="otros" formatoMoneda="true" />
+                        :valor="calculateAverageAmount() / 100" tipo="otros" formatoMoneda="true" />
                 </div>
 
                 <!-- Gráfico de ventas mensuales -->
@@ -104,7 +105,7 @@
                                             {{ producto.cantidadVentas }} {{ t('dashboard.sales') }}
                                         </div>
                                         <div class="text-sm text-gray-600">
-                                            {{ formatCurrency(producto.importeTotal) }}
+                                            {{ formatCurrency(producto.importeTotal / 100) }}
                                         </div>
                                     </div>
                                     <button @click="goToProductDetail(producto.id)"
