@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -19,6 +22,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 
 @RestController
 @RequestMapping("/api")
@@ -102,41 +111,48 @@ public class FileController {
         }
     }
 
-    /**
-     * Crea una versión de baja resolución de la imagen
-     * 
-     * @param originalImage archivo de imagen original
-     * @return array de bytes de la imagen en baja resolución
-     */
     private byte[] createLowResVersion(File originalImage) throws IOException {
-        java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        // Usar Thumbnailator para crear una versión reducida
-        // - Escalar a un máximo de 800px de ancho o alto
-        // - Comprimir con calidad 0.7 (70%)
-        net.coobird.thumbnailator.Thumbnails.of(originalImage)
-                .size(800, 800) // Tamaño máximo
-                .keepAspectRatio(true) // Mantener proporciones
-                .outputQuality(0.7) // Calidad de compresión (0.0-1.0)
-                .outputFormat(getImageFormatName(originalImage.getName()))
-                .toOutputStream(outputStream);
+        // Leer la imagen original
+        BufferedImage original = ImageIO.read(originalImage);
+
+        // Obtener dimensiones originales
+        int originalWidth = original.getWidth();
+        int originalHeight = original.getHeight();
+
+        // Calcular nuevas dimensiones manteniendo la proporción
+        int targetWidth = 800;
+        int targetHeight = 800;
+
+        if (originalWidth > originalHeight) {
+            targetHeight = (int) (originalHeight * ((double) targetWidth / originalWidth));
+        } else {
+            targetWidth = (int) (originalWidth * ((double) targetHeight / originalHeight));
+        }
+
+        // Crear versión redimensionada
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(original, 0, 0, targetWidth, targetHeight, null);
+        g.dispose();
+
+        // Guardar con compresión JPEG
+        ImageWriter writer = ImageIO.getImageWritersByFormatName("jpeg").next();
+        ImageWriteParam params = writer.getDefaultWriteParam();
+
+        // Configurar la compresión (0.0f - 1.0f)
+        params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+        params.setCompressionQuality(0.7f);
+
+        // Escribir la imagen comprimida al stream
+        ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(outputStream);
+        writer.setOutput(imageOutputStream);
+        writer.write(null, new IIOImage(resizedImage, null, null), params);
+        writer.dispose();
+        imageOutputStream.close();
 
         return outputStream.toByteArray();
-    }
-
-    /**
-     * Obtiene el formato de la imagen a partir del nombre del archivo
-     */
-    private String getImageFormatName(String fileName) {
-        String extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
-        // Para compatibilidad con thumbnailator
-        if (extension.equals("jpg") || extension.equals("jpeg")) {
-            return "JPEG";
-        } else if (extension.equals("png")) {
-            return "PNG";
-        } else {
-            return extension.toUpperCase();
-        }
     }
 
     @GetMapping("/binary-image/{fileName}")
