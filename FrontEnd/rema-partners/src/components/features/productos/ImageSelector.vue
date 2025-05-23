@@ -118,6 +118,20 @@ export default {
             const file = event.target.files?.[0];
             if (file) {
                 try {
+                    // Validar tamaño del archivo (5MB máximo)
+                    if (file.size > 5 * 1024 * 1024) {
+                        console.error('File too large');
+                        // Mostrar error al usuario
+                        return;
+                    }
+
+                    // Validar tipo de archivo
+                    if (!file.type.startsWith('image/')) {
+                        console.error('Invalid file type');
+                        // Mostrar error al usuario
+                        return;
+                    }
+
                     // Mostrar preview temporal usando FileReader
                     const reader = new FileReader();
                     reader.onload = (e) => {
@@ -133,14 +147,21 @@ export default {
                     const formData = new FormData();
                     formData.append('file', file);
 
-                    // Enviar al backend
+                    // Enviar al backend con timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos timeout
+
                     const response = await fetch('http://localhost:8080/api/upload', {
                         method: 'POST',
-                        body: formData
+                        body: formData,
+                        signal: controller.signal
                     });
 
+                    clearTimeout(timeoutId);
+
                     if (!response.ok) {
-                        throw new Error('Error uploading image');
+                        const errorText = await response.text();
+                        throw new Error(`HTTP ${response.status}: ${errorText}`);
                     }
 
                     const data = await response.json();
@@ -156,7 +177,18 @@ export default {
 
                 } catch (error) {
                     console.error('Error uploading image:', error);
-                    // Mostrar error al usuario
+
+                    // Restaurar preview en caso de error
+                    const newPreview = [...this.imagePreview];
+                    newPreview[this.currentImageIndex] = '';
+                    this.imagePreview = newPreview;
+
+                    // Mostrar error específico al usuario
+                    if (error.name === 'AbortError') {
+                        alert('La subida de imagen se canceló por timeout');
+                    } else {
+                        alert(`Error subiendo imagen: ${error.message}`);
+                    }
                 }
             }
         },
@@ -165,16 +197,27 @@ export default {
          * @param {Number} index Índice de la imagen a eliminar.
          */
         removeImage(index) {
-            // Create copies of arrays to avoid reactivity issues
-            const newPreview = [...this.imagePreview];
+            // Prevenir propagación del evento para evitar efectos secundarios
+            event?.preventDefault();
+            event?.stopPropagation();
 
-            // Remove at the specified index (set to empty string instead of removing)
-            newPreview[index] = '';
-            this.imagePreview = newPreview;
+            // Usar nextTick para asegurar que la operación se complete en el siguiente ciclo
+            this.$nextTick(() => {
+                // Crear copia del array actual
+                const newPreview = [...this.imagePreview];
+                
+                // Limpiar la posición específica sin reorganizar
+                newPreview[index] = '';
+                
+                // Actualizar la previsualización de manera inmutable
+                this.imagePreview = newPreview;
 
-            // Filter out empty strings and emit only non-empty images
-            const filteredImages = newPreview.filter(img => img !== '');
-            this.$emit('update:images', filteredImages);
+                // Filtrar solo las imágenes válidas para emitir al padre
+                const filteredImages = newPreview.filter(img => img !== '');
+                
+                // Emitir de manera síncrona para mantener consistencia
+                this.$emit('update:images', filteredImages);
+            });
         }
     },
     watch: {
@@ -183,14 +226,21 @@ export default {
              * Observa cambios en el array de imágenes y actualiza la previsualización.
              */
             handler(newImages) {
-                // Si recibimos nuevas imágenes desde el componente padre, actualizar preview
-                const newPreview = Array(this.maxImages).fill('');
-                newImages.forEach((img, index) => {
-                    if (index < this.maxImages) {
-                        newPreview[index] = img;
-                    }
-                });
-                this.imagePreview = newPreview;
+                // Evitar actualizaciones innecesarias comparando el contenido
+                const currentFiltered = this.imagePreview.filter(img => img !== '');
+                const arraysEqual = newImages.length === currentFiltered.length && 
+                    newImages.every((img, index) => img === currentFiltered[index]);
+                
+                if (!arraysEqual) {
+                    // Si recibimos nuevas imágenes desde el componente padre, actualizar preview
+                    const newPreview = Array(this.maxImages).fill('');
+                    newImages.forEach((img, index) => {
+                        if (index < this.maxImages) {
+                            newPreview[index] = img;
+                        }
+                    });
+                    this.imagePreview = newPreview;
+                }
             },
             deep: true,
             immediate: true

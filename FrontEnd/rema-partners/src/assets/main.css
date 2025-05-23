@@ -2,12 +2,6 @@
 @import 'leaflet/dist/leaflet.css';
 @import 'leaflet-geosearch/dist/geosearch.css';
 
-@font-face {
-    font-family: 'Bagnard';
-    src: url('../assets/fonts/Bagnard.otf') format('opentype');
-}
-
 html {
     background-color: #f3f4f6;
-    font-family: 'Bagnard', Arial, Helvetica, sans-serif;
 }

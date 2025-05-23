@@ -76,7 +76,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/login", "/logout", "/", "/api", "/createUser", "/vendedor/producto/getAll",
                             "/vendedor/producto/getById/*", "/api/binary-image/*",
                             "/api/images/*", "/resorces/static/**", "/api/stripe/**", "/api/upload/**",
-                            "/api/images/lowRes/**")
+                            "/api/images/lowRes/**", "/getUserByEmail/**", "/getUserByUsername/**")
                             .permitAll();
                     auth.anyRequest().authenticated();
                     // auth.anyRequest().permitAll();

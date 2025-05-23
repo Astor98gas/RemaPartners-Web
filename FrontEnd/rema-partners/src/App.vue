@@ -12,11 +12,11 @@ export default defineComponent({
 });
 </script>
 
-/**
-* Componente principal de la aplicación.
-* Actúa como contenedor raíz para todos los demás componentes y vistas.
-* Establece la estructura básica de la aplicación y gestiona la navegación global.
-*/
+
+<!-- Componente principal de la aplicación.
+Actúa como contenedor raíz para todos los demás componentes y vistas.
+Establece la estructura básica de la aplicación y gestiona la navegación global. -->
+
 
 <template>
   <div class="h-screen flex flex-col">

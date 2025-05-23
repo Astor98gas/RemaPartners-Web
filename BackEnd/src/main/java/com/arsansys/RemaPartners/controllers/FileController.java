@@ -50,6 +50,22 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
+            // Validar que el archivo no esté vacío
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("El archivo está vacío");
+            }
+
+            // Validar tamaño del archivo (ejemplo: máximo 5MB)
+            if (file.getSize() > 5 * 1024 * 1024) {
+                return ResponseEntity.badRequest().body("El archivo es demasiado grande. Máximo 5MB permitido");
+            }
+
+            // Validar tipo de archivo
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.badRequest().body("Solo se permiten archivos de imagen");
+            }
+
             // Crear directorio si no existe
             File directory = new File(uploadDir);
             if (!directory.exists()) {
@@ -70,6 +86,9 @@ public class FileController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error uploading file: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error inesperado: " + e.getMessage());
         }
     }
 
