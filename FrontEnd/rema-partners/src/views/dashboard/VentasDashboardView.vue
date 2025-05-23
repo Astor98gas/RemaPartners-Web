@@ -105,7 +105,7 @@
                                             {{ producto.cantidadVentas }} {{ t('dashboard.sales') }}
                                         </div>
                                         <div class="text-sm text-gray-600">
-                                            {{ formatCurrency(producto.importeTotal / 100) }}
+                                            {{ formatCurrency(producto.importeTotal / 100, producto.moneda) }}
                                         </div>
                                     </div>
                                     <button @click="goToProductDetail(producto.id)"
@@ -372,10 +372,10 @@ export default {
         };
 
         // Formato para moneda
-        const formatCurrency = (amount) => {
+        const formatCurrency = (amount, moneda) => {
             return new Intl.NumberFormat('es-ES', {
                 style: 'currency',
-                currency: 'EUR',
+                currency: moneda || 'EUR',
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2
             }).format(amount || 0);

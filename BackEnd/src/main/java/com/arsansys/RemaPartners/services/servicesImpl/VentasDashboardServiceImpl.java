@@ -15,6 +15,7 @@ import com.arsansys.RemaPartners.repositories.FacturaRepository;
 import com.arsansys.RemaPartners.services.FacturaService;
 import com.arsansys.RemaPartners.services.ProductoService;
 import com.arsansys.RemaPartners.services.VentasDashboardService;
+import com.arsansys.RemaPartners.services.CurrencyConversionService;
 
 @Service
 public class VentasDashboardServiceImpl implements VentasDashboardService {
@@ -27,6 +28,12 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
 
     @Autowired
     private FacturaRepository facturaRepository;
+
+    @Autowired
+    private CurrencyConversionService currencyConversionService;
+
+    // Target currency constant
+    private static final String TARGET_CURRENCY = "EUR";
 
     @Override
     public Map<String, Object> getEstadisticasGenerales(int year) {
@@ -235,15 +242,19 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
                     .filter(f -> f.getFechaEmision().getYear() == year)
                     .collect(Collectors.toList());
 
-            // Calcular totales
+            // Calcular totales (convertidos a EUR)
             int totalVentas = facturasAño.stream()
                     .mapToInt(FacturaEntity::getCantidad)
                     .sum();
+
             int importeTotalVentas = facturasAño.stream()
-                    .mapToInt(FacturaEntity::getImporteTotalCentimos)
+                    .mapToInt(factura -> currencyConversionService.convertCurrency(
+                            factura.getImporteTotalCentimos(),
+                            factura.getMoneda(),
+                            TARGET_CURRENCY))
                     .sum();
 
-            // Ventas por mes
+            // Ventas por mes (convertidas a EUR)
             Map<String, Map<String, Integer>> ventasPorMes = new HashMap<>();
             for (int mes = 1; mes <= 12; mes++) {
                 final int mesFinal = mes;
@@ -253,8 +264,13 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
 
                 Map<String, Integer> datosMes = new HashMap<>();
                 datosMes.put("cantidad", facturasMes.stream().mapToInt(FacturaEntity::getCantidad).sum());
+
+                // Convert each invoice amount to EUR before summing
                 datosMes.put("importe", facturasMes.stream()
-                        .mapToInt(FacturaEntity::getImporteTotalCentimos)
+                        .mapToInt(factura -> currencyConversionService.convertCurrency(
+                                factura.getImporteTotalCentimos(),
+                                factura.getMoneda(),
+                                TARGET_CURRENCY))
                         .sum());
 
                 ventasPorMes.put(String.valueOf(mes), datosMes);
@@ -265,7 +281,11 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
             for (FacturaEntity factura : facturasAño) {
                 String idProducto = factura.getIdProducto();
                 int cantidad = factura.getCantidad();
-                int importe = factura.getImporteTotalCentimos();
+                // Convert invoice amount to EUR
+                int importe = currencyConversionService.convertCurrency(
+                        factura.getImporteTotalCentimos(),
+                        factura.getMoneda(),
+                        TARGET_CURRENCY);
 
                 productosCantidad.putIfAbsent(idProducto, new HashMap<>());
                 Map<String, Object> datosProducto = productosCantidad.get(idProducto);
@@ -274,6 +294,7 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
                 datosProducto.put("titulo", factura.getTituloProducto());
                 datosProducto.putIfAbsent("cantidadVentas", 0);
                 datosProducto.putIfAbsent("importeTotal", 0);
+                datosProducto.putIfAbsent("moneda", TARGET_CURRENCY); // Always EUR now
 
                 int cantidadActual = (Integer) datosProducto.get("cantidadVentas");
                 int importeActual = (Integer) datosProducto.get("importeTotal");
@@ -297,7 +318,7 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
             stats.put("importeTotalVentas", importeTotalVentas);
             stats.put("ventasPorMes", ventasPorMes);
             stats.put("productosTopVentas", productosTopVentas);
-
+            stats.put("moneda", TARGET_CURRENCY); // Add information about the currency used
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener estadísticas de ventas del usuario: " + e.getMessage());
         }
