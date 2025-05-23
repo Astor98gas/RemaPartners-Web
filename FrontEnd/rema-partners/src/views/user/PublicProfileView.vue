@@ -78,7 +78,7 @@
                                 class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                                 <div class="h-48 overflow-hidden">
                                     <img v-if="product.imagenes && product.imagenes.length > 0"
-                                        :src="product.imagenes[0]" :alt="product.titulo"
+                                        :src="t('link.servidor.low') + product.imagenes[0]" :alt="product.titulo"
                                         class="w-full h-full object-cover" @error="onProductImageError">
                                     <div v-else class="w-full h-full flex items-center justify-center bg-gray-100">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400"
