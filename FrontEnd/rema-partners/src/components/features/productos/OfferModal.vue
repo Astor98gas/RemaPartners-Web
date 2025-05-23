@@ -15,12 +15,12 @@
             <!-- Product info -->
             <div class="flex items-center mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100 shadow-sm">
                 <div class="w-20 h-20 flex-shrink-0 rounded-md overflow-hidden mr-4">
-                    <img :src="productImage" :alt="productTitle" class="w-full h-full object-cover"
-                        @error="onImageError">
+                    <img :src="t('link.servidor.low') + productImage" :alt="productTitle"
+                        class="w-full h-full object-cover" @error="onImageError">
                 </div>
                 <div class="flex-1 min-w-0">
                     <h4 class="font-medium text-gray-900 text-base mb-1 truncate" :title="productTitle">{{ productTitle
-                    }}</h4>
+                        }}</h4>
                     <p class="text-gray-700 text-sm font-semibold bg-white inline-block px-2 py-1 rounded-md">
                         {{ formatCurrency(originalPrice, currency) }}
                     </p>

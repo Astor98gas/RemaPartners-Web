@@ -57,8 +57,9 @@
                     <div class="flex flex-1 items-start space-x-4 mb-4 md:mb-0">
                         <div v-if="getProductImage(chat.idProducto)"
                             class="flex-shrink-0 h-24 w-24 rounded-lg overflow-hidden bg-gray-100">
-                            <img :src="getProductImage(chat.idProducto)" :alt="getProductTitle(chat.idProducto)"
-                                class="h-full w-full object-cover" @error="onImageError" />
+                            <img :src="t('link.servidor.low') + getProductImage(chat.idProducto)"
+                                :alt="getProductTitle(chat.idProducto)" class="h-full w-full object-cover"
+                                @error="onImageError" />
                         </div>
                         <div v-else
                             class="flex-shrink-0 h-16 w-16 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
