@@ -22,6 +22,10 @@ import com.arsansys.RemaPartners.services.ChatService;
 import com.arsansys.RemaPartners.services.UserService;
 import com.arsansys.RemaPartners.services.firebase.FirebaseMessagingService;
 
+/**
+ * Controlador REST para la gestión de chats entre usuarios.
+ * Proporciona endpoints para crear chats, agregar mensajes, obtener chats por diferentes criterios y eliminar chats.
+ */
 @RestController
 @RequestMapping("/api/chat")
 public class ChatController {
@@ -36,10 +40,10 @@ public class ChatController {
     private UserService userService;
 
     /**
-     * Crea un nuevo chat
-     * 
-     * @param chatEntity Datos del chat a crear
-     * @return El chat creado
+     * Crea un nuevo chat.
+     *
+     * @param chatEntity Datos del chat a crear.
+     * @return El chat creado o un error si ocurre algún problema.
      */
     @PostMapping("/create")
     public ResponseEntity<ChatEntity> createChat(@RequestBody ChatEntity chatEntity) {
@@ -55,10 +59,10 @@ public class ChatController {
     }
 
     /**
-     * Obtiene un chat por su ID
-     * 
-     * @param id ID del chat
-     * @return El chat encontrado o error si no existe
+     * Obtiene un chat por su ID.
+     *
+     * @param id ID del chat.
+     * @return El chat encontrado o error si no existe.
      */
     @GetMapping("/getById/{id}")
     public ResponseEntity<ChatEntity> getChatById(@PathVariable("id") String id) {
@@ -75,11 +79,11 @@ public class ChatController {
     }
 
     /**
-     * Agrega un mensaje a un chat existente
-     * 
-     * @param id      ID del chat
-     * @param mensaje Mensaje a agregar
-     * @return El chat actualizado con el nuevo mensaje
+     * Agrega un mensaje a un chat existente.
+     *
+     * @param id      ID del chat.
+     * @param mensaje Mensaje a agregar.
+     * @return El chat actualizado con el nuevo mensaje.
      */
     @PostMapping("/addMessage/{id}")
     public ResponseEntity<ChatEntity> addMessage(@PathVariable("id") String id, @RequestBody MensajeEntity mensaje) {
@@ -140,10 +144,10 @@ public class ChatController {
     }
 
     /**
-     * Obtiene chats por ID de producto
-     * 
-     * @param idProducto ID del producto
-     * @return Lista de chats asociados al producto
+     * Obtiene los chats asociados a un producto por su ID.
+     *
+     * @param idProducto ID del producto.
+     * @return Lista de chats asociados al producto.
      */
     @GetMapping("/getByProductId/{idProducto}")
     public ResponseEntity<List<ChatEntity>> getChatsByProductId(@PathVariable("idProducto") String idProducto) {
@@ -156,10 +160,10 @@ public class ChatController {
     }
 
     /**
-     * Obtiene chats por ID de comprador
-     * 
-     * @param idComprador ID del comprador
-     * @return Lista de chats del comprador
+     * Obtiene los chats de un comprador por su ID.
+     *
+     * @param idComprador ID del comprador.
+     * @return Lista de chats del comprador.
      */
     @GetMapping("/getByBuyerId/{idComprador}")
     public ResponseEntity<List<ChatEntity>> getChatsByBuyerId(@PathVariable("idComprador") String idComprador) {
@@ -172,10 +176,10 @@ public class ChatController {
     }
 
     /**
-     * Obtiene chats por ID de vendedor
-     * 
-     * @param idVendedor ID del vendedor
-     * @return Lista de chats del vendedor
+     * Obtiene los chats de un vendedor por su ID.
+     *
+     * @param idVendedor ID del vendedor.
+     * @return Lista de chats del vendedor.
      */
     @GetMapping("/getBySellerId/{idVendedor}")
     public ResponseEntity<List<ChatEntity>> getChatsBySellerId(@PathVariable("idVendedor") String idVendedor) {
@@ -188,12 +192,12 @@ public class ChatController {
     }
 
     /**
-     * Obtiene un chat por la combinación de producto, comprador y vendedor
-     * 
-     * @param idProducto  ID del producto
-     * @param idComprador ID del comprador
-     * @param idVendedor  ID del vendedor
-     * @return El chat encontrado o error si no existe
+     * Obtiene un chat por la combinación de producto, comprador y vendedor.
+     *
+     * @param idProducto  ID del producto.
+     * @param idComprador ID del comprador.
+     * @param idVendedor  ID del vendedor.
+     * @return El chat encontrado o error si no existe.
      */
     @GetMapping("/getByParticipants/{idProducto}/{idComprador}/{idVendedor}")
     public ResponseEntity<ChatEntity> getChatByParticipants(
@@ -214,10 +218,10 @@ public class ChatController {
     }
 
     /**
-     * Elimina un chat por su ID
-     * 
-     * @param id ID del chat a eliminar
-     * @return Estado de la operación
+     * Elimina un chat por su ID.
+     *
+     * @param id ID del chat a eliminar.
+     * @return Estado de la operación.
      */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteChat(@PathVariable("id") String id) {

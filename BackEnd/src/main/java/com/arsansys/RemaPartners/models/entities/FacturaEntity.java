@@ -21,42 +21,66 @@ import lombok.Builder.Default;
 @Document(collection = "facturas")
 public class FacturaEntity {
 
+    /**
+     * Identificador único de la factura.
+     */
     @Id
     private String id;
 
-    // ID del producto vendido
+    /**
+     * ID del producto vendido.
+     */
     private String idProducto;
 
-    // ID del comprador
+    /**
+     * ID del comprador.
+     */
     private String idComprador;
 
-    // ID del vendedor
+    /**
+     * ID del vendedor.
+     */
     private String idVendedor;
 
-    // Cantidad de unidades vendidas
+    /**
+     * Cantidad de unidades vendidas.
+     */
     private Integer cantidad;
 
-    // Precio unitario en céntimos
+    /**
+     * Precio unitario en céntimos.
+     */
     private Integer precioCentimos;
 
-    // Importe total de la factura en céntimos (precio * cantidad)
+    /**
+     * Importe total de la factura en céntimos (precio * cantidad).
+     */
     private Integer importeTotalCentimos;
 
-    // Moneda
+    /**
+     * Moneda utilizada en la factura.
+     */
     private String moneda;
 
-    // Título del producto en el momento de la venta
+    /**
+     * Título del producto en el momento de la venta.
+     */
     private String tituloProducto;
 
-    // Fecha de emisión de la factura
+    /**
+     * Fecha de emisión de la factura.
+     */
     @Default
     private LocalDateTime fechaEmision = LocalDateTime.now();
 
-    // Referencia al chat donde se realizó la venta
+    /**
+     * Referencia al chat donde se realizó la venta.
+     */
     private String idChat;
 
-    // Estado de la factura (puede extenderse con más estados como PAGADA,
-    // CANCELADA, etc.)
+    /**
+     * Estado de la factura (por ejemplo: EMITIDA, PAGADA, CANCELADA, etc.).
+     */
     @Default
     private String estado = "EMITIDA";
 }

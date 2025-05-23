@@ -25,7 +25,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Filtre d'autenticació JWT.
+ * Filtro de autenticación JWT.
+ * <p>
+ * Este filtro se encarga de procesar las solicitudes de autenticación,
+ * validando las credenciales del usuario y generando un token JWT en caso de
+ * éxito.
+ * También gestiona la integración con Google Token y añade cabeceras CORS.
  */
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -33,9 +38,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private UserService userService;
 
     /**
-     * Constructor del filtre d'autenticació JWT.
+     * Constructor del filtro de autenticación JWT.
      *
-     * @param jwtUtils Utilidades JWT.
+     * @param jwtUtils    Utilidades para la gestión de JWT.
+     * @param userService Servicio de usuarios para operaciones relacionadas.
      */
     public JwtAuthenticationFilter(JwtUtils jwtUtils, UserService userService) {
         this.jwtUtils = jwtUtils;
@@ -43,12 +49,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     /**
-     * Intenta autenticar l'usuari a partir de la petició HTTP.
+     * Intenta autenticar al usuario a partir de la petición HTTP.
+     * <p>
+     * Lee las credenciales del usuario desde el cuerpo de la petición,
+     * añade cabeceras CORS y gestiona la autenticación con Google Token si
+     * corresponde.
      *
-     * @param request  Petició HTTP.
-     * @param response Resposta HTTP.
-     * @return Autenticació de l'usuari.
-     * @throws AuthenticationException Excepció d'autenticació.
+     * @param request  Petición HTTP entrante.
+     * @param response Respuesta HTTP saliente.
+     * @return Objeto Authentication si la autenticación es exitosa, null si es una
+     *         solicitud OPTIONS.
+     * @throws AuthenticationException Si ocurre un error durante la autenticación.
      */
     @Override
     public Authentication attemptAuthentication(
@@ -99,14 +110,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     /**
-     * Acció a realitzar en cas d'autenticació exitosa.
+     * Acción a realizar en caso de autenticación exitosa.
+     * <p>
+     * Genera un token JWT, lo añade a la respuesta y devuelve información relevante
+     * del usuario.
      *
-     * @param request    Petició HTTP.
-     * @param response   Resposta HTTP.
-     * @param chain      Cadena de filtres.
-     * @param authResult Resultat de l'autenticació.
-     * @throws IOException      Excepció d'E/S.
-     * @throws ServletException Excepció de Servlet.
+     * @param request    Petición HTTP.
+     * @param response   Respuesta HTTP.
+     * @param chain      Cadena de filtros.
+     * @param authResult Resultado de la autenticación.
+     * @throws IOException      Si ocurre un error de entrada/salida.
+     * @throws ServletException Si ocurre un error en el servlet.
      */
     @Override
     protected void successfulAuthentication(

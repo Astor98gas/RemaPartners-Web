@@ -26,6 +26,11 @@ import com.arsansys.RemaPartners.services.ProductoService;
 import com.arsansys.RemaPartners.services.ProductoVisitaService;
 import com.arsansys.RemaPartners.services.UserService;
 
+/**
+ * Controlador REST para el dashboard de visitas.
+ * Proporciona endpoints para obtener estadísticas generales y detalladas de
+ * visitas a productos.
+ */
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/dashboard")
@@ -41,8 +46,11 @@ public class DashboardController {
     private UserService userService;
 
     /**
-     * Endpoint para obtener las estadísticas generales del dashboard
-     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR
+     * Obtiene las estadísticas generales del dashboard.
+     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR.
+     *
+     * @param year Año para el que se solicitan las estadísticas (opcional).
+     * @return Estadísticas generales del dashboard.
      */
     @GetMapping("/stats")
     @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR', 'TRABAJADOR')")
@@ -124,8 +132,11 @@ public class DashboardController {
     }
 
     /**
-     * Endpoint para obtener las estadísticas de visitas por producto
-     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR
+     * Obtiene las estadísticas de visitas para un producto específico.
+     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR.
+     *
+     * @param id ID del producto.
+     * @return Estadísticas de visitas del producto.
      */
     @GetMapping("/producto/{id}/visitas")
     @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR', 'TRABAJADOR')")
@@ -167,8 +178,12 @@ public class DashboardController {
     }
 
     /**
-     * Endpoint para obtener las estadísticas de visitas por mes
-     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR
+     * Obtiene las estadísticas de visitas por mes.
+     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR.
+     *
+     * @param año Año de las estadísticas.
+     * @param mes Mes de las estadísticas.
+     * @return Estadísticas de visitas del mes especificado.
      */
     @GetMapping("/visitas/mes/{año}/{mes}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR', 'TRABAJADOR')")

@@ -11,12 +11,20 @@ import com.arsansys.RemaPartners.models.enums.EMoneda;
 import com.arsansys.RemaPartners.repositories.ProductoRepository;
 import com.arsansys.RemaPartners.services.ProductoService;
 
+/**
+ * Implementación del servicio para la gestión de productos.
+ */
 @Service
 public class ProductoServiceImpl implements ProductoService {
 
     @Autowired
     private ProductoRepository productoRepository;
 
+    /**
+     * Obtiene todos los productos.
+     * 
+     * @return Lista de productos.
+     */
     @Override
     public List<ProductoEntity> getProductos() {
         try {
@@ -26,6 +34,12 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Obtiene un producto por su identificador.
+     * 
+     * @param id Identificador del producto.
+     * @return Entidad de producto encontrada.
+     */
     @Override
     public ProductoEntity getProductoById(String id) {
         try {
@@ -35,6 +49,12 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Obtiene productos por estado.
+     * 
+     * @param estado Estado del producto.
+     * @return Lista de productos con el estado especificado.
+     */
     @Override
     public List<ProductoEntity> getProductosByEstado(EEstado estado) {
         try {
@@ -44,6 +64,12 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Obtiene productos por moneda.
+     * 
+     * @param moneda Moneda del producto.
+     * @return Lista de productos con la moneda especificada.
+     */
     @Override
     public List<ProductoEntity> getProductosByMoneda(EMoneda moneda) {
         try {
@@ -53,6 +79,12 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Obtiene productos por identificador de categoría.
+     * 
+     * @param idCategoria Identificador de la categoría.
+     * @return Lista de productos de la categoría.
+     */
     @Override
     public List<ProductoEntity> getProductosByIdCategoria(String idCategoria) {
         try {
@@ -62,6 +94,12 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Obtiene productos por marca.
+     * 
+     * @param marca Marca del producto.
+     * @return Lista de productos de la marca.
+     */
     @Override
     public List<ProductoEntity> getProductosByMarca(String marca) {
         try {
@@ -71,6 +109,12 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Obtiene productos por modelo.
+     * 
+     * @param modelo Modelo del producto.
+     * @return Lista de productos del modelo.
+     */
     @Override
     public List<ProductoEntity> getProductosByModelo(String modelo) {
         try {
@@ -80,6 +124,12 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Obtiene productos por título.
+     * 
+     * @param titulo Título del producto.
+     * @return Lista de productos con el título especificado.
+     */
     @Override
     public List<ProductoEntity> getProductosByTitulo(String titulo) {
         try {
@@ -89,6 +139,12 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Obtiene productos por descripción.
+     * 
+     * @param descripcion Descripción del producto.
+     * @return Lista de productos con la descripción especificada.
+     */
     @Override
     public List<ProductoEntity> getProductosByDescripcion(String descripcion) {
         try {
@@ -98,6 +154,12 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Crea un nuevo producto.
+     * 
+     * @param productoEntity Entidad de producto a crear.
+     * @return Entidad de producto creada.
+     */
     @Override
     public ProductoEntity createProducto(ProductoEntity productoEntity) {
         try {
@@ -112,6 +174,12 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Actualiza un producto existente.
+     * 
+     * @param productoEntity Entidad de producto a actualizar.
+     * @return Entidad de producto actualizada.
+     */
     @Override
     public ProductoEntity updateProducto(ProductoEntity productoEntity) {
         try {
@@ -125,6 +193,11 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Elimina un producto por su identificador.
+     * 
+     * @param id Identificador del producto a eliminar.
+     */
     @Override
     public void deleteProductoById(String id) {
         try {
@@ -138,6 +211,11 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    /**
+     * Cambia el estado de activo/inactivo de un producto.
+     * 
+     * @param id Identificador del producto.
+     */
     @Override
     public void toggleStatus(String id) {
         try {

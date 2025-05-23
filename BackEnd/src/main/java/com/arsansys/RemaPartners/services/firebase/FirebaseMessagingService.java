@@ -9,10 +9,21 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Servicio para el envío de notificaciones push utilizando Firebase Cloud Messaging.
+ */
 @Service
 @RequiredArgsConstructor
 public class FirebaseMessagingService {
 
+    /**
+     * Envía una notificación push a un dispositivo específico utilizando un token de Firebase.
+     *
+     * @param note  Objeto Note que contiene el título, contenido, imagen y datos adicionales de la notificación.
+     * @param token Token del dispositivo al que se enviará la notificación.
+     * @return String con el ID del mensaje enviado por Firebase.
+     * @throws FirebaseMessagingException Si ocurre un error al enviar la notificación.
+     */
     public String sendNotification(Note note, String token) throws FirebaseMessagingException {
         Notification notification = Notification
                 .builder()

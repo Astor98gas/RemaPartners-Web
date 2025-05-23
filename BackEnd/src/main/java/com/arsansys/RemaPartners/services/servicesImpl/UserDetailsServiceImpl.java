@@ -17,7 +17,7 @@ import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.repositories.UserRepository;
 
 /**
- * Servei que implementa mètodes pels usuaris.
+ * Servicio que implementa métodos para la gestión de usuarios y autenticación.
  */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -26,11 +26,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         private UserRepository userRepository;
 
         /**
-         * Mètode per carregar la sessió dels usuaris.
+         * Carga los detalles de un usuario por su nombre de usuario.
          *
-         * @param username Nom d'usuari.
-         * @return UserDetails.
-         * @throws UsernameNotFoundException Excepció si l'usuari no existeix.
+         * @param username Nombre de usuario.
+         * @return Detalles del usuario (UserDetails).
+         * @throws UsernameNotFoundException Si el usuario no existe.
          */
         @Override
         public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

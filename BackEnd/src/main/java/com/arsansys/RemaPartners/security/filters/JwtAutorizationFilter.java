@@ -19,7 +19,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Filtre d'autorització JWT.
+ * Filtro de autorización JWT.
+ * <p>
+ * Este filtro valida el token JWT en cada petición y establece la autenticación
+ * en el contexto de seguridad si el token es válido.
  */
 @Component
 public class JwtAutorizationFilter extends OncePerRequestFilter {
@@ -31,13 +34,16 @@ public class JwtAutorizationFilter extends OncePerRequestFilter {
     private UserDetailsServiceImpl userDetailsServiceImpl;
 
     /**
-     * Mètode que s'executa per cada petició HTTP.
+     * Método que se ejecuta por cada petición HTTP.
+     * <p>
+     * Extrae y valida el token JWT del encabezado Authorization.
+     * Si es válido, establece la autenticación en el contexto de seguridad.
      *
-     * @param request     Petició HTTP.
-     * @param response    Resposta HTTP.
-     * @param filterChain Cadena de filtres.
-     * @throws ServletException Excepció de Servlet.
-     * @throws IOException      Excepció d'E/S.
+     * @param request     Petición HTTP.
+     * @param response    Respuesta HTTP.
+     * @param filterChain Cadena de filtros.
+     * @throws ServletException Si ocurre un error en el servlet.
+     * @throws IOException      Si ocurre un error de entrada/salida.
      */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,

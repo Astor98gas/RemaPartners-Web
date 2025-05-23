@@ -27,6 +27,12 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * Controlador para la gestión de autenticación JWT y operaciones relacionadas
+ * con usuarios.
+ * Permite crear usuarios, cerrar sesión, validar tokens y obtener información
+ * de usuario.
+ */
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class JwtController {
@@ -40,6 +46,13 @@ public class JwtController {
     @Autowired
     private JwtUtils jwtUtil;
 
+    /**
+     * Crea un nuevo usuario en el sistema.
+     *
+     * @param createUserDTO Datos del usuario a crear.
+     * @param response      Respuesta HTTP para agregar cookies si es necesario.
+     * @return Respuesta con el token JWT o mensaje de error.
+     */
     @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO createUserDTO, HttpServletResponse response) {
         try {
@@ -83,6 +96,12 @@ public class JwtController {
         }
     }
 
+    /**
+     * Cierra la sesión del usuario invalidando el token JWT.
+     *
+     * @param request Solicitud HTTP para extraer el token.
+     * @return Respuesta indicando el resultado del cierre de sesión.
+     */
     @GetMapping("/log_out")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         try {
@@ -114,6 +133,12 @@ public class JwtController {
         }
     }
 
+    /**
+     * Obtiene los detalles del usuario a partir de un token JWT.
+     *
+     * @param token Token JWT proporcionado.
+     * @return Detalles del usuario o mensaje de error.
+     */
     @GetMapping("/getUserByToken/{token}")
     public ResponseEntity<?> getUserByToken(@RequestParam String token) {
         try {
@@ -133,6 +158,12 @@ public class JwtController {
         }
     }
 
+    /**
+     * Verifica si el usuario está autenticado mediante el token JWT.
+     *
+     * @param request Solicitud HTTP para extraer el token.
+     * @return Información del usuario autenticado o mensaje de error.
+     */
     @GetMapping("/isLoggedIn")
     public ResponseEntity<?> isLoggedIn(HttpServletRequest request) {
         try {

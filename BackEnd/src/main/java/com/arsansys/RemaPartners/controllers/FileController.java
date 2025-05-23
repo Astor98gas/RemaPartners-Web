@@ -29,6 +29,11 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 
+/**
+ * Controlador REST para la gestión de archivos.
+ * Permite subir archivos, obtener imágenes y versiones de baja resolución, y
+ * descargar imágenes en binario.
+ */
 @RestController
 @RequestMapping("/api")
 public class FileController {
@@ -36,6 +41,12 @@ public class FileController {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    /**
+     * Sube un archivo al servidor.
+     *
+     * @param file Archivo a subir.
+     * @return URL del archivo subido o error si ocurre algún problema.
+     */
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
@@ -62,6 +73,12 @@ public class FileController {
         }
     }
 
+    /**
+     * Obtiene una imagen por su nombre de archivo.
+     *
+     * @param fileName Nombre del archivo de la imagen.
+     * @return Recurso de la imagen o error si no se encuentra.
+     */
     @GetMapping("/images/{fileName}")
     public ResponseEntity<Resource> getImage(@PathVariable String fileName) {
         try {
@@ -84,6 +101,12 @@ public class FileController {
         }
     }
 
+    /**
+     * Obtiene una versión de baja resolución de una imagen.
+     *
+     * @param fileName Nombre del archivo de la imagen.
+     * @return Recurso de la imagen en baja resolución o error si no se encuentra.
+     */
     @GetMapping("/images/lowRes/{fileName}")
     public ResponseEntity<Resource> getLowResImage(@PathVariable String fileName) {
         try {
@@ -108,6 +131,34 @@ public class FileController {
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * Obtiene una imagen en formato binario.
+     *
+     * @param fileName Nombre del archivo de la imagen.
+     * @return Imagen en formato binario o error si no se encuentra.
+     */
+    @GetMapping("/binary-image/{fileName}")
+    public ResponseEntity<byte[]> getBinaryImage(@PathVariable String fileName) {
+        try {
+            Path filePath = Path.of(uploadDir, fileName);
+
+            if (Files.exists(filePath)) {
+                byte[] imageData = Files.readAllBytes(filePath);
+
+                // Determinar el tipo de contenido basado en la extensión del archivo
+                String contentType = determineContentType(fileName);
+
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(contentType))
+                        .body(imageData);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -153,28 +204,6 @@ public class FileController {
         imageOutputStream.close();
 
         return outputStream.toByteArray();
-    }
-
-    @GetMapping("/binary-image/{fileName}")
-    public ResponseEntity<byte[]> getBinaryImage(@PathVariable String fileName) {
-        try {
-            Path filePath = Path.of(uploadDir, fileName);
-
-            if (Files.exists(filePath)) {
-                byte[] imageData = Files.readAllBytes(filePath);
-
-                // Determinar el tipo de contenido basado en la extensión del archivo
-                String contentType = determineContentType(fileName);
-
-                return ResponseEntity.ok()
-                        .contentType(MediaType.parseMediaType(contentType))
-                        .body(imageData);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 
     private String determineContentType(String fileName) {

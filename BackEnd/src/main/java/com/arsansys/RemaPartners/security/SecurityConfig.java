@@ -26,7 +26,10 @@ import com.arsansys.RemaPartners.services.UserService;
 import java.util.Arrays;
 
 /**
- * Classe de configuració de seguretat.
+ * Clase de configuración de seguridad.
+ * <p>
+ * Configura la cadena de filtros de seguridad, la gestión de autenticación,
+ * la codificación de contraseñas y la configuración CORS para la aplicación.
  */
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
@@ -46,12 +49,12 @@ public class SecurityConfig {
     UserService userService;
 
     /**
-     * Configura la cadena de filtres de seguretat.
+     * Configura la cadena de filtros de seguridad.
      *
-     * @param httpSecurity          Objecte HttpSecurity.
-     * @param authenticationManager Objecte AuthenticationManager.
-     * @return SecurityFilterChain cadena de filtres de seguretat configurada.
-     * @throws Exception Excepció si hi ha algun error.
+     * @param httpSecurity          Objeto HttpSecurity para la configuración HTTP.
+     * @param authenticationManager Gestor de autenticación.
+     * @return SecurityFilterChain Cadena de filtros de seguridad configurada.
+     * @throws Exception Si ocurre algún error durante la configuración.
      */
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationManager authenticationManager)
@@ -87,9 +90,9 @@ public class SecurityConfig {
     }
 
     /**
-     * Bean que proporciona un codificador de contrasenyes BCrypt.
+     * Bean que proporciona un codificador de contraseñas BCrypt.
      *
-     * @return BCryptPasswordEncoder Codificador de contrasenyes BCrypt.
+     * @return BCryptPasswordEncoder Codificador de contraseñas BCrypt.
      */
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -97,12 +100,12 @@ public class SecurityConfig {
     }
 
     /**
-     * Bean que proporciona un gestor d'autenticació.
+     * Bean que proporciona un gestor de autenticación.
      *
-     * @param httpSecurity    Objecte HttpSecurity.
-     * @param passwordEncoder Codificador de contrasenyes.
-     * @return AuthenticationManager Gestor d'autenticació.
-     * @throws Exception Excepció si hi ha algun error.
+     * @param httpSecurity    Objeto HttpSecurity.
+     * @param passwordEncoder Codificador de contraseñas.
+     * @return AuthenticationManager Gestor de autenticación.
+     * @throws Exception Si ocurre algún error durante la configuración.
      */
     @SuppressWarnings("removal")
     @Bean
@@ -115,9 +118,11 @@ public class SecurityConfig {
     }
 
     /**
-     * Bean de configuració CORS.
+     * Bean de configuración CORS.
+     * <p>
+     * Permite solicitudes desde el origen especificado y métodos HTTP definidos.
      *
-     * @return CorsConfigurationSource Configuració CORS.
+     * @return CorsConfigurationSource Configuración CORS.
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

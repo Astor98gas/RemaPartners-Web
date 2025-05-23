@@ -23,6 +23,10 @@ import com.arsansys.RemaPartners.services.UserService;
 
 import org.springframework.web.bind.annotation.PathVariable;
 
+/**
+ * Controlador principal para operaciones generales y de usuario.
+ * Permite gestionar usuarios y obtener información básica de la API.
+ */
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class HomeController {
@@ -37,40 +41,79 @@ public class HomeController {
     @Autowired
     private JwtUtils jwtUtils;
 
+    /**
+     * Página de bienvenida de la API.
+     *
+     * @return Mensaje de bienvenida.
+     */
     @GetMapping("/")
     public String home() {
         return "Welcome to the RemaPartners API!";
     }
 
+    /**
+     * Página de bienvenida alternativa de la API.
+     *
+     * @return Mensaje de bienvenida.
+     */
     @GetMapping("/api")
     public String api() {
         return "Welcome to the RemaPartners API!";
     }
 
+    /**
+     * Obtiene la lista de todos los usuarios.
+     *
+     * @return Lista de usuarios.
+     */
     @GetMapping("/getUsers")
     public ResponseEntity<List<UserEntity>> getUsers() {
         List<UserEntity> users = userService.getUsers();
         return ResponseEntity.ok(users);
     }
 
+    /**
+     * Obtiene un usuario por su nombre de usuario.
+     *
+     * @param username Nombre de usuario.
+     * @return Usuario correspondiente.
+     */
     @GetMapping("/getUserByUsername/{username}")
     public ResponseEntity<UserEntity> getUserByUsername(@PathVariable String username) {
         UserEntity user = userService.getUserByUsername(username);
         return ResponseEntity.ok(user);
     }
 
+    /**
+     * Obtiene un usuario por su ID.
+     *
+     * @param id ID del usuario.
+     * @return Usuario correspondiente.
+     */
     @GetMapping("/getUserById/{id}")
     public ResponseEntity<UserEntity> getUserById(@PathVariable String id) {
         UserEntity user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
 
+    /**
+     * Obtiene un usuario por su correo electrónico.
+     *
+     * @param email Correo electrónico del usuario.
+     * @return Usuario correspondiente.
+     */
     @GetMapping("/getUserByEmail/{email}")
     public ResponseEntity<UserEntity> getUserByEmail(@PathVariable String email) {
         UserEntity user = userService.getByEmail(email);
         return ResponseEntity.ok(user);
     }
 
+    /**
+     * Elimina un usuario por su nombre de usuario.
+     *
+     * @param username Nombre de usuario.
+     * @return Mensaje indicando el resultado de la operación.
+     */
     @GetMapping("/deleteUser/{username}")
     public ResponseEntity<?> deleteUser(@PathVariable String username) {
         try {
@@ -84,6 +127,14 @@ public class HomeController {
         }
     }
 
+    /**
+     * Actualiza los datos de un usuario.
+     *
+     * @param id            ID del usuario a actualizar.
+     * @param updateUserDTO Datos actualizados del usuario.
+     * @param request       Solicitud HTTP para extraer el token si es necesario.
+     * @return Mensaje indicando el resultado de la actualización.
+     */
     @PostMapping("/updateUser/{id}")
     public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody CreateUserDTO updateUserDTO,
             HttpServletRequest request) {
@@ -138,6 +189,12 @@ public class HomeController {
         }
     }
 
+    /**
+     * Obtiene el perfil público de un usuario por su ID.
+     *
+     * @param id ID del usuario.
+     * @return Perfil público del usuario.
+     */
     @GetMapping("/getUserProfileById/{id}")
     public ResponseEntity<?> getUserProfileById(@PathVariable String id) {
         try {

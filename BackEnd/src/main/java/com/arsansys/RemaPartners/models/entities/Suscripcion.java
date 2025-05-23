@@ -14,6 +14,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Builder.Default;
 
+/**
+ * Entidad que representa una suscripción de usuario.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,16 +25,28 @@ import lombok.Builder.Default;
 @Document(collection = "suscripciones")
 public class Suscripcion {
 
+    /**
+     * Identificador único de la suscripción.
+     */
     @Id
     private String id;
 
+    /**
+     * Identificador del usuario suscrito.
+     */
     @NotNull
     private String idUsuario;
 
+    /**
+     * Fecha de compra de la suscripción.
+     */
     @NotNull
     @Default
     private LocalDate fechaCompra = LocalDate.now();
 
+    /**
+     * Fecha de vencimiento de la suscripción.
+     */
     @NotNull
     @Default
     private LocalDate fechaVencimiento = LocalDate.now().plusDays(30);

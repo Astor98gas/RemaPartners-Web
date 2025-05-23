@@ -7,11 +7,16 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para la entidad RatingEntity.
+ * Permite operaciones CRUD y consultas personalizadas sobre valoraciones en
+ * MongoDB.
+ */
 @Repository
 public interface RatingRepository extends MongoRepository<RatingEntity, String> {
 
     /**
-     * Busca todas las valoraciones de un vendedor específico
+     * Busca todas las valoraciones de un vendedor específico.
      * 
      * @param sellerId ID del vendedor
      * @return Lista de valoraciones
@@ -19,7 +24,7 @@ public interface RatingRepository extends MongoRepository<RatingEntity, String> 
     List<RatingEntity> findBySellerId(String sellerId);
 
     /**
-     * Busca la valoración que un usuario hizo a un vendedor
+     * Busca la valoración que un usuario hizo a un vendedor.
      * 
      * @param userId   ID del usuario
      * @param sellerId ID del vendedor

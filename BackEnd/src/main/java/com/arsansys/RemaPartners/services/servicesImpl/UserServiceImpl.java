@@ -15,6 +15,9 @@ import com.arsansys.RemaPartners.repositories.UserRepository;
 import com.arsansys.RemaPartners.security.jwt.JwtUtils;
 import com.arsansys.RemaPartners.services.UserService;
 
+/**
+ * Implementación del servicio para la gestión de usuarios.
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -27,12 +30,23 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
 
+    /**
+     * Obtiene todos los usuarios.
+     * 
+     * @return Lista de entidades de usuario.
+     */
     @Override
     public List<UserEntity> getUsers() {
         userRepository.findAll();
         return userRepository.findAll();
     }
 
+    /**
+     * Crea un nuevo usuario y retorna el token JWT.
+     * 
+     * @param userEntity Entidad de usuario a crear.
+     * @return Respuesta con el token JWT y el ID del usuario.
+     */
     public JwtResponse createUser(UserEntity userEntity) {
         try {
             // Check if the user already exists
@@ -60,21 +74,44 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * Obtiene un usuario por su identificador.
+     * 
+     * @param id Identificador del usuario.
+     * @return Entidad de usuario encontrada o null si no existe.
+     */
     @Override
     public UserEntity getUserById(String id) {
         return userRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Obtiene un usuario por su nombre de usuario.
+     * 
+     * @param username Nombre de usuario.
+     * @return Entidad de usuario encontrada o null si no existe.
+     */
     @Override
     public UserEntity getUserByUsername(String username) {
         return userRepository.findByUsername(username).orElse(null);
     }
 
+    /**
+     * Obtiene un usuario por su correo electrónico.
+     * 
+     * @param email Correo electrónico.
+     * @return Entidad de usuario encontrada o null si no existe.
+     */
     @Override
     public UserEntity getByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
 
+    /**
+     * Actualiza un usuario existente.
+     * 
+     * @param userEntity Entidad de usuario a actualizar.
+     */
     @Override
     public void updateUser(UserEntity userEntity) {
         try {

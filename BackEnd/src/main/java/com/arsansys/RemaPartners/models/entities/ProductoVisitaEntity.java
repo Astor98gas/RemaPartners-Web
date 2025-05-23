@@ -10,6 +10,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entidad que representa el registro de visitas de un producto por mes y año.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,18 +20,39 @@ import lombok.NoArgsConstructor;
 @Document(collection = "producto_visitas")
 public class ProductoVisitaEntity {
 
+    /**
+     * Identificador único del registro de visitas.
+     */
     @Id
     private String id;
 
+    /**
+     * Identificador del producto.
+     */
     private String productoId;
 
+    /**
+     * Identificador del vendedor del producto.
+     */
     private String vendedorId;
 
+    /**
+     * Año del registro de visitas.
+     */
     private int año;
 
+    /**
+     * Mes del registro de visitas.
+     */
     private int mes;
 
+    /**
+     * Cantidad de visitas en el mes y año indicados.
+     */
     private long cantidadVisitas;
 
+    /**
+     * Fecha y hora de la última actualización del registro.
+     */
     private LocalDateTime ultimaActualizacion;
 }

@@ -19,6 +19,10 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
+/**
+ * Implementación del servicio para la conversión de divisas utilizando tasas de
+ * cambio del BCE.
+ */
 @Service
 public class CurrencyConversionServiceImpl implements CurrencyConversionService {
     private static final Logger logger = LoggerFactory.getLogger(CurrencyConversionServiceImpl.class);
@@ -30,6 +34,10 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
     private final Map<String, Double> exchangeRates = new ConcurrentHashMap<>();
 
     // Initialize with default values (used as fallback)
+    /**
+     * Inicializa las tasas de cambio por defecto y realiza una actualización
+     * inicial.
+     */
     @PostConstruct
     public void init() {
         // Set EUR as base currency
@@ -51,6 +59,9 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
     }
 
     // Update exchange rates daily at midnight
+    /**
+     * Actualiza las tasas de cambio diariamente a medianoche.
+     */
     @Scheduled(cron = "0 0 0 * * ?")
     public void scheduledRateUpdate() {
         updateExchangeRates();
@@ -99,10 +110,21 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
     }
 
     // Force an update of exchange rates (can be called via API if needed)
+    /**
+     * Fuerza una actualización de las tasas de cambio desde el BCE.
+     */
     public void forceUpdateRates() {
         updateExchangeRates();
     }
 
+    /**
+     * Convierte una cantidad de una moneda origen a una moneda destino.
+     * 
+     * @param amount         Cantidad a convertir (en céntimos).
+     * @param targetCurrency Moneda destino.
+     * @param sourceCurrency Moneda origen.
+     * @return Cantidad convertida (en céntimos).
+     */
     @Override
     public int convertCurrency(int amount, String targetCurrency, String sourceCurrency) {
         if (sourceCurrency.equals(targetCurrency)) {
@@ -122,7 +144,11 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         return (int) Math.round(amountInTarget);
     }
 
-    // Get current exchange rates (useful for debugging or UI display)
+    /**
+     * Obtiene las tasas de cambio actuales.
+     * 
+     * @return Mapa con las tasas de cambio actuales.
+     */
     public Map<String, Double> getCurrentRates() {
         return new HashMap<>(exchangeRates);
     }

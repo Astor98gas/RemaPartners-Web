@@ -9,12 +9,20 @@ import com.arsansys.RemaPartners.models.entities.CategoriaEntity;
 import com.arsansys.RemaPartners.repositories.CategoriaRepository;
 import com.arsansys.RemaPartners.services.CategoriaService;
 
+/**
+ * Implementación del servicio para la gestión de categorías.
+ */
 @Service
 public class CategoriaServiceImpl implements CategoriaService {
 
     @Autowired
     private CategoriaRepository categoriaRepository;
 
+    /**
+     * Obtiene todas las categorías disponibles.
+     * 
+     * @return Lista de entidades de categoría.
+     */
     @Override
     public List<CategoriaEntity> getCategorias() {
         try {
@@ -24,6 +32,12 @@ public class CategoriaServiceImpl implements CategoriaService {
         }
     }
 
+    /**
+     * Obtiene una categoría por su identificador.
+     * 
+     * @param id Identificador de la categoría.
+     * @return Entidad de categoría encontrada.
+     */
     @Override
     public CategoriaEntity getCategoriaById(String id) {
         try {
@@ -33,6 +47,12 @@ public class CategoriaServiceImpl implements CategoriaService {
         }
     }
 
+    /**
+     * Obtiene una categoría por su título.
+     * 
+     * @param titulo Título de la categoría.
+     * @return Entidad de categoría encontrada.
+     */
     @Override
     public CategoriaEntity getCategoriaByTitulo(String titulo) {
         try {
@@ -45,6 +65,12 @@ public class CategoriaServiceImpl implements CategoriaService {
         }
     }
 
+    /**
+     * Crea una nueva categoría.
+     * 
+     * @param categoriaEntity Entidad de categoría a crear.
+     * @return Entidad de categoría creada.
+     */
     @Override
     public CategoriaEntity createCategoria(CategoriaEntity categoriaEntity) {
         try {
@@ -59,6 +85,12 @@ public class CategoriaServiceImpl implements CategoriaService {
         }
     }
 
+    /**
+     * Actualiza una categoría existente.
+     * 
+     * @param categoriaEntity Entidad de categoría a actualizar.
+     * @return Entidad de categoría actualizada.
+     */
     @Override
     public CategoriaEntity updateCategoria(CategoriaEntity categoriaEntity) {
         try {
@@ -72,6 +104,11 @@ public class CategoriaServiceImpl implements CategoriaService {
         }
     }
 
+    /**
+     * Elimina una categoría por su identificador.
+     * 
+     * @param id Identificador de la categoría a eliminar.
+     */
     @Override
     public void deleteCategoriaById(String id) {
         try {

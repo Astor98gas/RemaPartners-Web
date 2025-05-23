@@ -2,12 +2,12 @@ package com.arsansys.RemaPartners.services;
 
 public interface CurrencyConversionService {
     /**
-     * Converts an amount from source currency to target currency
+     * Convierte una cantidad de una moneda origen a una moneda destino.
      *
-     * @param amount         Amount in source currency cents
-     * @param sourceCurrency Source currency code
-     * @param targetCurrency Target currency code
-     * @return Amount in target currency cents
+     * @param amount         Cantidad en centavos de la moneda origen.
+     * @param sourceCurrency Código de la moneda origen.
+     * @param targetCurrency Código de la moneda destino.
+     * @return Cantidad en centavos de la moneda destino.
      */
     int convertCurrency(int amount, String sourceCurrency, String targetCurrency);
 }

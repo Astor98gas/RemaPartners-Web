@@ -14,7 +14,18 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SocialLinkEntity {
 
-    private String platform; // Ej: "facebook", "twitter", "instagram", "linkedin", etc.
-    private String url; // URL completa del perfil
-    private String icon; // Opcional: nombre del icono para usar en el frontend
+    /**
+     * Plataforma de la red social (Ej: "facebook", "twitter", etc.).
+     */
+    private String platform;
+
+    /**
+     * URL completa del perfil de la red social.
+     */
+    private String url;
+
+    /**
+     * Nombre del icono para usar en el frontend (opcional).
+     */
+    private String icon;
 }

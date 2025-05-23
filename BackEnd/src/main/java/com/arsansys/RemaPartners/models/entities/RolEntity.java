@@ -16,7 +16,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Entidad que representa un rol d'usuari.
+ * Entidad que representa un rol de usuario.
  */
 @Data
 @AllArgsConstructor
@@ -27,14 +27,14 @@ import lombok.NoArgsConstructor;
 public class RolEntity {
 
     /**
-     * Identificador únic del rol.
+     * Identificador único del rol.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     /**
-     * Nom del rol.
+     * Nombre del rol.
      */
     @Enumerated(EnumType.STRING)
     @Builder.Default

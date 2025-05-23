@@ -16,6 +16,11 @@ import com.arsansys.RemaPartners.models.enums.ERol;
 import com.arsansys.RemaPartners.services.UserService;
 import com.arsansys.RemaPartners.services.stripe.SuscripcionService;
 
+/**
+ * Listener que se ejecuta tras un inicio de sesión exitoso.
+ * <p>
+ * Verifica la suscripción del usuario y ajusta el rol si es necesario.
+ */
 @Component
 public class LoginSuccessListener implements ApplicationListener<AuthenticationSuccessEvent> {
 
@@ -25,6 +30,14 @@ public class LoginSuccessListener implements ApplicationListener<AuthenticationS
     @Autowired
     private SuscripcionService suscripcionService;
 
+    /**
+     * Método que se ejecuta cuando ocurre un evento de autenticación exitosa.
+     * <p>
+     * Si el usuario es vendedor, verifica si tiene suscripción activa.
+     * Si no tiene suscripción o está caducada, cambia el rol a comprador.
+     *
+     * @param event Evento de autenticación exitosa.
+     */
     @Override
     public void onApplicationEvent(@NonNull AuthenticationSuccessEvent event) {
         try {

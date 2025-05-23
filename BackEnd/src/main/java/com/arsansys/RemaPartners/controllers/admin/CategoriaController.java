@@ -14,12 +14,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 
+/**
+ * Controlador REST para la gestión de categorías.
+ * Permite crear, actualizar, eliminar y consultar categorías.
+ */
 @RestController
 public class CategoriaController {
 
     @Autowired
     private CategoriaService categoriaService;
 
+    /**
+     * Crea una nueva categoría.
+     *
+     * @param categoriaEntity Datos de la categoría a crear.
+     * @return Respuesta con el estado de la operación y el ID de la nueva categoría.
+     */
     @PostMapping("admin/categoria/create")
     public ResponseEntity<?> createCategoria(@RequestBody CategoriaEntity categoriaEntity) {
         try {
@@ -32,6 +42,13 @@ public class CategoriaController {
         }
     }
 
+    /**
+     * Actualiza una categoría existente.
+     *
+     * @param id ID de la categoría a actualizar.
+     * @param categoriaEntity Nuevos datos de la categoría.
+     * @return Respuesta con el estado de la operación y el ID de la categoría actualizada.
+     */
     @PostMapping("admin/categoria/update/{id}")
     public ResponseEntity<?> updateCategoria(@PathVariable String id, @RequestBody CategoriaEntity categoriaEntity) {
         try {
@@ -44,6 +61,12 @@ public class CategoriaController {
         }
     }
 
+    /**
+     * Elimina una categoría por su ID.
+     *
+     * @param id ID de la categoría a eliminar.
+     * @return Respuesta con el estado de la operación.
+     */
     @DeleteMapping("admin/categoria/delete/{id}")
     public ResponseEntity<?> deleteCategoria(@PathVariable String id) {
         try {
@@ -55,6 +78,11 @@ public class CategoriaController {
         }
     }
 
+    /**
+     * Obtiene todas las categorías.
+     *
+     * @return Lista de todas las categorías.
+     */
     @GetMapping("admin/categoria/getAll")
     public ResponseEntity<?> getCategorias() {
         try {
@@ -66,6 +94,12 @@ public class CategoriaController {
         }
     }
 
+    /**
+     * Obtiene una categoría por su ID.
+     *
+     * @param id ID de la categoría a consultar.
+     * @return La categoría encontrada o un error si no existe.
+     */
     @GetMapping("admin/categoria/getById/{id}")
     public ResponseEntity<?> getCategoriaById(@PathVariable String id) {
         try {

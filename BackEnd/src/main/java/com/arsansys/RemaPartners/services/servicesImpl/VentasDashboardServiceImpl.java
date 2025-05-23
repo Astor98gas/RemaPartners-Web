@@ -17,6 +17,10 @@ import com.arsansys.RemaPartners.services.ProductoService;
 import com.arsansys.RemaPartners.services.VentasDashboardService;
 import com.arsansys.RemaPartners.services.CurrencyConversionService;
 
+/**
+ * Implementación del servicio para la obtención de estadísticas y dashboard de
+ * ventas.
+ */
 @Service
 public class VentasDashboardServiceImpl implements VentasDashboardService {
 
@@ -35,6 +39,12 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
     // Target currency constant
     private static final String TARGET_CURRENCY = "EUR";
 
+    /**
+     * Obtiene estadísticas generales de ventas para un año específico.
+     * 
+     * @param year Año para el que se obtienen las estadísticas.
+     * @return Mapa con estadísticas generales de ventas.
+     */
     @Override
     public Map<String, Object> getEstadisticasGenerales(int year) {
         Map<String, Object> stats = new HashMap<>();
@@ -111,6 +121,12 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
         return stats;
     }
 
+    /**
+     * Obtiene estadísticas de ventas para un producto específico.
+     * 
+     * @param productoId Identificador del producto.
+     * @return Mapa con estadísticas del producto.
+     */
     @Override
     public Map<String, Object> getEstadisticasProducto(String productoId) {
         Map<String, Object> stats = new HashMap<>();
@@ -176,6 +192,13 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
         return stats;
     }
 
+    /**
+     * Obtiene estadísticas de ventas para un mes y año específicos.
+     * 
+     * @param año Año de las estadísticas.
+     * @param mes Mes de las estadísticas.
+     * @return Mapa con estadísticas del mes.
+     */
     @Override
     public Map<String, Object> getEstadisticasMes(int año, int mes) {
         Map<String, Object> stats = new HashMap<>();
@@ -229,6 +252,14 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
         return stats;
     }
 
+    /**
+     * Obtiene estadísticas de ventas de un usuario como vendedor para un año
+     * específico.
+     * 
+     * @param userId Identificador del usuario.
+     * @param year   Año de las estadísticas.
+     * @return Mapa con estadísticas de ventas del usuario.
+     */
     @Override
     public Map<String, Object> getEstadisticasVentasUsuario(String userId, int year) {
         Map<String, Object> stats = new HashMap<>();
@@ -326,6 +357,14 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
         return stats;
     }
 
+    /**
+     * Obtiene estadísticas de compras de un usuario como comprador para un año
+     * específico.
+     * 
+     * @param userId Identificador del usuario.
+     * @param year   Año de las estadísticas.
+     * @return Mapa con estadísticas de compras del usuario.
+     */
     @Override
     public Map<String, Object> getEstadisticasComprasUsuario(String userId, int year) {
         Map<String, Object> stats = new HashMap<>();

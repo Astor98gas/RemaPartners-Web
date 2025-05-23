@@ -18,7 +18,9 @@ import com.arsansys.RemaPartners.services.FacturaService;
 import com.arsansys.RemaPartners.services.ProductoService;
 
 /**
- * Controlador para gestionar facturas
+ * Controlador REST para la gestión de facturas.
+ * Permite crear facturas, obtener facturas por diferentes criterios y crear
+ * facturas a partir de ventas.
  */
 @RestController
 @RequestMapping("/api/factura")
@@ -31,10 +33,10 @@ public class FacturaController {
     private ProductoService productoService;
 
     /**
-     * Crea una nueva factura
-     * 
-     * @param facturaEntity Datos de la factura a crear
-     * @return La factura creada
+     * Crea una nueva factura.
+     *
+     * @param facturaEntity Datos de la factura a crear.
+     * @return La factura creada o error si ocurre algún problema.
      */
     @PostMapping("/create")
     public ResponseEntity<FacturaEntity> createFactura(@RequestBody FacturaEntity facturaEntity) {
@@ -56,10 +58,10 @@ public class FacturaController {
     }
 
     /**
-     * Obtiene una factura por su ID
-     * 
-     * @param id ID de la factura
-     * @return La factura encontrada o error si no existe
+     * Obtiene una factura por su ID.
+     *
+     * @param id ID de la factura.
+     * @return La factura encontrada o error si no existe.
      */
     @GetMapping("/getById/{id}")
     public ResponseEntity<FacturaEntity> getFacturaById(@PathVariable("id") String id) {
@@ -72,10 +74,10 @@ public class FacturaController {
     }
 
     /**
-     * Obtiene facturas donde el usuario es el comprador
-     * 
-     * @param idComprador ID del comprador
-     * @return Lista de facturas del comprador
+     * Obtiene las facturas donde el usuario es el comprador.
+     *
+     * @param idComprador ID del comprador.
+     * @return Lista de facturas del comprador.
      */
     @GetMapping("/getByBuyerId/{idComprador}")
     public ResponseEntity<List<FacturaEntity>> getFacturasByIdComprador(
@@ -89,10 +91,10 @@ public class FacturaController {
     }
 
     /**
-     * Obtiene facturas donde el usuario es el vendedor
-     * 
-     * @param idVendedor ID del vendedor
-     * @return Lista de facturas del vendedor
+     * Obtiene las facturas donde el usuario es el vendedor.
+     *
+     * @param idVendedor ID del vendedor.
+     * @return Lista de facturas del vendedor.
      */
     @GetMapping("/getBySellerId/{idVendedor}")
     public ResponseEntity<List<FacturaEntity>> getFacturasByIdVendedor(@PathVariable("idVendedor") String idVendedor) {
@@ -105,10 +107,10 @@ public class FacturaController {
     }
 
     /**
-     * Obtiene facturas asociadas a un producto
-     * 
-     * @param idProducto ID del producto
-     * @return Lista de facturas del producto
+     * Obtiene las facturas asociadas a un producto.
+     *
+     * @param idProducto ID del producto.
+     * @return Lista de facturas del producto.
      */
     @GetMapping("/getByProductId/{idProducto}")
     public ResponseEntity<List<FacturaEntity>> getFacturasByIdProducto(@PathVariable("idProducto") String idProducto) {
@@ -121,10 +123,10 @@ public class FacturaController {
     }
 
     /**
-     * Obtiene facturas asociadas a un chat
-     * 
-     * @param idChat ID del chat
-     * @return Lista de facturas del chat
+     * Obtiene las facturas asociadas a un chat.
+     *
+     * @param idChat ID del chat.
+     * @return Lista de facturas del chat.
      */
     @GetMapping("/getByChatId/{idChat}")
     public ResponseEntity<List<FacturaEntity>> getFacturasByIdChat(@PathVariable("idChat") String idChat) {
@@ -137,14 +139,14 @@ public class FacturaController {
     }
 
     /**
-     * Crea una factura a partir de la venta de un producto
-     * 
-     * @param idProducto  ID del producto vendido
-     * @param idComprador ID del comprador
-     * @param idVendedor  ID del vendedor
-     * @param cantidad    Cantidad vendida
-     * @param idChat      ID del chat donde se realizó la venta
-     * @return La factura creada
+     * Crea una factura a partir de la venta de un producto.
+     *
+     * @param idProducto  ID del producto vendido.
+     * @param idComprador ID del comprador.
+     * @param idVendedor  ID del vendedor.
+     * @param cantidad    Cantidad vendida.
+     * @param idChat      ID del chat donde se realizó la venta.
+     * @return La factura creada o error si ocurre algún problema.
      */
     @PostMapping("/createFromSale/{idProducto}/{idComprador}/{idVendedor}/{cantidad}/{idChat}")
     public ResponseEntity<FacturaEntity> createFacturaFromSale(

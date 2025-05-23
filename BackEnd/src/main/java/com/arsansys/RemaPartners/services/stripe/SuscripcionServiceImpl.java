@@ -8,17 +8,26 @@ import org.springframework.stereotype.Service;
 import com.arsansys.RemaPartners.models.entities.Suscripcion;
 import com.arsansys.RemaPartners.repositories.SuscripcionRepository;
 
+/**
+ * Implementación del servicio de suscripciones.
+ */
 @Service
 public class SuscripcionServiceImpl implements SuscripcionService {
 
     @Autowired
     private SuscripcionRepository suscripcionRepository;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Suscripcion> getSuscripcionesByIdUsuario(String idUsuario) {
         return suscripcionRepository.findByIdUsuario(idUsuario);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Suscripcion createSuscripcion(String isUsuario) {
         Suscripcion suscripcion = new Suscripcion();

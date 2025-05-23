@@ -14,6 +14,11 @@ import com.arsansys.RemaPartners.services.ProductoVisitaService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/**
+ * Controlador para la gestión de productos de los vendedores.
+ * Permite crear, actualizar, eliminar, obtener y cambiar el estado de
+ * productos.
+ */
 @RestController
 public class ProductoController {
 
@@ -23,6 +28,12 @@ public class ProductoController {
     @Autowired
     private ProductoVisitaService productoVisitaService;
 
+    /**
+     * Crea un nuevo producto.
+     *
+     * @param productoEntity Entidad del producto a crear.
+     * @return Mensaje indicando el resultado de la operación.
+     */
     @PostMapping("vendedor/producto/create")
     public ResponseEntity<?> createProducto(@RequestBody ProductoEntity productoEntity) {
         try {
@@ -35,6 +46,13 @@ public class ProductoController {
         }
     }
 
+    /**
+     * Actualiza un producto existente.
+     *
+     * @param id             ID del producto a actualizar.
+     * @param productoEntity Entidad del producto con los nuevos datos.
+     * @return Mensaje indicando el resultado de la operación.
+     */
     @PostMapping("vendedor/producto/update/{id}")
     public ResponseEntity<?> updateProducto(@PathVariable String id, @RequestBody ProductoEntity productoEntity) {
         try {
@@ -47,6 +65,12 @@ public class ProductoController {
         }
     }
 
+    /**
+     * Elimina un producto por su ID.
+     *
+     * @param id ID del producto a eliminar.
+     * @return Mensaje indicando el resultado de la operación.
+     */
     @DeleteMapping("vendedor/producto/delete/{id}")
     public ResponseEntity<?> deleteProducto(@PathVariable String id) {
         try {
@@ -58,6 +82,11 @@ public class ProductoController {
         }
     }
 
+    /**
+     * Obtiene la lista de todos los productos.
+     *
+     * @return Lista de productos.
+     */
     @GetMapping("vendedor/producto/getAll")
     public ResponseEntity<?> getProductos() {
         try {
@@ -68,6 +97,12 @@ public class ProductoController {
         }
     }
 
+    /**
+     * Obtiene un producto por su ID e incrementa su contador de visitas.
+     *
+     * @param id ID del producto.
+     * @return Producto correspondiente.
+     */
     @GetMapping("vendedor/producto/getById/{id}")
     public ResponseEntity<?> getProductoById(@PathVariable String id) {
         try {
@@ -89,6 +124,12 @@ public class ProductoController {
         }
     }
 
+    /**
+     * Obtiene los productos por el ID de la categoría.
+     *
+     * @param id ID de la categoría.
+     * @return Lista de productos de la categoría.
+     */
     @GetMapping("vendedor/producto/getProductosByIdCategoria/{id}")
     public ResponseEntity<?> getProductosByIdCategoria(@PathVariable String id) {
         try {
@@ -99,6 +140,12 @@ public class ProductoController {
         }
     }
 
+    /**
+     * Cambia el estado (activo/inactivo) de un producto.
+     *
+     * @param id ID del producto.
+     * @return Mensaje indicando el resultado de la operación.
+     */
     @PostMapping("vendedor/producto/toggleStatus/{id}")
     public ResponseEntity<?> toggleStatus(@PathVariable String id) {
         try {

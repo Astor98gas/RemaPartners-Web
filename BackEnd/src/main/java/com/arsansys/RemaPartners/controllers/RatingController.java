@@ -16,6 +16,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controlador REST para gestionar las valoraciones de los usuarios sobre los
+ * vendedores.
+ * Permite crear, obtener, actualizar, responder y eliminar valoraciones.
+ */
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/ratings")
@@ -28,7 +33,10 @@ public class RatingController {
     private UserService userService;
 
     /**
-     * Obtiene todas las valoraciones de un vendedor
+     * Obtiene todas las valoraciones de un vendedor específico.
+     *
+     * @param sellerId ID del vendedor.
+     * @return Lista de valoraciones asociadas al vendedor.
      */
     @GetMapping("/seller/{sellerId}")
     public ResponseEntity<List<RatingEntity>> getRatingsBySeller(@PathVariable String sellerId) {
@@ -41,7 +49,10 @@ public class RatingController {
     }
 
     /**
-     * Obtiene una valoración específica por su ID
+     * Obtiene una valoración específica por su ID.
+     *
+     * @param ratingId ID de la valoración.
+     * @return La valoración correspondiente al ID proporcionado.
      */
     @GetMapping("/{ratingId}")
     public ResponseEntity<RatingEntity> getRatingById(@PathVariable String ratingId) {
@@ -54,7 +65,11 @@ public class RatingController {
     }
 
     /**
-     * Obtiene la valoración que un usuario ha hecho a un vendedor específico
+     * Obtiene la valoración que un usuario ha hecho a un vendedor específico.
+     *
+     * @param userId   ID del usuario que realizó la valoración.
+     * @param sellerId ID del vendedor valorado.
+     * @return La valoración realizada por el usuario al vendedor.
      */
     @GetMapping("/user/{userId}/seller/{sellerId}")
     public ResponseEntity<RatingEntity> getUserRatingForSeller(
@@ -69,7 +84,10 @@ public class RatingController {
     }
 
     /**
-     * Crea una nueva valoración
+     * Crea una nueva valoración para un vendedor.
+     *
+     * @param ratingDTO Objeto con los datos de la valoración.
+     * @return La valoración creada o un mensaje de error.
      */
     @PostMapping("/create")
     public ResponseEntity<?> createRating(@RequestBody RatingDTO ratingDTO) {
@@ -112,7 +130,11 @@ public class RatingController {
     }
 
     /**
-     * Actualiza una valoración existente
+     * Actualiza una valoración existente.
+     *
+     * @param ratingId  ID de la valoración a actualizar.
+     * @param ratingDTO Objeto con los nuevos datos de la valoración.
+     * @return La valoración actualizada o un mensaje de error.
      */
     @PutMapping("/{ratingId}")
     public ResponseEntity<?> updateRating(
@@ -155,7 +177,11 @@ public class RatingController {
     }
 
     /**
-     * Añade una respuesta del vendedor a una valoración
+     * Añade una respuesta del vendedor a una valoración.
+     *
+     * @param replyDTO Objeto con el ID de la valoración y la respuesta del
+     *                 vendedor.
+     * @return La valoración actualizada con la respuesta o un mensaje de error.
      */
     @PostMapping("/reply")
     public ResponseEntity<?> addReplyToRating(@RequestBody RatingReplyDTO replyDTO) {
@@ -187,7 +213,10 @@ public class RatingController {
     }
 
     /**
-     * Elimina una valoración
+     * Elimina una valoración existente.
+     *
+     * @param ratingId ID de la valoración a eliminar.
+     * @return Respuesta indicando el resultado de la operación.
      */
     @DeleteMapping("/{ratingId}")
     public ResponseEntity<?> deleteRating(@PathVariable String ratingId) {

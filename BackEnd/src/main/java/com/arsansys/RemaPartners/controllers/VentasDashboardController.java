@@ -22,6 +22,11 @@ import com.arsansys.RemaPartners.services.ProductoService;
 import com.arsansys.RemaPartners.services.UserService;
 import com.arsansys.RemaPartners.services.VentasDashboardService;
 
+/**
+ * Controlador REST para el dashboard de ventas.
+ * Proporciona endpoints para obtener estadísticas de ventas y compras para
+ * productos, usuarios y periodos de tiempo.
+ */
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/dashboard")
@@ -37,8 +42,11 @@ public class VentasDashboardController {
     private ProductoService productoService;
 
     /**
-     * Endpoint para obtener las estadísticas generales del dashboard de ventas
-     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR
+     * Obtiene las estadísticas generales del dashboard de ventas.
+     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR.
+     *
+     * @param year Año para el que se solicitan las estadísticas (opcional).
+     * @return Estadísticas generales de ventas.
      */
     @GetMapping("/ventas/stats")
     @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR', 'TRABAJADOR')")
@@ -59,8 +67,11 @@ public class VentasDashboardController {
     }
 
     /**
-     * Endpoint para obtener las estadísticas de ventas para un producto específico
-     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR
+     * Obtiene las estadísticas de ventas para un producto específico.
+     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR.
+     *
+     * @param id ID del producto.
+     * @return Estadísticas de ventas del producto.
      */
     @GetMapping("/ventas/producto/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR', 'TRABAJADOR')")
@@ -96,8 +107,12 @@ public class VentasDashboardController {
     }
 
     /**
-     * Endpoint para obtener las estadísticas de ventas mensuales detalladas
-     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR
+     * Obtiene las estadísticas de ventas mensuales detalladas.
+     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR.
+     *
+     * @param año Año de las estadísticas.
+     * @param mes Mes de las estadísticas.
+     * @return Estadísticas de ventas del mes especificado.
      */
     @GetMapping("/ventas/mes/{año}/{mes}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR', 'TRABAJADOR')")
@@ -119,9 +134,12 @@ public class VentasDashboardController {
     }
 
     /**
-     * Endpoint para obtener las estadísticas de ventas de un usuario (como
-     * vendedor)
-     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR
+     * Obtiene las estadísticas de ventas de un usuario como vendedor.
+     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR.
+     *
+     * @param id   ID del usuario.
+     * @param year Año para el que se solicitan las estadísticas (opcional).
+     * @return Estadísticas de ventas del usuario.
      */
     @GetMapping("/ventas/usuario/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR', 'TRABAJADOR')")
@@ -162,9 +180,12 @@ public class VentasDashboardController {
     }
 
     /**
-     * Endpoint para obtener las estadísticas de compras de un usuario (como
-     * comprador)
-     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR
+     * Obtiene las estadísticas de compras de un usuario como comprador.
+     * Solo accesible para roles ADMIN, VENDEDOR y TRABAJADOR.
+     *
+     * @param id   ID del usuario.
+     * @param year Año para el que se solicitan las estadísticas (opcional).
+     * @return Estadísticas de compras del usuario.
      */
     @GetMapping("/compras/usuario/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR', 'TRABAJADOR')")

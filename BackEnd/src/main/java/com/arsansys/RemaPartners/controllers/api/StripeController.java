@@ -24,6 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controlador REST para la gestión de pagos y suscripciones con Stripe.
+ * Permite crear sesiones de pago, activar pruebas gratuitas, verificar historial de suscripciones y actualizar el estado de pago de los usuarios.
+ */
 @RestController
 @RequestMapping("/api/stripe/")
 @CrossOrigin(origins = "*") // Asegúrate de que esta línea esté presente
@@ -38,6 +42,12 @@ public class StripeController {
     @Value("${stripe.api.secret}")
     private String stripeApiKey;
 
+    /**
+     * Obtiene las suscripciones de un usuario por su ID.
+     *
+     * @param idUsuario ID del usuario.
+     * @return Lista de suscripciones del usuario.
+     */
     @GetMapping("/suscripciones/{idUsuario}")
     public ResponseEntity<?> getSuscripcionesByIdUsuario(@PathVariable String idUsuario) {
         try {
@@ -47,6 +57,12 @@ public class StripeController {
         }
     }
 
+    /**
+     * Crea una sesión de pago de Stripe para el usuario.
+     *
+     * @param requestData Datos necesarios para crear la sesión (priceId, successUrl, cancelUrl, clientReferenceId, promoCode).
+     * @return URL de la sesión de pago creada o error si ocurre algún problema.
+     */
     @PostMapping("/create-checkout-session")
     public ResponseEntity<Map<String, String>> createCheckoutSession(@RequestBody Map<String, Object> requestData) {
         try {
@@ -230,6 +246,12 @@ public class StripeController {
         }
     }
 
+    /**
+     * Activa una prueba gratuita para el usuario si no ha tenido suscripciones previas.
+     *
+     * @param requestData Datos con el ID del usuario.
+     * @return Estado de la activación de la prueba gratuita y la suscripción creada.
+     */
     @PostMapping("/create-free-trial")
     public ResponseEntity<Map<String, Object>> createFreeTrial(@RequestBody Map<String, Object> requestData) {
         try {
@@ -288,6 +310,12 @@ public class StripeController {
         }
     }
 
+    /**
+     * Verifica si el usuario ha tenido alguna suscripción anteriormente.
+     *
+     * @param userId ID del usuario.
+     * @return Indica si el usuario ha tenido suscripciones previas.
+     */
     @GetMapping("/check-subscription-history/{userId}")
     public ResponseEntity<Map<String, Object>> checkSubscriptionHistory(@PathVariable String userId) {
         try {
@@ -320,6 +348,12 @@ public class StripeController {
         }
     }
 
+    /**
+     * Actualiza el estado de pago del usuario y activa la suscripción premium si corresponde.
+     *
+     * @param requestData Datos con el ID del usuario y el estado de pago.
+     * @return Estado de la operación y la suscripción creada si aplica.
+     */
     @PostMapping("/update-user-payment")
     public ResponseEntity<Map<String, Object>> updateUserPayment(@RequestBody Map<String, Object> requestData) {
         try {

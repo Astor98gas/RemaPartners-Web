@@ -11,12 +11,21 @@ import com.arsansys.RemaPartners.models.entities.MensajeEntity;
 import com.arsansys.RemaPartners.repositories.ChatRepository;
 import com.arsansys.RemaPartners.services.ChatService;
 
+/**
+ * Implementación del servicio para la gestión de chats.
+ */
 @Service
 public class ChatServiceImpl implements ChatService {
 
     @Autowired
     private ChatRepository chatRepository;
 
+    /**
+     * Crea un nuevo chat.
+     * 
+     * @param chatEntity Entidad de chat a crear.
+     * @return Entidad de chat creada.
+     */
     @Override
     public ChatEntity createChat(ChatEntity chatEntity) {
         try {
@@ -26,6 +35,13 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
+    /**
+     * Añade un mensaje a un chat existente.
+     * 
+     * @param chatEntity    Entidad de chat.
+     * @param mensajeEntity Entidad de mensaje a añadir.
+     * @return Entidad de chat actualizada.
+     */
     @Override
     public ChatEntity addMensaje(ChatEntity chatEntity, MensajeEntity mensajeEntity) {
         try {
@@ -40,6 +56,12 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
+    /**
+     * Obtiene un chat por su identificador.
+     * 
+     * @param id Identificador del chat.
+     * @return Entidad de chat encontrada.
+     */
     @Override
     public ChatEntity getChatById(String id) {
         try {
@@ -49,6 +71,12 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
+    /**
+     * Busca chats por identificador de producto.
+     * 
+     * @param idProducto Identificador del producto.
+     * @return Lista de chats asociados al producto.
+     */
     @Override
     public List<ChatEntity> findByIdProducto(String idProducto) {
         try {
@@ -58,6 +86,12 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
+    /**
+     * Busca chats por identificador de comprador.
+     * 
+     * @param idComprador Identificador del comprador.
+     * @return Lista de chats asociados al comprador.
+     */
     @Override
     public List<ChatEntity> findByIdComprador(String idComprador) {
         try {
@@ -67,6 +101,12 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
+    /**
+     * Busca chats por identificador de vendedor.
+     * 
+     * @param idVendedor Identificador del vendedor.
+     * @return Lista de chats asociados al vendedor.
+     */
     @Override
     public List<ChatEntity> findByIdVendedor(String idVendedor) {
         try {
@@ -76,6 +116,14 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
+    /**
+     * Obtiene un chat por identificador de producto, comprador y vendedor.
+     * 
+     * @param idProducto  Identificador del producto.
+     * @param idComprador Identificador del comprador.
+     * @param idVendedor  Identificador del vendedor.
+     * @return Entidad de chat encontrada.
+     */
     @Override
     public ChatEntity getChatByIdProductoAndIdCompradorAndIdVendedor(String idProducto, String idComprador,
             String idVendedor) {
@@ -88,6 +136,11 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
+    /**
+     * Elimina un chat por su identificador.
+     * 
+     * @param id Identificador del chat a eliminar.
+     */
     @Override
     public void deleteChat(String id) {
         try {
