@@ -25,13 +25,33 @@ import { defineComponent, type PropType, watch } from 'vue';
 import { useutf8Store } from '@/stores/counter';
 import type { CamposCategoria } from '@/models/camposCategoria';
 
+/**
+ * Componente CategoryFields
+ * 
+ * Muestra y permite editar los campos personalizados de una categoría de producto.
+ * 
+ * Props:
+ * - fields: Array de objetos CamposCategoria que representan los campos a mostrar y editar.
+ * - categoryTitle: Título de la categoría actual.
+ * 
+ * Emits:
+ * - update:fields: Emite el array actualizado de campos cuando se modifica algún valor.
+ */
 export default defineComponent({
     name: 'CategoryFields',
     props: {
+        /**
+         * Lista de campos personalizados de la categoría.
+         * @type {CamposCategoria[]}
+         */
         fields: {
             type: Array as PropType<CamposCategoria[]>,
             required: true
         },
+        /**
+         * Título de la categoría.
+         * @type {string}
+         */
         categoryTitle: {
             type: String,
             default: ''
@@ -39,13 +59,21 @@ export default defineComponent({
     },
     emits: ['update:fields'],
     setup(props, { emit }) {
-        // Traducción mediante el store
+        /**
+         * Traduce una clave utilizando el store de traducciones.
+         * @param {string} key Clave de traducción.
+         * @returns {string} Traducción correspondiente.
+         */
         const t = (key: string): string => {
             const store = useutf8Store();
             return store.t(key);
         };
 
-        // Actualizar un campo específico
+        /**
+         * Actualiza el valor de un campo específico y emite el array actualizado.
+         * @param {number} index Índice del campo a actualizar.
+         * @param {string} value Nuevo valor del campo.
+         */
         const updateField = (index: number, value: string) => {
             const updatedFields = [...props.fields];
             updatedFields[index].datos = value;

@@ -6,7 +6,7 @@
             variant === 'secondary' ? 'text-gray-700 hover:bg-gray-200 hover:text-orange-500 focus:ring-gray-500' :
                 variant === 'danger' ? 'bg-red-600 text-white hover:bg-red-500 focus:ring-red-500 hover:shadow-md' :
                     variant === 'success' ? 'bg-green-600 text-white hover:bg-green-500 focus:ring-green-500 hover:shadow-md' :
-                    'bg-gray-600 text-white hover:bg-gray-500 focus:ring-gray-500 hover:shadow-md',
+                        'bg-gray-600 text-white hover:bg-gray-500 focus:ring-gray-500 hover:shadow-md',
         disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer',
         fullWidth ? 'w-full' : '',
         size === 'sm' ? 'text-sm py-1.5 px-3' : size === 'lg' ? 'text-lg px-6 py-3 font-semibold' : 'text-base'
@@ -16,6 +16,20 @@
 </template>
 
 <script lang="ts">
+/**
+ * Componente de botón básico reutilizable.
+ * 
+ * Permite seleccionar variantes de estilo, tamaño, deshabilitar el botón y expandirlo a todo el ancho.
+ * 
+ * @component
+ * @prop {String} to - (Opcional) Ruta de navegación, no utilizada actualmente.
+ * @prop {'primary'|'secondary'|'danger'|'success'|'default'} variant - Variante de estilo del botón.
+ * @prop {'sm'|'md'|'lg'} size - Tamaño del botón.
+ * @prop {Boolean} disabled - Si el botón está deshabilitado.
+ * @prop {Boolean} fullWidth - Si el botón ocupa el ancho completo del contenedor.
+ * 
+ * @event click - Se emite cuando el usuario hace clic en el botón.
+ */
 export default {
     name: 'ButtonBasic',
     props: {

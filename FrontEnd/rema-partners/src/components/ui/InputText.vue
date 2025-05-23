@@ -20,6 +20,27 @@
 </template>
 
 <script lang="ts">
+/**
+ * Campo de entrada de texto reutilizable.
+ * 
+ * Permite mostrar un input con etiqueta, mensaje de error y sugerencia.
+ * 
+ * @component
+ * @prop {String|Number} modelValue - Valor del input.
+ * @prop {'text'|'password'|'email'|'number'|'tel'|'url'} type - Tipo de input.
+ * @prop {String} label - Etiqueta del campo.
+ * @prop {String} placeholder - Texto de ayuda.
+ * @prop {String} error - Mensaje de error.
+ * @prop {String} hint - Sugerencia o ayuda.
+ * @prop {Boolean} disabled - Si el campo está deshabilitado.
+ * @prop {String} id - Identificador único del input.
+ * 
+ * @event update:modelValue - Se emite al cambiar el valor.
+ * @event blur - Se emite al perder el foco.
+ * 
+ * @method handleInput - Maneja el cambio de valor.
+ * @method handleBlur - Maneja el evento blur.
+ */
 export default {
     name: 'InputText',
     props: {

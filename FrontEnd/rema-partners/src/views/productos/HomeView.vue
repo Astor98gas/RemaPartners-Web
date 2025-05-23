@@ -129,6 +129,14 @@
 </template>
 
 <script lang="ts">
+/**
+ * Vista principal de productos.
+ * Muestra una lista filtrable de productos disponibles para compra.
+ * Incluye opciones de filtrado por categoría, precio, estado, ubicación y búsqueda por palabras clave.
+ * 
+ * Administradores pueden ver todos los productos mientras que usuarios normales
+ * solo ven productos activos.
+ */
 import { defineComponent } from 'vue';
 import ProductoCard from '@/components/layout/ProductoComponent.vue';
 import type { Producto } from '@/models/producto';
@@ -168,9 +176,16 @@ export default defineComponent({
         };
     },
     computed: {
+        /**
+         * Devuelve los productos que cumplen con los filtros aplicados.
+         */
         productosVisibles(): Producto[] {
             return this.productos;
         },
+
+        /**
+         * Indica si hay filtros activos aplicados.
+         */
         hayFiltrosActivos(): boolean {
             return this.filtros.keyword !== '' ||
                 this.filtros.categoria !== '' ||
@@ -179,6 +194,10 @@ export default defineComponent({
                 this.filtros.precioMin !== null ||
                 this.filtros.precioMax !== null;
         },
+
+        /**
+         * Formatea las categorías para el selector de filtro.
+         */
         categoriaOptions() {
             // Make sure we return objects with label/value that match the actual data structure
             return this.categorias.map(cat => ({
@@ -186,6 +205,9 @@ export default defineComponent({
                 value: cat.id
             }));
         },
+        /**
+         * Formatea los estados para el selector de filtro.
+         */
         estadoOptions() {
             // Return the actual estado values without wrapping them in objects
             return this.estadosProducto.map(estado => ({
@@ -194,6 +216,10 @@ export default defineComponent({
             }));
         }
     },
+    /**
+     * Ciclo de vida que se ejecuta al montar el componente.
+     * Carga las categorías, verifica si el usuario es administrador y carga los productos correspondientes.
+     */
     async mounted() {
         try {
             // Cargar categorías
@@ -219,11 +245,19 @@ export default defineComponent({
         }
     },
     methods: {
+        /**
+         * Traduce una clave de idioma usando el store global.
+         * @param key Clave de traducción
+         * @returns Traducción correspondiente
+         */
         t(key: string): string {
             const store = useutf8Store();
             return store.t(key);
         },
 
+        /**
+         * Carga las categorías disponibles para filtrar.
+         */
         async cargarCategorias() {
             try {
                 const categoriaService = useCategoria();
@@ -234,6 +268,9 @@ export default defineComponent({
             }
         },
 
+        /**
+         * Carga todos los productos (admin).
+         */
         async fetchProductos() {
             try {
                 this.loading = true;
@@ -256,6 +293,9 @@ export default defineComponent({
             }
         },
 
+        /**
+         * Carga solo los productos activos (usuarios normales).
+         */
         async fetchProductosActivos() {
             try {
                 this.loading = true;
@@ -278,6 +318,9 @@ export default defineComponent({
             }
         },
 
+        /**
+         * Extrae ubicaciones únicas de los productos para filtrar.
+         */
         extraerUbicacionesUnicas() {
             // Extraer ubicaciones únicas para el filtro
             const ubicaciones = new Set<string>();
@@ -293,6 +336,9 @@ export default defineComponent({
             this.ubicacionesDisponibles = Array.from(ubicaciones).sort();
         },
 
+        /**
+         * Aplica los filtros seleccionados a la lista de productos.
+         */
         aplicarFiltros() {
             this.loading = true;
 
@@ -351,6 +397,9 @@ export default defineComponent({
             }, 300); // Pequeño delay para mostrar el spinner
         },
 
+        /**
+         * Reinicia todos los filtros a sus valores por defecto.
+         */
         reiniciarFiltros() {
             this.filtros = {
                 keyword: '',

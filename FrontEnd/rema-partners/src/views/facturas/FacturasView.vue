@@ -26,6 +26,11 @@
 </template>
 
 <script lang="ts">
+/**
+ * Vista de facturas del usuario.
+ * Muestra las facturas asociadas al usuario actual, permitiendo visualizar
+ * el historial de compras y ventas realizadas en la plataforma.
+ */
 import { defineComponent } from 'vue';
 import { useUsers } from '@/composables/useUsers';
 import { useutf8Store } from '@/stores/counter';
@@ -44,10 +49,18 @@ export default defineComponent({
             error: null
         };
     },
+    /**
+     * Ciclo de vida que se ejecuta al montar el componente.
+     * Carga los datos del usuario autenticado.
+     */
     async mounted() {
         await this.loadUserData();
     },
     methods: {
+        /**
+         * Carga los datos del usuario autenticado.
+         * Verifica que el usuario esté logueado para mostrar sus facturas.
+         */
         async loadUserData() {
             try {
                 this.loading = true;

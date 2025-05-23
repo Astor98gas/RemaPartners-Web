@@ -52,17 +52,38 @@
 </template>
 
 <script>
+/**
+ * Componente EstadisticasCard
+ * Tarjeta visual para mostrar estadísticas con icono, valor y cambio porcentual.
+ *
+ * @component
+ * @prop {String} titulo - Título de la estadística.
+ * @prop {String|Number} valor - Valor principal a mostrar.
+ * @prop {String} [tipo='otros'] - Tipo de estadística ('productos', 'visitas', 'promedio', 'otros').
+ * @prop {Number|null} [cambio=null] - Valor numérico del cambio respecto a un periodo anterior.
+ * @prop {String} [cambioTexto=''] - Texto descriptivo del cambio.
+ */
 export default {
     name: 'EstadisticasCard',
     props: {
+        /**
+         * Título de la estadística.
+         */
         titulo: {
             type: String,
             required: true
         },
+        /**
+         * Valor principal a mostrar.
+         */
         valor: {
             type: [String, Number],
             required: true
         },
+        /**
+         * Tipo de estadística para icono y color.
+         * Puede ser 'productos', 'visitas', 'promedio' u 'otros'.
+         */
         tipo: {
             type: String,
             default: 'otros',
@@ -70,16 +91,26 @@ export default {
                 return ['productos', 'visitas', 'promedio', 'otros'].includes(value);
             }
         },
+        /**
+         * Valor numérico del cambio respecto a un periodo anterior.
+         */
         cambio: {
             type: Number,
             default: null
         },
+        /**
+         * Texto descriptivo del cambio.
+         */
         cambioTexto: {
             type: String,
             default: ''
         }
     },
     computed: {
+        /**
+         * Color de fondo del icono según el tipo.
+         * @returns {String}
+         */
         iconBgColor() {
             const colores = {
                 productos: 'bg-indigo-100',
@@ -89,6 +120,10 @@ export default {
             };
             return colores[this.tipo] || colores.otros;
         },
+        /**
+         * Color del icono según el tipo.
+         * @returns {String}
+         */
         iconColor() {
             const colores = {
                 productos: 'text-indigo-600',
@@ -98,6 +133,10 @@ export default {
             };
             return colores[this.tipo] || colores.otros;
         },
+        /**
+         * Indica si el cambio es positivo o negativo.
+         * @returns {Boolean}
+         */
         cambioPositivo() {
             return this.cambio !== null && this.cambio >= 0;
         }

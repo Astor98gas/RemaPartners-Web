@@ -42,6 +42,11 @@
 </template>
 
 <script lang="ts">
+/**
+ * Vista de inicio de sesión.
+ * Permite a los usuarios autenticarse en la plataforma mediante nombre de usuario y contraseña.
+ * Maneja la validación de entradas y muestra mensajes de error cuando corresponde.
+ */
 import InputText from '@/components/ui/InputText.vue'
 import Modal from '@/components/ui/Modal.vue'
 import { useutf8Store } from '@/stores/counter'
@@ -71,6 +76,11 @@ export default {
         }
     },
     methods: {
+        /**
+         * Maneja el intento de inicio de sesión.
+         * Valida las entradas del usuario y realiza la petición de autenticación.
+         * Muestra errores si las credenciales son inválidas o si faltan campos.
+         */
         handleLogin() {
             this.error = null
             if (!this.userLogin.username || !this.userLogin.password) {
@@ -91,6 +101,10 @@ export default {
                 })
         }
     },
+    /**
+     * Ciclo de vida que se ejecuta al montar el componente.
+     * Verifica si hay errores de sesión caducada y muestra notificaciones correspondientes.
+     */
     mounted() {
         if (this.route.query.error === 'session_expired') {
             this.toast.error(this.utf8.t('login.session_expired'));

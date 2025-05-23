@@ -127,6 +127,18 @@
 </template>
 
 <script>
+/**
+ * Vista de dashboard de ventas.
+ * Muestra estadísticas detalladas sobre las ventas y compras del usuario, incluyendo:
+ * - Total de ventas realizadas
+ * - Total de compras realizadas
+ * - Importe total de ventas
+ * - Importe promedio por venta
+ * - Gráficos de ventas y compras mensuales
+ * - Listado de productos más vendidos
+ * 
+ * Permite filtrar por año y actualizar las estadísticas en tiempo real.
+ */
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useutf8Store } from '@/stores/counter';
@@ -171,7 +183,10 @@ export default {
             t('months.october'), t('months.november'), t('months.december')
         ];
 
-        // Cargar los datos del usuario actual
+        /**
+         * Carga los datos del usuario actual.
+         * @returns Datos del usuario autenticado o null si hay error
+         */
         const loadUserData = async () => {
             try {
                 const usersComposable = useUsers();
@@ -185,7 +200,9 @@ export default {
             }
         };
 
-        // Función para cargar los datos del dashboard
+        /**
+         * Carga los datos del dashboard filtrados por el año seleccionado.
+         */
         const loadDashboardData = async () => {
             loading.value = true;
             error.value = null;
@@ -223,7 +240,10 @@ export default {
             }
         };
 
-        // Preparar datos para el gráfico de ventas
+        /**
+         * Prepara los datos para el gráfico de ventas mensuales.
+         * @returns Configuración formateada para el componente de gráfico
+         */
         const prepareSalesChartData = () => {
             // Verificar si hay datos para no causar errores
             if (!dashboardData.value || !dashboardData.value.ventasPorMes) {
@@ -292,7 +312,10 @@ export default {
             };
         };
 
-        // Preparar datos para el gráfico de compras
+        /**
+         * Prepara los datos para el gráfico de compras mensuales.
+         * @returns Configuración formateada para el componente de gráfico
+         */
         const preparePurchasesChartData = () => {
             // Verificar si hay datos para no causar errores
             if (!dashboardData.value || !dashboardData.value.comprasPorMes) {
@@ -361,7 +384,10 @@ export default {
             };
         };
 
-        // Calcular el importe promedio por venta
+        /**
+         * Calcula el importe promedio por venta.
+         * @returns Importe promedio calculado
+         */
         const calculateAverageAmount = () => {
             const totalVentas = dashboardData.value.totalVentas || 0;
             const importeTotal = dashboardData.value.importeTotalVentas || 0;
@@ -371,7 +397,12 @@ export default {
             return importeTotal / totalVentas;
         };
 
-        // Formato para moneda
+        /**
+         * Formatea un valor numérico como moneda.
+         * @param amount Cantidad a formatear
+         * @param moneda Código de moneda (EUR por defecto)
+         * @returns Valor formateado como moneda
+         */
         const formatCurrency = (amount, moneda) => {
             return new Intl.NumberFormat('es-ES', {
                 style: 'currency',
@@ -381,15 +412,24 @@ export default {
             }).format(amount || 0);
         };
 
-        // Navegación
+        /**
+         * Navega a la vista detallada de ventas de un producto específico.
+         * @param productId ID del producto a visualizar
+         */
         const goToProductDetail = (productId) => {
             router.push({ name: 'producto-ventas', params: { id: productId } });
         };
 
+        /**
+         * Actualiza los datos del dashboard.
+         */
         const refreshDashboard = () => {
             loadDashboardData();
         };
 
+        /**
+         * Navega a la vista de facturas.
+         */
         const goToFacturas = () => {
             router.push({ name: 'facturas' });
         };

@@ -88,9 +88,22 @@ import type { User } from '@/models/user';
 import type { Rating } from '@/models/rating';
 import { useRatings } from '@/composables/useRatings';
 
+/**
+ * Componente para mostrar la tarjeta de perfil de un vendedor.
+ * Incluye imagen, nombre, descripción, enlaces sociales, valoración media y acciones.
+ * 
+ * @component
+ * @example
+ * <SellerProfileCard :seller="seller" />
+ */
 export default defineComponent({
     name: 'SellerProfileCard',
     props: {
+        /**
+         * Objeto del vendedor a mostrar.
+         * @type {User|null}
+         * @required
+         */
         seller: {
             type: Object as () => User | null,
             required: true
@@ -102,12 +115,18 @@ export default defineComponent({
         const error = ref<string | null>(null);
         const ratingsService = useRatings();
 
+        /**
+         * Calcula la valoración media del vendedor.
+         */
         const averageRating = computed(() => {
             if (ratings.value.length === 0) return 0;
             const sum = ratings.value.reduce((acc, rating) => acc + rating.rating, 0);
             return sum / ratings.value.length;
         });
 
+        /**
+         * Carga las valoraciones del vendedor.
+         */
         const loadRatings = async () => {
             if (!props.seller?.id) return;
 
@@ -135,10 +154,20 @@ export default defineComponent({
         };
     },
     methods: {
+        /**
+         * Traduce una clave usando el store de internacionalización.
+         * @param {string} key - Clave de traducción.
+         * @returns {string} Traducción.
+         */
         t(key: string): string {
             const store = useutf8Store();
             return store.t(key);
         },
+        /**
+         * Manejador de error para la imagen de perfil.
+         * Si falla la carga, muestra una imagen por defecto.
+         * @param {Event} event - Evento de error de imagen.
+         */
         onImageError(event: Event) {
             (event.target as HTMLImageElement).src = new URL('@/assets/logoCuadrado.jpeg', import.meta.url).href;
         }

@@ -34,13 +34,33 @@
 <script>
 import { useutf8Store } from '@/stores/counter';
 
+/**
+ * Componente ImageSelector
+ * 
+ * Permite seleccionar, previsualizar, subir y eliminar imágenes para un producto.
+ * 
+ * Props:
+ * - images: Array de imágenes actuales.
+ * - maxImages: Número máximo de imágenes permitidas.
+ * 
+ * Emits:
+ * - update:images: Emite el array actualizado de imágenes al componente padre.
+ */
 export default {
     name: 'ImageSelector',
     props: {
+        /**
+         * Array de imágenes seleccionadas.
+         * @type {Array}
+         */
         images: {
             type: Array,
             required: true
         },
+        /**
+         * Número máximo de imágenes permitidas.
+         * @type {Number}
+         */
         maxImages: {
             type: Number,
             default: 8
@@ -58,10 +78,18 @@ export default {
         this.initializePreview();
     },
     methods: {
+        /**
+         * Traduce una clave usando el store de traducciones.
+         * @param {String} key Clave de traducción.
+         * @returns {String}
+         */
         t(key) {
             const store = useutf8Store();
             return store.t(key);
         },
+        /**
+         * Inicializa el array de previsualización con las imágenes existentes.
+         */
         initializePreview() {
             // Llenar el array de preview con las imágenes existentes
             if (this.images && this.images.length > 0) {
@@ -74,10 +102,18 @@ export default {
                 this.imagePreview = newPreview;
             }
         },
+        /**
+         * Dispara el input de archivo para seleccionar una imagen.
+         * @param {Number} index Índice de la imagen a actualizar.
+         */
         triggerFileInput(index) {
             this.currentImageIndex = index;
             this.$refs.fileInput.click();
         },
+        /**
+         * Maneja la selección de un archivo, sube la imagen y actualiza el array.
+         * @param {Event} event Evento de cambio del input file.
+         */
         async onFileSelected(event) {
             const file = event.target.files?.[0];
             if (file) {
@@ -124,6 +160,10 @@ export default {
                 }
             }
         },
+        /**
+         * Elimina una imagen del array y actualiza la previsualización.
+         * @param {Number} index Índice de la imagen a eliminar.
+         */
         removeImage(index) {
             // Create copies of arrays to avoid reactivity issues
             const newPreview = [...this.imagePreview];
@@ -139,6 +179,9 @@ export default {
     },
     watch: {
         images: {
+            /**
+             * Observa cambios en el array de imágenes y actualiza la previsualización.
+             */
             handler(newImages) {
                 // Si recibimos nuevas imágenes desde el componente padre, actualizar preview
                 const newPreview = Array(this.maxImages).fill('');

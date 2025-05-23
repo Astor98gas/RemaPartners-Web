@@ -239,7 +239,7 @@
                             class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow col-span-1 md:col-span-2 lg:col-span-3">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.direccion') }}</p>
                             <p class="text-gray-900 font-semibold mb-2">{{ product.direccion || t('common.notAvailable')
-                            }}</p>
+                                }}</p>
 
                             <div v-if="product.direccion"
                                 class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden shadow-sm mt-2 hover:shadow-md transition-shadow"
@@ -362,6 +362,17 @@
 </template>
 
 <script lang="ts">
+/**
+ * Vista de detalle de producto.
+ * Permite visualizar toda la información de un producto, imágenes, vendedor, mapa, productos similares y chat.
+ * Incluye acciones de compra, edición, eliminación y activación/desactivación del producto.
+ * 
+ * Métodos principales:
+ * - loadProductData: Carga los datos del producto y del vendedor.
+ * - startChat: Inicia el proceso de chat/oferta para el producto.
+ * - handleOfferSubmitted: Gestiona el envío de una oferta y la creación de un chat.
+ * - initMap/geocodeAddress: Inicializa y centra el mapa en la dirección del producto.
+ */
 import { defineComponent, ref, watch } from 'vue';
 import { useProducto } from '@/composables/useProducto';
 import { useUsers } from '@/composables/useUsers';
@@ -423,6 +434,9 @@ export default defineComponent({
         };
     },
     computed: {
+        /**
+         * Indica si el usuario autenticado es el propietario del producto.
+         */
         isOwner(): boolean {
             return !!this.currentUser && !!this.product && this.currentUser.id === this.product.idUsuario;
         }
@@ -455,31 +469,49 @@ export default defineComponent({
         }
     },
     methods: {
+        /**
+         * Traduce una clave de idioma usando el store global.
+         */
         t(key: string): string {
             const store = useutf8Store();
             return store.t(key);
         },
+        /**
+         * Manejador de error para la imagen principal.
+         */
         onImageError(event: Event) {
             (event.target as HTMLImageElement).src = new URL('@/assets/logoCuadrado.jpeg', import.meta.url).href;
         },
+        /**
+         * Selecciona una imagen de la galería.
+         */
         selectImage(image: string) {
             this.currentImage = image;
             if (this.product?.imagenes) {
                 this.currentImageIndex = this.product.imagenes.indexOf(image);
             }
         },
+        /**
+         * Navega a la siguiente imagen.
+         */
         nextImage() {
             if (this.product && this.product.imagenes.length > 0) {
                 this.currentImageIndex = (this.currentImageIndex + 1) % this.product.imagenes.length;
                 this.currentImage = this.product.imagenes[this.currentImageIndex];
             }
         },
+        /**
+         * Navega a la imagen anterior.
+         */
         prevImage() {
             if (this.product && this.product.imagenes.length > 0) {
                 this.currentImageIndex = (this.currentImageIndex - 1 + this.product.imagenes.length) % this.product.imagenes.length;
                 this.currentImage = this.product.imagenes[this.currentImageIndex];
             }
         },
+        /**
+         * Formatea una fecha a formato legible.
+         */
         formatDate(dateStr: string): string {
             if (!dateStr) return this.t('common.notAvailable');
 
@@ -495,6 +527,9 @@ export default defineComponent({
                 return dateStr;
             }
         },
+        /**
+         * Activa o desactiva el producto.
+         */
         async toggleProductStatus() {
             if (!this.product) return;
 
@@ -522,6 +557,9 @@ export default defineComponent({
                 });
             }
         },
+        /**
+         * Confirma y elimina el producto.
+         */
         async confirmDeleteProduct() {
             if (!this.product) return;
 
@@ -544,6 +582,9 @@ export default defineComponent({
                 console.error('Error in delete confirmation:', error);
             }
         },
+        /**
+         * Elimina el producto.
+         */
         async deleteProduct() {
             if (!this.product) return;
 
@@ -570,6 +611,9 @@ export default defineComponent({
                 });
             }
         },
+        /**
+         * Inicializa el mapa con la dirección del producto.
+         */
         async initMap() {
             if (!this.product?.direccion || !this.mapContainer) return;
 
@@ -605,6 +649,9 @@ export default defineComponent({
             // Geocode the address and center map
             await this.geocodeAddress();
         },
+        /**
+         * Geocodifica la dirección del producto y centra el mapa.
+         */
         async geocodeAddress() {
             if (!this.product?.direccion) return;
 
@@ -632,6 +679,9 @@ export default defineComponent({
                 console.error('Error geocoding address:', error);
             }
         },
+        /**
+         * Inicia el proceso de chat/oferta para el producto.
+         */
         startChat() {
             // Show offer modal first instead of directly opening chat
             if (!this.currentUser) {
@@ -655,14 +705,7 @@ export default defineComponent({
             this.showOfferModal = true;
         },
         /**
-         * Maneja el proceso cuando un usuario envía una oferta por un producto.
-         * Este método:
-         * - Cierra el modal de oferta
-         * - Crea o recupera un chat entre el comprador y el vendedor
-         * - Envía un mensaje automático con la oferta propuesta
-         * - Muestra el chat para continuar la conversación
-         * 
-         * @param offerDetails - Objeto con los detalles de la oferta: amount (cantidad), currency (moneda) y formattedOffer (oferta formateada)
+         * Maneja el envío de una oferta y la creación de un chat.
          */
         async handleOfferSubmitted(offerDetails: { amount: number, currency: string, formattedOffer: string }) {
             // Comentado: console.log de detalles de oferta
@@ -717,6 +760,9 @@ export default defineComponent({
                 });
             }
         },
+        /**
+         * Carga productos similares por categoría.
+         */
         async getProductosByIdCategoria(idCategoria: string) {
             if (!idCategoria || !this.product) return;
 
@@ -742,6 +788,9 @@ export default defineComponent({
                 this.productosSimilares = [];
             }
         },
+        /**
+         * Carga los datos del producto y del vendedor.
+         */
         async loadProductData(productoId: string) {
             if (!productoId) {
                 this.error = 'No product ID provided';
@@ -812,6 +861,9 @@ export default defineComponent({
                 this.loading = false;
             }
         },
+        /**
+         * Muestra el lightbox de imágenes.
+         */
         showLightbox() {
             if (this.product && this.product.imagenes && this.product.imagenes.length > 0) {
                 this.lightboxVisible = true;

@@ -44,6 +44,11 @@
 </template>
 
 <script lang="ts">
+/**
+ * Vista de registro de usuarios.
+ * Permite a los nuevos usuarios crear una cuenta en la plataforma.
+ * Incluye validaciones de campos y verificación de disponibilidad de nombre de usuario y email.
+ */
 import ButtonBasic from '@/components/ui/ButtonBasic.vue'
 import InputText from '@/components/ui/InputText.vue'
 import { useutf8Store } from '@/stores/counter'
@@ -71,6 +76,10 @@ export default {
         }
     },
     methods: {
+        /**
+         * Maneja el proceso de registro de usuario.
+         * Valida todos los campos del formulario antes de intentar crear un nuevo usuario.
+         */
         handleLogin() {
             if (!this.email.includes('@')) {
                 this.openModal('signup.invalidEmail')
@@ -113,6 +122,11 @@ export default {
                     this.openModal('signup.error')
                 })
         },
+
+        /**
+         * Crea un nuevo usuario después de validar que el email y nombre de usuario están disponibles.
+         * Si el registro es exitoso, redirige al usuario a la página principal.
+         */
         createNewUser() {
             useUsers().createUser({
                 email: this.email,
@@ -127,9 +141,18 @@ export default {
                     this.openModal('signup.error')
                 })
         },
+
+        /**
+         * Cierra el modal de mensajes.
+         */
         handleClose() {
             this.showModal = false
         },
+
+        /**
+         * Abre un modal con un mensaje de error específico.
+         * @param messageKey Clave de traducción para el mensaje a mostrar
+         */
         openModal(messageKey: string) {
             this.modalTitle = this.utf8.t('modal.error')
             this.modalMessage = this.utf8.t(messageKey)

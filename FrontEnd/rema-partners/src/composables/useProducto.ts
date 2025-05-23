@@ -3,6 +3,10 @@ import { productoService } from "@/services/producto.service";
 import type { Producto, ProductoModify } from "@/models/producto";
 import Cookies from "js-cookie";
 
+/**
+ * Composable para gestionar productos.
+ * Permite obtener, crear, actualizar, eliminar productos y operaciones relacionadas.
+ */
 export function useProducto() {
     const productos = ref<Producto[]>([]);
     const error = ref<string | null>(null);
@@ -10,6 +14,11 @@ export function useProducto() {
     const loading = ref<boolean>(false);
     const currentProducto = ref<Producto | null>(null);
 
+    /**
+     * Obtiene productos por ID de categoría.
+     * @param {string} id - ID de la categoría.
+     * @returns {Promise<void>}
+     */
     const getProductosByIdCategoria = async (id: string) => {
         try {
             loading.value = true;
@@ -26,6 +35,11 @@ export function useProducto() {
         }
     };
 
+    /**
+     * Cambia el estado (activo/inactivo) de un producto.
+     * @param {string} id - ID del producto.
+     * @returns {Promise<any>}
+     */
     const toggleStatus = async (id: string) => {
         try {
             loading.value = true;
@@ -45,6 +59,10 @@ export function useProducto() {
         }
     };
 
+    /**
+     * Obtiene todos los productos.
+     * @returns {Promise<void>}
+     */
     const getProductos = async () => {
         try {
             loading.value = true;
@@ -56,6 +74,10 @@ export function useProducto() {
             loading.value = false;
         }
     };
+    /**
+     * Obtiene solo los productos activos.
+     * @returns {Promise<void>}
+     */
     const getProductosActivos = async () => {
         try {
             loading.value = true;
@@ -71,6 +93,11 @@ export function useProducto() {
             loading.value = false;
         }
     }
+    /**
+     * Crea un nuevo producto.
+     * @param {ProductoModify} producto - Datos del producto.
+     * @returns {Promise<any>}
+     */
     const createProducto = async (producto: ProductoModify) => {
         try {
             loading.value = true;
@@ -89,6 +116,11 @@ export function useProducto() {
             loading.value = false;
         }
     }
+    /**
+     * Obtiene un producto por su ID.
+     * @param {string} id - ID del producto.
+     * @returns {Promise<any>}
+     */
     const getProductoById = async (id: string) => {
         try {
             loading.value = true;
@@ -104,6 +136,12 @@ export function useProducto() {
             loading.value = false;
         }
     }
+    /**
+     * Actualiza un producto existente.
+     * @param {string} id - ID del producto.
+     * @param {ProductoModify} producto - Datos a actualizar.
+     * @returns {Promise<any>}
+     */
     const updateProducto = async (id: string, producto: ProductoModify) => {
         try {
             loading.value = true;
@@ -122,6 +160,11 @@ export function useProducto() {
             loading.value = false;
         }
     }
+    /**
+     * Elimina un producto por su ID.
+     * @param {string} id - ID del producto.
+     * @returns {Promise<any>}
+     */
     const deleteProducto = async (id: string) => {
         try {
             loading.value = true;
@@ -140,6 +183,11 @@ export function useProducto() {
             loading.value = false;
         }
     }
+    /**
+     * Obtiene productos por ID de usuario.
+     * @param {string} idUsuario - ID del usuario.
+     * @returns {Promise<void>}
+     */
     const getProductosByUsuario = async (idUsuario: string) => {
         try {
             loading.value = true;
@@ -152,6 +200,12 @@ export function useProducto() {
             loading.value = false;
         }
     }
+    /**
+     * Marca un producto como vendido y actualiza el stock.
+     * @param {string} id - ID del producto.
+     * @param {number} quantity - Cantidad vendida.
+     * @returns {Promise<any>}
+     */
     const markAsSold = async (id: string, quantity: number) => {
         try {
             loading.value = true;

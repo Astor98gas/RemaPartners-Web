@@ -4,6 +4,10 @@ import type { User, UserFormData, UserLogin } from '@/models/user'
 import Cookies from 'js-cookie'
 import { useToast } from 'vue-toastification';
 
+/**
+ * Composable para gestionar usuarios y autenticación.
+ * Proporciona métodos para login, logout, registro, actualización de perfil y verificación de sesión.
+ */
 export function useUsers() {
     const users = ref<User[]>([])
     const error = ref<string | null>(null)
@@ -12,6 +16,10 @@ export function useUsers() {
     const currentUser = ref<User | null>(null)
     const toast = useToast()
 
+    /**
+     * Obtiene todos los usuarios.
+     * @returns {Promise<void>}
+     */
     const getUsers = async () => {
         try {
             loading.value = true
@@ -34,8 +42,8 @@ export function useUsers() {
      * - Actualiza el estado del usuario actual
      * - Redirige a la página principal en caso de éxito
      * 
-     * @param formData - Datos de inicio de sesión (username/email y password)
-     * @returns Los datos del usuario autenticado, incluyendo el token
+     * @param {UserLogin} formData - Datos de inicio de sesión (username/email y password)
+     * @returns {Promise<any>} Los datos del usuario autenticado, incluyendo el token
      * @throws Error si no se puede autenticar al usuario
      */
     const loginUser = async (formData: UserLogin) => {
@@ -76,6 +84,10 @@ export function useUsers() {
         }
     }
 
+    /**
+     * Verifica si el usuario está autenticado.
+     * @returns {Promise<any|boolean>} Datos del usuario autenticado o false.
+     */
     const isLoggedIn = async () => {
         try {
             // Verificar si hay token guardado en las cookies
@@ -103,6 +115,11 @@ export function useUsers() {
         }
     }
 
+    /**
+     * Crea un nuevo usuario y realiza login automático si es exitoso.
+     * @param {UserFormData} formData - Datos del usuario a crear.
+     * @returns {Promise<void>}
+     */
     const createUser = async (formData: UserFormData) => {
         try {
             loading.value = true
@@ -126,6 +143,11 @@ export function useUsers() {
         }
     }
 
+    /**
+     * Cierra la sesión del usuario.
+     * @param {boolean} redirect - Si debe redirigir al login tras cerrar sesión.
+     * @returns {Promise<void>}
+     */
     const logout = async (redirect = true) => {
         try {
             loading.value = true
@@ -148,6 +170,12 @@ export function useUsers() {
         }
     }
 
+    /**
+     * Verifica si existe un usuario por email o username.
+     * @param {string} email - Email a verificar.
+     * @param {string} username - Username a verificar.
+     * @returns {Promise<{exists: boolean, reason?: string}>}
+     */
     const checkUserIfExist = async (email: string, username: string) => {
         try {
             const response = await userService.getUserByEmail(email);
@@ -167,6 +195,13 @@ export function useUsers() {
         }
     };
 
+    /**
+     * Actualiza el perfil del usuario.
+     * @param {string} userId - ID del usuario.
+     * @param {Partial<User>} userData - Datos a actualizar.
+     * @returns {Promise<any>} Respuesta del backend.
+     * @throws Error si ocurre un problema al actualizar.
+     */
     const updateProfile = async (userId: string, userData: Partial<User>) => {
         try {
             loading.value = true;
@@ -217,7 +252,9 @@ export function useUsers() {
     };
 
     /**
-     * Refresca la información del usuario actual desde el servidor
+     * Refresca la información del usuario actual desde el servidor.
+     * @returns {Promise<User|null>} Usuario actualizado.
+     * @throws Error si ocurre un problema al refrescar.
      */
     const refreshUser = async () => {
         try {
@@ -237,9 +274,10 @@ export function useUsers() {
     };
 
     /**
-     * Obtiene el perfil de un usuario por su ID (perfil público)
-     * 
-     * @param userId - ID del usuario
+     * Obtiene el perfil público de un usuario por su ID.
+     * @param {string} userId - ID del usuario.
+     * @returns {Promise<any>} Perfil público del usuario.
+     * @throws Error si ocurre un problema al obtener el perfil.
      */
     const getUserProfileById = async (userId: string) => {
         try {

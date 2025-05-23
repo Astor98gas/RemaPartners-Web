@@ -26,6 +26,16 @@
 <script setup lang="ts">
 import type { User } from '@/models/user'
 
+/**
+ * Componente para mostrar y editar un usuario individual.
+ * 
+ * Props:
+ * - user: Objeto User a mostrar y editar.
+ * 
+ * Emits:
+ * - update: Se emite cuando se actualiza el usuario.
+ * - delete: Se emite cuando se elimina el usuario.
+ */
 defineProps<{
     user: User
 }>()

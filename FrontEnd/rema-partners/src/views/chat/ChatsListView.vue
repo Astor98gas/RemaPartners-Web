@@ -141,6 +141,17 @@
 </template>
 
 <script lang="ts">
+/**
+ * Vista de listado de chats.
+ * Permite al usuario ver todos los chats en los que participa, ya sea como comprador o vendedor.
+ * Incluye funcionalidades para refrescar la lista, ver detalles del chat y acceder a los productos relacionados.
+ * 
+ * Métodos principales:
+ * - refreshChats: Refresca la lista de chats y limpia la caché.
+ * - loadChats: Carga los chats del usuario actual, tanto como comprador como vendedor.
+ * - preloadProductInfo: Precarga la información de los productos relacionados a los chats.
+ * - t: Traduce claves de idioma usando el store global.
+ */
 import { defineComponent } from 'vue';
 import { useChat } from '@/composables/useChat';
 import { useProducto } from '@/composables/useProducto';
@@ -166,6 +177,10 @@ export default defineComponent({
             selectedChat: null as ChatEntity | null
         };
     },
+    /**
+     * Hook de ciclo de vida que se ejecuta al montar el componente.
+     * Obtiene el usuario actual y carga los chats asociados.
+     */
     async mounted() {
         try {
             // Obtener usuario actual
@@ -187,7 +202,9 @@ export default defineComponent({
         }
     },
     methods: {
-        // Método para refrescar los chats
+        /**
+         * Refresca la lista de chats y limpia la caché de productos y usuarios.
+         */
         async refreshChats() {
             // Limpiar caché antes de recargar
             this.productCache = {};
@@ -196,11 +213,21 @@ export default defineComponent({
             await this.loadChats();
         },
 
+        /**
+         * Traduce una clave de idioma usando el store global.
+         * @param key Clave de traducción
+         * @returns Traducción correspondiente
+         */
         t(key: string): string {
             const store = useutf8Store();
             return store.t(key);
         },
 
+        /**
+         * Carga todos los chats relevantes para el usuario actual,
+         * combinando los chats como comprador y como vendedor.
+         * También precarga la información de productos y usuarios.
+         */
         async loadChats() {
             try {
                 this.loading = true;
@@ -239,6 +266,9 @@ export default defineComponent({
             }
         },
 
+        /**
+         * Precarga la información de productos para los chats listados.
+         */
         async preloadProductInfo() {
             const productoService = useProducto();
 

@@ -89,34 +89,72 @@ import type { Rating } from '@/models/rating';
 import StarRating from './StarRating.vue';
 import { useutf8Store } from '@/stores/counter';
 
+/**
+ * Componente para mostrar una valoración individual, incluyendo comentario, puntuación,
+ * respuesta del vendedor y acciones de edición, respuesta o eliminación.
+ * 
+ * @component
+ * @example
+ * <RatingItem :rating="rating" :canEdit="true" @edit="onEdit" />
+ */
 export default defineComponent({
     name: 'RatingItem',
     components: {
         StarRating
     },
     props: {
+        /**
+         * Objeto de valoración a mostrar.
+         * @type {Rating}
+         * @required
+         */
         rating: {
             type: Object as () => Rating,
             required: true
         },
+        /**
+         * Indica si el usuario puede editar la valoración.
+         * @type {boolean}
+         * @default false
+         */
         canEdit: {
             type: Boolean,
             default: false
         },
+        /**
+         * Indica si el usuario puede responder a la valoración.
+         * @type {boolean}
+         * @default false
+         */
         canReply: {
             type: Boolean,
             default: false
         },
+        /**
+         * Indica si el usuario puede eliminar la valoración.
+         * @type {boolean}
+         * @default false
+         */
         canDelete: {
             type: Boolean,
             default: false
         },
+        /**
+         * Resalta visualmente la valoración.
+         * @type {boolean}
+         * @default false
+         */
         highlight: {
             type: Boolean,
             default: false
         }
     },
     methods: {
+        /**
+         * Obtiene las iniciales a partir del nombre de usuario.
+         * @param {string} name - Nombre de usuario.
+         * @returns {string} Iniciales.
+         */
         getInitials(name: string): string {
             if (!name) return '';
             return name.split(' ')
@@ -124,6 +162,11 @@ export default defineComponent({
                 .join('')
                 .substring(0, 2);
         },
+        /**
+         * Formatea una fecha en formato legible (es-ES).
+         * @param {string} dateStr - Fecha en formato ISO.
+         * @returns {string} Fecha formateada.
+         */
         formatDate(dateStr: string): string {
             if (!dateStr) return '';
 
@@ -134,6 +177,11 @@ export default defineComponent({
                 day: 'numeric'
             });
         },
+        /**
+         * Traduce una clave usando el store de internacionalización.
+         * @param {string} key - Clave de traducción.
+         * @returns {string} Traducción.
+         */
         t(key: string): string {
             const store = useutf8Store();
             return store.t(key);

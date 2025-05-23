@@ -17,6 +17,13 @@
 <script lang="ts">
 import { useutf8Store } from '@/stores/counter';
 
+/**
+ * Botón de edición con icono animado.
+ * 
+ * Muestra un botón estilizado con icono de lápiz y texto traducible.
+ * 
+ * @component
+ */
 export default {
     name: 'EditButton',
     setup() {

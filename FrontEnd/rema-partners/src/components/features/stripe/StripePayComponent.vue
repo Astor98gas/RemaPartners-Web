@@ -79,12 +79,22 @@ export default {
         };
     },
     methods: {
+        /**
+         * Traduce una clave utilizando el store de internacionalización.
+         * @param {string} key - Clave de traducción.
+         * @returns {string} Traducción correspondiente o la clave si no existe.
+         */
         t(key) {
             const store = useutf8Store();
             return store.t(key) || key;
         },
 
-        // Opcionalmente puedes verificar el código promo antes de enviarlo
+        /**
+         * Verifica el código promocional ingresado por el usuario.
+         * Si el campo está vacío, muestra un error. Si no, lo marca como válido.
+         * Este método puede ser extendido para realizar una verificación real vía API.
+         * @async
+         */
         async verifyPromoCode() {
             if (!this.promoCode.trim()) {
                 this.promoCodeError = this.t('profile.promo_code_empty');
@@ -111,6 +121,12 @@ export default {
             }
         },
 
+        /**
+         * Redirige al usuario al checkout de Stripe.
+         * Envía los datos necesarios al backend para crear una sesión de pago.
+         * Incluye el código promocional si es válido.
+         * @async
+         */
         async redirectToStripe() {
             try {
                 this.loading = true;
@@ -166,6 +182,10 @@ export default {
             }
         },
 
+        /**
+         * Maneja el resultado del pago leyendo los parámetros de la URL.
+         * Emite eventos según el resultado y limpia los parámetros de la URL.
+         */
         handlePaymentResult() {
             // Verificar si hay un parámetro de éxito o cancelación en la URL
             const urlParams = new URLSearchParams(window.location.search);

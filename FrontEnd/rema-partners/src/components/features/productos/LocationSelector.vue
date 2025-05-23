@@ -55,13 +55,33 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
+/**
+ * Componente LocationSelector
+ * 
+ * Permite seleccionar una ubicación mediante búsqueda de dirección o clic en el mapa.
+ * 
+ * Props:
+ * - modelValue: Dirección seleccionada (v-model).
+ * - id: Identificador único para el input y el mapa.
+ * 
+ * Emits:
+ * - update:modelValue: Emite la dirección seleccionada.
+ */
 export default defineComponent({
     name: 'LocationSelector',
     props: {
+        /**
+         * Dirección seleccionada (v-model).
+         * @type {string}
+         */
         modelValue: {
             type: String,
             default: ''
         },
+        /**
+         * Identificador único para el input y el mapa.
+         * @type {string}
+         */
         id: {
             type: String,
             default: 'location-selector'
@@ -90,7 +110,9 @@ export default defineComponent({
             }
         });
 
-        // Inicializar el mapa
+        /**
+         * Inicializa el mapa Leaflet y configura eventos.
+         */
         const initMap = () => {
             const container = document.getElementById(`map-container-${props.id}`);
             if (!container) return;
@@ -138,7 +160,12 @@ export default defineComponent({
             }, 300);
         };
 
-        // Añadir o mover marcador
+        /**
+         * Añade o mueve el marcador en el mapa.
+         * @param {number} lat Latitud.
+         * @param {number} lng Longitud.
+         * @param {string} [popupText] Texto opcional para el popup.
+         */
         const addOrMoveMarker = (lat: number, lng: number, popupText?: string) => {
             if (!map.value) return;
 
@@ -153,14 +180,19 @@ export default defineComponent({
             }
         };
 
-        // Manejar clic en el mapa
+        /**
+         * Maneja el clic en el mapa y obtiene la dirección.
+         * @param {L.LeafletMouseEvent} e Evento de Leaflet.
+         */
         const handleMapClick = (e: L.LeafletMouseEvent) => {
             const { lat, lng } = e.latlng;
             addOrMoveMarker(lat, lng);
             obtenerDireccionDesdeLatLng(lat, lng);
         };
 
-        // Buscar dirección desde texto
+        /**
+         * Busca la dirección introducida y actualiza el mapa.
+         */
         const buscarDireccion = async () => {
             if (!direccionBusqueda.value.trim()) return;
 
@@ -189,7 +221,11 @@ export default defineComponent({
             }
         };
 
-        // Obtener ciudad desde coordenadas
+        /**
+         * Obtiene la ciudad desde coordenadas y actualiza el input.
+         * @param {number} lat Latitud.
+         * @param {number} lng Longitud.
+         */
         const obtenerDireccionDesdeLatLng = async (lat: number, lng: number) => {
             try {
                 const response = await fetch(
@@ -225,7 +261,11 @@ export default defineComponent({
             }
         };
 
-        // Traducción mediante el store
+        /**
+         * Traduce una clave usando el store de traducciones.
+         * @param {string} key Clave de traducción.
+         * @returns {string}
+         */
         const t = (key: string): string => {
             const store = useutf8Store();
             return store.t(key);

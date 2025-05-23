@@ -12,6 +12,13 @@
 <script lang="ts">
 import { useutf8Store } from '@/stores/counter';
 
+/**
+ * Botón de eliminación con icono animado.
+ * 
+ * Muestra un botón estilizado con icono de papelera y texto traducible.
+ * 
+ * @component
+ */
 export default {
     name: 'DeleteButton',
     setup() {

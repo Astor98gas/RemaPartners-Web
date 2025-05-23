@@ -184,6 +184,10 @@ export default defineComponent({
         }
     },
     methods: {
+        /**
+         * Desplaza el contenedor de mensajes hasta el fondo para mostrar el último mensaje.
+         * @returns {Promise<void>}
+         */
         async scrollToBottom() {
             await this.$nextTick();
             if (this.$refs.messagesContainer) {
@@ -193,6 +197,11 @@ export default defineComponent({
                 }, 50);
             }
         },
+        /**
+         * Inicializa el chat cargando los mensajes y la información del producto.
+         * También obtiene el nombre del usuario con el que se está chateando.
+         * @returns {Promise<void>}
+         */
         async initializeChat() {
             try {
                 this.loading = true;
@@ -236,6 +245,11 @@ export default defineComponent({
                 this.scrollToBottom();
             }
         },
+        /**
+         * Carga la información del producto asociado al chat actual.
+         * Establece una bandera si el producto no existe o no está activo.
+         * @returns {Promise<void>}
+         */
         async loadProductInfo() {
             try {
                 if (!this.currentChat) return;
@@ -250,6 +264,9 @@ export default defineComponent({
                 this.productNotFound = true;
             }
         },
+        /**
+         * Enfoca el campo de entrada de mensaje.
+         */
         focusInput() {
             setTimeout(() => {
                 if (this.$refs.messageInput) {
@@ -257,6 +274,9 @@ export default defineComponent({
                 }
             }, 100);
         },
+        /**
+         * Configura la actualización automática de los mensajes del chat cada 10 segundos.
+         */
         setupAutoRefresh() {
             if (this.refreshInterval) {
                 clearInterval(this.refreshInterval);
@@ -282,6 +302,10 @@ export default defineComponent({
                 }
             }, 10000);
         },
+        /**
+         * Envía un nuevo mensaje en el chat actual.
+         * @returns {Promise<void>}
+         */
         async sendMessage() {
             if (!this.newMessage.trim() || !this.currentChat?.id) {
                 return;
@@ -308,6 +332,9 @@ export default defineComponent({
                 await this.scrollToBottom();
             }
         },
+        /**
+         * Muestra un cuadro de confirmación para eliminar el chat.
+         */
         confirmDeleteChat() {
             if (!this.currentChat?.id) return;
 
@@ -325,6 +352,10 @@ export default defineComponent({
                 }
             });
         },
+        /**
+         * Elimina el chat actual de la base de datos.
+         * @returns {Promise<void>}
+         */
         async deleteChat() {
             if (!this.currentChat?.id) return;
 
@@ -351,6 +382,9 @@ export default defineComponent({
                 this.loading = false;
             }
         },
+        /**
+         * Muestra un cuadro de diálogo para confirmar la venta del producto y seleccionar la cantidad.
+         */
         confirmMarkAsSold() {
             if (!this.currentChat?.idProducto || !this.isSeller || !this.currentProduct) return;
 
@@ -397,6 +431,12 @@ export default defineComponent({
                 }
             });
         },
+        /**
+         * Marca el producto como vendido y crea una factura por la venta.
+         * También envía un mensaje de sistema notificando la venta.
+         * @param {number} quantity - Cantidad de productos vendidos.
+         * @returns {Promise<void>}
+         */
         async markProductAsSold(quantity = 1) {
             if (!this.currentChat?.idProducto || !this.isSeller) return;
 
@@ -453,6 +493,11 @@ export default defineComponent({
                 this.loading = false;
             }
         },
+        /**
+         * Da formato a una fecha en función del idioma del usuario.
+         * @param {string} dateStr - Fecha en formato string.
+         * @returns {string}
+         */
         formatTime(dateStr: string) {
             if (!dateStr) return '';
 
@@ -473,6 +518,12 @@ export default defineComponent({
                 return dateStr;
             }
         },
+        /**
+         * Traduce una clave utilizando el sistema de traducción de la aplicación.
+         * @param {string} key - Clave de traducción.
+         * @param {Record<string, any>} [params] - Parámetros para interpolar en la traducción.
+         * @returns {string}
+         */
         t(key: string, params?: Record<string, any>) {
             const store = useutf8Store();
             const translation = store.t(key);

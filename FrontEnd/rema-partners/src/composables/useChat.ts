@@ -4,6 +4,10 @@ import { userService } from "@/services/user.service";
 import type { ChatEntity, MensajeEntity } from "@/models/chat";
 import type { User } from "@/models/user";
 
+/**
+ * Composable para gestionar chats y mensajes.
+ * Permite obtener, crear, eliminar chats y añadir mensajes.
+ */
 export function useChat() {
     const currentChat = ref<ChatEntity | null>(null);
     const chats = ref<ChatEntity[]>([]);
@@ -13,10 +17,9 @@ export function useChat() {
 
     /**
      * Obtiene un chat por su ID único.
-     * 
-     * @param id - El identificador único del chat a obtener
-     * @returns El objeto chat completo con sus mensajes y datos de participantes
-     * @throws Error si no se puede cargar el chat
+     * @param {string} id - ID del chat.
+     * @returns {Promise<any>} Chat encontrado.
+     * @throws Error si ocurre un problema al buscar.
      */
     const getChatById = async (id: string) => {
         try {
@@ -41,9 +44,9 @@ export function useChat() {
 
     /**
      * Obtiene todos los chats asociados a un producto específico.
-     * 
-     * @param idProducto - El ID del producto del cual se quieren obtener los chats
-     * @throws Error si hay problemas para cargar los chats
+     * @param {string} idProducto - ID del producto.
+     * @returns {Promise<void>}
+     * @throws Error si ocurre un problema al buscar.
      */
     const getChatsByProductId = async (idProducto: string) => {
         try {
@@ -62,10 +65,10 @@ export function useChat() {
     };
 
     /**
-     * Obtiene todos los chats donde el usuario especificado es el comprador.
-     * 
-     * @param idComprador - El ID del usuario comprador
-     * @throws Error si hay problemas para cargar los chats
+     * Obtiene todos los chats donde el usuario es comprador.
+     * @param {string} idComprador - ID del comprador.
+     * @returns {Promise<void>}
+     * @throws Error si ocurre un problema al buscar.
      */
     const getChatsByBuyerId = async (idComprador: string) => {
         try {
@@ -84,10 +87,10 @@ export function useChat() {
     };
 
     /**
-     * Obtiene todos los chats donde el usuario especificado es el vendedor.
-     * 
-     * @param idVendedor - El ID del usuario vendedor
-     * @throws Error si hay problemas para cargar los chats
+     * Obtiene todos los chats donde el usuario es vendedor.
+     * @param {string} idVendedor - ID del vendedor.
+     * @returns {Promise<void>}
+     * @throws Error si ocurre un problema al buscar.
      */
     const getChatsBySellerId = async (idVendedor: string) => {
         try {
@@ -107,13 +110,11 @@ export function useChat() {
 
     /**
      * Obtiene o crea un chat entre un comprador y un vendedor para un producto específico.
-     * Si ya existe un chat con estos participantes, lo devuelve; si no, crea uno nuevo.
-     * 
-     * @param idProducto - El ID del producto sobre el que se está conversando
-     * @param idComprador - El ID del usuario comprador
-     * @param idVendedor - El ID del usuario vendedor
-     * @returns El objeto chat existente o el nuevo chat creado
-     * @throws Error si hay problemas al obtener o crear el chat
+     * @param {string} idProducto - ID del producto.
+     * @param {string} idComprador - ID del comprador.
+     * @param {string} idVendedor - ID del vendedor.
+     * @returns {Promise<any>} Chat existente o creado.
+     * @throws Error si ocurre un problema al buscar o crear.
      */
     const getChatByParticipants = async (idProducto: string, idComprador: string, idVendedor: string) => {
         try {
@@ -134,12 +135,11 @@ export function useChat() {
 
     /**
      * Añade un nuevo mensaje a un chat existente.
-     * 
-     * @param chatId - El ID del chat donde se añadirá el mensaje
-     * @param idEmisor - El ID del usuario que envía el mensaje
-     * @param mensaje - El texto del mensaje a enviar
-     * @returns El chat actualizado con el nuevo mensaje
-     * @throws Error si hay problemas al añadir el mensaje
+     * @param {string} chatId - ID del chat.
+     * @param {string} idEmisor - ID del usuario emisor.
+     * @param {string} mensaje - Texto del mensaje.
+     * @returns {Promise<any>} Chat actualizado.
+     * @throws Error si ocurre un problema al añadir.
      */
     const addMessage = async (chatId: string, idEmisor: string, mensaje: string) => {
         try {
@@ -166,11 +166,10 @@ export function useChat() {
     };
 
     /**
-     * Elimina un chat existente por su ID
-     * 
-     * @param chatId - El ID del chat a eliminar
-     * @returns Respuesta de la operación
-     * @throws Error si hay problemas al eliminar el chat
+     * Elimina un chat existente por su ID.
+     * @param {string} chatId - ID del chat.
+     * @returns {Promise<any>} Respuesta de la operación.
+     * @throws Error si ocurre un problema al eliminar.
      */
     const deleteChat = async (chatId: string) => {
         try {
@@ -201,6 +200,11 @@ export function useChat() {
         }
     };
 
+    /**
+     * Obtiene el nombre de usuario por su ID.
+     * @param {string} userId - ID del usuario.
+     * @returns {Promise<string>} Nombre de usuario.
+     */
     const getUserNameById = async (userId: string): Promise<string> => {
         try {
             if (!userId) return '';
@@ -218,6 +222,12 @@ export function useChat() {
         }
     };
 
+    /**
+     * Obtiene el nombre del interlocutor en un chat.
+     * @param {string} chatId - ID del chat.
+     * @param {string} [currentUserId] - ID del usuario actual (opcional).
+     * @returns {Promise<string>} Nombre del interlocutor.
+     */
     const getChatPartnerName = async (chatId: string, currentUserId?: string): Promise<string> => {
         try {
             // Obtener el chat

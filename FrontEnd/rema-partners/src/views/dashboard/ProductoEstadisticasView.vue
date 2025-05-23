@@ -164,6 +164,14 @@
 </template>
 
 <script>
+/**
+ * Vista de estadísticas detalladas de un producto específico.
+ * Muestra información sobre las visitas recibidas por el producto, incluyendo:
+ * - Información básica del producto
+ * - Total de visitas recibidas
+ * - Gráfico de visitas mensuales
+ * - Tabla detallada de visitas por mes y año
+ */
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useutf8Store } from '@/stores/counter';
@@ -199,6 +207,11 @@ export default {
             t('months.october'), t('months.november'), t('months.december')
         ];
 
+        /**
+         * Obtiene el nombre del mes a partir de su número.
+         * @param numeroMes Número del mes (1-12)
+         * @returns Nombre del mes traducido
+         */
         const getNombreMes = (numeroMes) => {
             if (numeroMes >= 1 && numeroMes <= 12) {
                 return mesesTraducidos[numeroMes - 1];
@@ -206,7 +219,9 @@ export default {
             return t('common.unknown');
         };
 
-        // Función para cargar los datos del producto y sus estadísticas
+        /**
+         * Carga las estadísticas de visitas del producto.
+         */
         const loadProductoStats = async () => {
             loading.value = true;
             error.value = null;
@@ -229,7 +244,10 @@ export default {
             }
         };
 
-        // Preparar datos para el gráfico
+        /**
+         * Prepara los datos para el gráfico de visitas.
+         * @returns Configuración formateada para el componente de gráfico
+         */
         const prepareChartData = () => {
             // Preparar datos para el gráfico
             const visitasData = Array(12).fill(0);
@@ -283,7 +301,12 @@ export default {
             return { datasets };
         };
 
-        // Funciones de utilidad
+        /**
+         * Formatea un precio en céntimos a formato de moneda.
+         * @param precioCentimos Precio en céntimos
+         * @param moneda Código de moneda
+         * @returns Precio formateado como moneda
+         */
         const formatPrecio = (precioCentimos, moneda) => {
             if (!precioCentimos) return '-';
             const precio = precioCentimos / 100;
@@ -293,6 +316,11 @@ export default {
             }).format(precio);
         };
 
+        /**
+         * Formatea una fecha ISO a formato localizado.
+         * @param dateString Fecha en formato ISO
+         * @returns Fecha formateada
+         */
         const formatDate = (dateString) => {
             if (!dateString) return '-';
             const date = new Date(dateString);

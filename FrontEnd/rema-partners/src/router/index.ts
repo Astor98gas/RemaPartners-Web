@@ -1,3 +1,10 @@
+/**
+ * @file
+ * Configuración de las rutas principales de la aplicación Vue.
+ * Incluye la definición de rutas, protección de rutas según autenticación y roles,
+ * y lógica de navegación previa para controlar el acceso de usuarios.
+ */
+
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useToast } from 'vue-toastification';
@@ -8,11 +15,20 @@ const EmptyComponent = {
     template: '<div></div>'
 }
 
+/**
+ * Interfaz para definir la meta información de las rutas.
+ * @property {boolean} [requiresAuth] - Indica si la ruta requiere autenticación.
+ * @property {string[]} [roles] - Lista de roles permitidos para acceder a la ruta.
+ */
 interface RouteMeta {
     requiresAuth?: boolean;
     roles?: string[] | undefined;
 }
 
+/**
+ * Definición de las rutas de la aplicación.
+ * Cada ruta puede tener meta información para control de acceso.
+ */
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -119,6 +135,10 @@ const router = createRouter({
     ],
 })
 
+/**
+ * Lógica de navegación previa.
+ * Verifica si el usuario está autenticado y tiene el rol adecuado antes de permitir el acceso a rutas protegidas.
+ */
 router.beforeEach(async (to, from, next) => {
     const usersComposable = useUsers();
     const toast = useToast();

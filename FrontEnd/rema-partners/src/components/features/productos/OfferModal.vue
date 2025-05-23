@@ -20,7 +20,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <h4 class="font-medium text-gray-900 text-base mb-1 truncate" :title="productTitle">{{ productTitle
-                        }}</h4>
+                    }}</h4>
                     <p class="text-gray-700 text-sm font-semibold bg-white inline-block px-2 py-1 rounded-md">
                         {{ formatCurrency(originalPrice, currency) }}
                     </p>
@@ -68,21 +68,52 @@
 <script>
 import { useutf8Store } from '@/stores/counter';
 
+/**
+ * Componente OfferModal
+ * 
+ * Modal para realizar una oferta sobre un producto. Permite al usuario introducir una cantidad y enviarla.
+ * 
+ * Props:
+ * - productTitle: Título del producto.
+ * - productImage: URL de la imagen del producto.
+ * - originalPrice: Precio original del producto (en céntimos).
+ * - currency: Moneda a mostrar (por defecto '€').
+ * 
+ * Emits:
+ * - close: Se emite cuando se cierra el modal.
+ * - offer-submitted: Se emite al enviar una oferta, pasando un objeto con la cantidad y moneda.
+ */
 export default {
     name: 'OfferModal',
     props: {
+        /**
+         * Título del producto.
+         * @type {String}
+         */
         productTitle: {
             type: String,
             required: true
         },
+        /**
+         * URL de la imagen del producto.
+         * @type {String}
+         */
         productImage: {
             type: String,
             required: true
         },
+        /**
+         * Precio original del producto (en céntimos).
+         * @type {Number}
+         */
         originalPrice: {
             type: Number,
             required: true
         },
+        /**
+         * Moneda a mostrar.
+         * @type {String}
+         */
         currency: {
             type: String,
             default: '€'
@@ -96,33 +127,57 @@ export default {
         };
     },
     computed: {
+        /**
+         * Indica si la oferta introducida es válida.
+         * @returns {Boolean}
+         */
         isValidOffer() {
             const amount = parseFloat(this.offerAmount);
             return amount && amount > 0;
         }
     },
     mounted() {
-        // Initialize with original price
+        // Inicializa la cantidad con el precio original
         this.offerAmount = this.formatNumber(this.originalPrice / 100);
 
-        // Add event listener to close modal on escape key
+        // Añade listener para cerrar el modal con Escape
         document.addEventListener('keydown', this.handleEscapeKey);
     },
     beforeUnmount() {
-        // Remove event listener when component is destroyed
+        // Elimina el listener al destruir el componente
         document.removeEventListener('keydown', this.handleEscapeKey);
     },
     methods: {
+        /**
+         * Traduce una clave usando el store de traducciones.
+         * @param {String} key Clave de traducción.
+         * @returns {String}
+         */
         t(key) {
             const store = useutf8Store();
             return store.t(key);
         },
+        /**
+         * Formatea el precio con la moneda.
+         * @param {Number} price Precio en céntimos.
+         * @param {String} currency Moneda.
+         * @returns {String}
+         */
         formatCurrency(price, currency) {
             return `${currency} ${this.formatNumber(price / 100)}`;
         },
+        /**
+         * Formatea un número a dos decimales.
+         * @param {Number} value Valor numérico.
+         * @returns {String}
+         */
         formatNumber(value) {
             return typeof value === 'number' ? value.toFixed(2) : value;
         },
+        /**
+         * Envía la oferta si es válida.
+         * Emite el evento 'offer-submitted' con los datos de la oferta.
+         */
         submitOffer() {
             if (!this.isValidOffer) return;
 
@@ -134,9 +189,17 @@ export default {
 
             this.$emit('offer-submitted', offerData);
         },
+        /**
+         * Muestra una imagen por defecto si falla la carga de la imagen del producto.
+         * @param {Event} event Evento de error de imagen.
+         */
         onImageError(event) {
             event.target.src = this.placeholderImg;
         },
+        /**
+         * Cierra el modal al pulsar la tecla Escape.
+         * @param {KeyboardEvent} event Evento de teclado.
+         */
         handleEscapeKey(event) {
             if (event.key === 'Escape') {
                 this.$emit('close');

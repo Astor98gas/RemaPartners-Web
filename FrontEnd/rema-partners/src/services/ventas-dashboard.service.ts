@@ -44,9 +44,9 @@ const generateTestData = (year: number, isVentas = true) => {
 
 export const ventasDashboardService = {
     /**
-     * Obtiene las estadísticas generales del dashboard de ventas/compras
-     * @param {number} year - Año a consultar
-     * @returns {Promise} Promesa con los datos del dashboard
+     * Obtiene las estadísticas generales del dashboard de ventas/compras.
+     * @param {number} year - Año a consultar.
+     * @returns {Promise} Promesa con los datos del dashboard.
      */
     getVentasStats: async (year: number) => {
         try {
@@ -71,9 +71,9 @@ export const ventasDashboardService = {
     },
 
     /**
-     * Obtiene las estadísticas de ventas para un producto específico
-     * @param {string} productoId - ID del producto
-     * @returns {Promise} Promesa con los datos de ventas del producto
+     * Obtiene las estadísticas de ventas para un producto específico.
+     * @param {string} productoId - ID del producto.
+     * @returns {Promise} Promesa con los datos de ventas del producto.
      */
     getProductoVentas: async (productoId: string) => {
         try {
@@ -157,10 +157,10 @@ export const ventasDashboardService = {
     },
 
     /**
-     * Obtiene las estadísticas de ventas mensuales desglosadas
-     * @param {number} año - Año a consultar
-     * @param {number} mes - Mes a consultar (1-12)
-     * @returns {Promise} Promesa con los datos de ventas del mes
+     * Obtiene las estadísticas de ventas mensuales desglosadas.
+     * @param {number} año - Año a consultar.
+     * @param {number} mes - Mes a consultar (1-12).
+     * @returns {Promise} Promesa con los datos de ventas del mes.
      */
     getVentasPorMes: async (año: number, mes: number) => {
         try {
@@ -175,10 +175,10 @@ export const ventasDashboardService = {
     },
 
     /**
-     * Obtiene las estadísticas de ventas para un usuario específico (como vendedor)
-     * @param {string} userId - ID del usuario
-     * @param {number} year - Año a consultar
-     * @returns {Promise} Promesa con los datos de ventas del usuario
+     * Obtiene las estadísticas de ventas para un usuario específico (como vendedor).
+     * @param {string} userId - ID del usuario.
+     * @param {number} year - Año a consultar.
+     * @returns {Promise} Promesa con los datos de ventas del usuario.
      */
     getVentasUsuario: async (userId: string, year: number) => {
         try {
@@ -202,10 +202,10 @@ export const ventasDashboardService = {
     },
 
     /**
-     * Obtiene las estadísticas de compras para un usuario específico (como comprador)
-     * @param {string} userId - ID del usuario
-     * @param {number} year - Año a consultar
-     * @returns {Promise} Promesa con los datos de compras del usuario
+     * Obtiene las estadísticas de compras para un usuario específico (como comprador).
+     * @param {string} userId - ID del usuario.
+     * @param {number} year - Año a consultar.
+     * @returns {Promise} Promesa con los datos de compras del usuario.
      */
     getComprasUsuario: async (userId: string, year: number) => {
         try {

@@ -91,6 +91,14 @@ import RatingForm from './RatingForm.vue';
 import { useToast } from 'vue-toastification';
 import Swal from 'sweetalert2';
 
+/**
+ * Componente para mostrar y gestionar la sección de valoraciones de un vendedor.
+ * Permite ver, añadir, editar, responder y eliminar valoraciones.
+ * 
+ * @component
+ * @example
+ * <RatingsSection :sellerId="sellerId" :currentUserId="userId" :isCurrentUserSeller="true" />
+ */
 export default defineComponent({
     name: 'RatingsSection',
     components: {
@@ -99,14 +107,29 @@ export default defineComponent({
         RatingForm
     },
     props: {
+        /**
+         * ID del vendedor cuyas valoraciones se muestran.
+         * @type {string}
+         * @required
+         */
         sellerId: {
             type: String,
             required: true
         },
+        /**
+         * ID del usuario autenticado actual.
+         * @type {string}
+         * @default null
+         */
         currentUserId: {
             type: String,
             default: null
         },
+        /**
+         * Indica si el usuario actual es el vendedor del perfil.
+         * @type {boolean}
+         * @default false
+         */
         isCurrentUserSeller: {
             type: Boolean,
             default: false
@@ -151,6 +174,9 @@ export default defineComponent({
         });
 
         // Methods
+        /**
+         * Carga todas las valoraciones del vendedor.
+         */
         const loadRatings = async () => {
             loading.value = true;
             error.value = null;
@@ -172,6 +198,9 @@ export default defineComponent({
             }
         };
 
+        /**
+         * Carga la valoración del usuario actual para este vendedor, si existe.
+         */
         const loadUserRating = async () => {
             if (!props.currentUserId) return;
 
@@ -188,7 +217,9 @@ export default defineComponent({
             }
         };
 
-        // Cargar información del usuario actual
+        /**
+         * Carga los datos del usuario autenticado (incluyendo rol).
+         */
         const loadUserData = async () => {
             if (props.currentUserId) {
                 try {
@@ -200,6 +231,10 @@ export default defineComponent({
             }
         };
 
+        /**
+         * Maneja el envío del formulario de valoración (crear o editar).
+         * @param {RatingFormData} formData - Datos del formulario de valoración.
+         */
         const handleRatingSubmit = async (formData: RatingFormData) => {
             try {
                 if (userRating.value) {
@@ -220,6 +255,10 @@ export default defineComponent({
             }
         };
 
+        /**
+         * Maneja el envío del formulario de respuesta a una valoración.
+         * @param {RatingReplyData} replyData - Datos de la respuesta.
+         */
         const handleReplySubmit = async (replyData: RatingReplyData) => {
             try {
                 await ratingsComposable.addReplyToRating(replyData);
@@ -234,23 +273,41 @@ export default defineComponent({
             }
         };
 
+        /**
+         * Permite editar una valoración seleccionada.
+         * @param {Rating} rating - Valoración a editar.
+         */
         const editRating = (rating: Rating) => {
             selectedRating.value = rating;
             showReplyForm.value = false;
             showRatingForm.value = true;
         };
 
+        /**
+         * Permite responder a una valoración seleccionada.
+         * @param {Rating} rating - Valoración a responder.
+         */
         const replyToRating = (rating: Rating) => {
             selectedRating.value = rating;
             showRatingForm.value = false;
             showReplyForm.value = true;
         };
 
+        /**
+         * Determina si el usuario puede editar una valoración.
+         * @param {Rating} rating
+         * @returns {boolean}
+         */
         const canEditRating = (rating: Rating): boolean => {
             // Un usuario puede editar una valoración si es el autor
             return props.currentUserId === rating.userId;
         };
 
+        /**
+         * Determina si el usuario puede responder a una valoración.
+         * @param {Rating} rating
+         * @returns {boolean}
+         */
         const canReplyToRating = (rating: Rating): boolean => {
             // Un vendedor puede responder a una valoración si:
             // 1. Es el vendedor del perfil
@@ -262,7 +319,11 @@ export default defineComponent({
                 rating.userId !== props.currentUserId;
         };
 
-        // Comprobar si el usuario puede eliminar valoraciones
+        /**
+         * Determina si el usuario puede eliminar una valoración.
+         * @param {Rating} rating
+         * @returns {boolean}
+         */
         const canDeleteRating = (rating: Rating): boolean => {
             // Un usuario puede eliminar una valoración si:
             // 1. Es administrador (ADMIN)
@@ -273,7 +334,12 @@ export default defineComponent({
                 userData.value?.rol?.name === 'TRABAJADOR' ||
                 props.currentUserId === rating.userId
             );
-        };        // Manejar la eliminación de valoraciones
+        };
+
+        /**
+         * Muestra un diálogo de confirmación y elimina la valoración si se confirma.
+         * @param {Rating} rating
+         */
         const confirmDeleteRating = async (rating: Rating) => {
             // Determinar si el usuario actual es el propietario de la valoración
             const isOwnRating = props.currentUserId === rating.userId;

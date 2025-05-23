@@ -71,6 +71,16 @@
 </template>
 
 <script>
+/**
+ * Componente de cabecera principal de la aplicación.
+ * Muestra el logo, nombre de la aplicación, enlaces de autenticación y selector de idioma.
+ * Gestiona el menú móvil y el mensaje de bienvenida al usuario autenticado.
+ * 
+ * Métodos principales:
+ * - checkLoginStatus: Verifica si el usuario está autenticado.
+ * - toggleMobileMenu: Alterna el menú móvil.
+ * - reload: Recarga la página principal.
+ */
 import ButtonBasic from '@/components/ui/ButtonBasic.vue';
 import SelectorIdioma from '@/components/ui/SelectorIdioma.vue';
 import { useUsers } from '@/composables/useUsers';
@@ -91,9 +101,15 @@ export default {
         };
     },
     computed: {
+        /**
+         * Indica si el usuario está autenticado.
+         */
         isLoggedIn() {
             return !!this.currentUser;
         },
+        /**
+         * Mensaje de bienvenida personalizado para el usuario autenticado.
+         */
         welcomeMessage() {
             return this.currentUser ? `Hola, ${this.currentUser.username}` : '';
         }
@@ -110,6 +126,9 @@ export default {
         this.checkLoginStatus();
     },
     methods: {
+        /**
+         * Verifica si el usuario está autenticado.
+         */
         async checkLoginStatus() {
             try {
                 await this.usersComposable.isLoggedIn();
@@ -117,12 +136,21 @@ export default {
                 console.error('Error checking login status:', error);
             }
         },
+        /**
+         * Alterna el estado del menú móvil.
+         */
         toggleMobileMenu() {
             this.mobileMenuOpen = !this.mobileMenuOpen;
         },
+        /**
+         * Cierra el menú móvil.
+         */
         closeMobileMenu() {
             this.mobileMenuOpen = false;
         },
+        /**
+         * Recarga la página principal.
+         */
         reload() {
             window.location.href = '/';
         }

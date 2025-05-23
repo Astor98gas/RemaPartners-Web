@@ -215,13 +215,27 @@ export default defineComponent({
         }
     },
     methods: {
+        /**
+         * Traduce una clave utilizando el store de internacionalización.
+         * @param {string} key - Clave de traducción.
+         * @returns {string} Traducción correspondiente.
+         */
         t(key: string): string {
             const store = useutf8Store();
             return store.t(key);
         },
+        /**
+         * Maneja el error de carga de la imagen del producto.
+         * Si la imagen falla, se reemplaza por el logo por defecto.
+         * @param {Event} event - Evento de error de imagen.
+         */
         onImageError(event: Event) {
             (event.target as HTMLImageElement).src = new URL('@/assets/logoCuadrado.jpeg', import.meta.url).href;
         },
+        /**
+         * Alterna el estado activo/inactivo del producto.
+         * Llama al servicio correspondiente y emite eventos de cambio de estado.
+         */
         toggleProductStatus() {
             const productoService = useProducto();
             productoService.toggleStatus(this.producto.id)
@@ -234,6 +248,11 @@ export default defineComponent({
                 });
             this.$emit('toggle-status', this.producto.id);
         },
+        /**
+         * Formatea una fecha en formato legible según el idioma del documento.
+         * @param {string} dateStr - Fecha en formato string.
+         * @returns {string} Fecha formateada o texto de no disponible.
+         */
         formatDate(dateStr: string): string {
             if (!dateStr) return this.t('common.notAvailable');
 

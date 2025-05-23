@@ -19,6 +19,20 @@
 <script lang="ts">
 import { useutf8Store } from '@/stores/counter'
 
+/**
+ * Selector de idioma con banderas.
+ * 
+ * Permite al usuario seleccionar entre varios idiomas (es, en, cat).
+ * Muestra la bandera correspondiente al idioma actual y un menú desplegable para cambiarlo.
+ * 
+ * @component
+ * @data {Object} utf8 - Store de traducciones y estado del idioma.
+ * @data {Boolean} isOpen - Indica si el menú desplegable está abierto.
+ * 
+ * @method getFlag(lang) - Devuelve la ruta de la bandera para el idioma dado.
+ * @method selectLanguage(lang) - Cambia el idioma actual y cierra el menú.
+ * @method closeDropdown(e) - Cierra el menú si se hace clic fuera del componente.
+ */
 export default {
     name: 'SelectorIdioma',
     data() {

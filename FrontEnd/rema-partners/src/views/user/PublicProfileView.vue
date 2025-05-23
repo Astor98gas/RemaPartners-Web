@@ -125,6 +125,16 @@
 </template>
 
 <script lang="ts">
+/**
+ * Vista de perfil público de usuario.
+ * Permite visualizar la información pública de un usuario, sus productos y valoraciones.
+ * Incluye manejo de errores, carga de datos y acciones de contacto.
+ * 
+ * Métodos principales:
+ * - loadUserProducts: Carga los productos del usuario si es vendedor.
+ * - startChat: Inicia un chat con el usuario (redirige a un producto si existe).
+ * - t: Traduce claves de idioma con parámetros.
+ */
 import { defineComponent } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useUsers } from '@/composables/useUsers';
@@ -166,6 +176,9 @@ export default defineComponent({
         };
     },
     computed: {
+        /**
+         * Indica si el usuario del perfil es vendedor o administrador.
+         */
         isVendedor(): boolean {
             return this.userProfile?.rol?.name === 'VENDEDOR' || this.userProfile?.rol?.name === 'ADMIN';
         }
@@ -208,6 +221,12 @@ export default defineComponent({
         }
     },
     methods: {
+        /**
+         * Traduce una clave de idioma con parámetros opcionales.
+         * @param key Clave de traducción
+         * @param params Parámetros para interpolar en la traducción
+         * @returns Traducción correspondiente
+         */
         t(key: string, params?: Record<string, any>): string {
             const translation = this.utf8.t(key);
             if (params && translation) {
@@ -219,14 +238,23 @@ export default defineComponent({
             return translation || key;
         },
 
+        /**
+         * Manejador de error para la imagen de perfil.
+         */
         onImageError(event: Event) {
             (event.target as HTMLImageElement).src = new URL('@/assets/logoCuadrado.jpeg', import.meta.url).href;
         },
 
+        /**
+         * Manejador de error para la imagen de producto.
+         */
         onProductImageError(event: Event) {
             (event.target as HTMLImageElement).src = new URL('@/assets/productDefault.png', import.meta.url).href;
         },
 
+        /**
+         * Formatea el precio en formato moneda.
+         */
         formatPrice(precioCentimos: number, moneda: string): string {
             const precio = precioCentimos / 100;
             return new Intl.NumberFormat('es-ES', {
@@ -235,6 +263,9 @@ export default defineComponent({
             }).format(precio);
         },
 
+        /**
+         * Carga los productos del usuario vendedor.
+         */
         async loadUserProducts(userId: string) {
             try {
                 // Get products using the composable
@@ -249,6 +280,10 @@ export default defineComponent({
             }
         },
 
+        /**
+         * Inicia un chat con el usuario del perfil.
+         * Si tiene productos, redirige al primero.
+         */
         async startChat() {
             if (!this.currentUser) {
                 // Redirect to login if not logged in
@@ -283,6 +318,7 @@ export default defineComponent({
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

@@ -240,9 +240,22 @@ import { useFactura } from '@/composables/useFactura';
 import { useutf8Store } from '@/stores/counter';
 import type { FacturaEntity } from '@/models/factura';
 
+/**
+ * Componente para mostrar y gestionar las facturas del usuario.
+ * Permite alternar entre facturas como comprador y como vendedor, ver detalles y calcular totales.
+ * 
+ * @component
+ * @example
+ * <FacturasPanel :userId="userId" />
+ */
 export default defineComponent({
     name: 'FacturasPanel',
     props: {
+        /**
+         * ID del usuario cuyas facturas se mostrarán.
+         * @type {string}
+         * @required
+         */
         userId: {
             type: String,
             required: true
@@ -283,6 +296,9 @@ export default defineComponent({
         }
     },
     methods: {
+        /**
+         * Carga las facturas del usuario según la pestaña seleccionada (comprador o vendedor).
+         */
         async loadInvoices() {
             if (!this.userId) {
                 console.error("No user ID provided to FacturasPanel");
@@ -315,6 +331,10 @@ export default defineComponent({
                 console.log(`Loaded ${this.facturas.length} invoices`);
             }
         },
+        /**
+         * Muestra los detalles de una factura seleccionada en un modal.
+         * @param {string|undefined} invoiceId - ID de la factura a mostrar.
+         */
         async viewInvoiceDetails(invoiceId: string | undefined) {
             if (!invoiceId) return;
 
@@ -340,21 +360,41 @@ export default defineComponent({
                 console.error("Error displaying invoice details:", err);
             }
         },
+        /**
+         * Calcula el importe del IVA para una factura.
+         * @param {FacturaEntity} factura - Factura a calcular.
+         * @returns {number} Importe del IVA.
+         */
         calculateIVA(factura: FacturaEntity) {
             // Usar un valor de IVA predeterminado si no viene en la respuesta de la API
             const ivaRate = factura.iva || 21; // 21% es el IVA común en España
             const subtotal = (factura.precioCentimos * factura.cantidad) / 100;
             return subtotal * (ivaRate / 100);
         },
+        /**
+         * Calcula el total (subtotal + IVA) de una factura.
+         * @param {FacturaEntity} factura - Factura a calcular.
+         * @returns {number} Total de la factura.
+         */
         calculateTotal(factura: FacturaEntity) {
             const subtotal = (factura.precioCentimos * factura.cantidad) / 100;
             const ivaRate = factura.iva || 21; // 21% es el IVA común en España
             const iva = subtotal * (ivaRate / 100);
             return subtotal + iva;
         },
+        /**
+         * Formatea un número como moneda con dos decimales.
+         * @param {number} amount - Cantidad a formatear.
+         * @returns {string} Cantidad formateada.
+         */
         formatCurrency(amount: number) {
             return amount.toFixed(2);
         },
+        /**
+         * Formatea una fecha a formato local según el idioma del usuario.
+         * @param {string} [dateStr] - Fecha en formato ISO.
+         * @returns {string} Fecha formateada.
+         */
         formatDate(dateStr?: string) {
             if (!dateStr) return 'N/A';
 
@@ -373,6 +413,12 @@ export default defineComponent({
                 return dateStr;
             }
         },
+        /**
+         * Traduce una clave usando el store de internacionalización.
+         * @param {string} key - Clave de traducción.
+         * @param {Record<string, any>} [params] - Parámetros para interpolación.
+         * @returns {string} Traducción.
+         */
         t(key: string, params?: Record<string, any>) {
             const store = useutf8Store();
             const translation = store.t(key);

@@ -35,24 +35,53 @@ import { defineComponent, ref, computed, watch } from 'vue';
 import type { Rating, RatingFormData, RatingReplyData } from '@/models/rating';
 import StarRating from './StarRating.vue';
 
+/**
+ * Componente de formulario para crear, editar o responder valoraciones.
+ * 
+ * Permite al usuario añadir una valoración, editar una existente o responder como vendedor.
+ * 
+ * @component
+ * @example
+ * <RatingForm :sellerId="sellerId" :existingRating="rating" :isEditing="true" @submit="onSubmit" @cancel="onCancel" />
+ */
 export default defineComponent({
     name: 'RatingForm',
     components: {
         StarRating
     },
     props: {
+        /**
+         * ID del vendedor al que se le realiza la valoración.
+         * @type {string}
+         * @required
+         */
         sellerId: {
             type: String,
             required: true
         },
+        /**
+         * Valoración existente para editar o responder.
+         * @type {Rating|null}
+         * @default null
+         */
         existingRating: {
             type: Object as () => Rating | null,
             default: null
         },
+        /**
+         * Indica si el formulario está en modo edición.
+         * @type {boolean}
+         * @default false
+         */
         isEditing: {
             type: Boolean,
             default: false
         },
+        /**
+         * Indica si el formulario es para responder a una valoración.
+         * @type {boolean}
+         * @default false
+         */
         isReplying: {
             type: Boolean,
             default: false
@@ -63,7 +92,9 @@ export default defineComponent({
         const maxCommentLength = 500;
         const submitting = ref(false);
 
-        // Si estamos editando o respondiendo, inicializar el formulario con los datos existentes
+        /**
+         * Datos del formulario reactivos.
+         */
         const formData = ref({
             sellerId: props.sellerId,
             rating: props.existingRating?.rating || 0,
@@ -84,6 +115,9 @@ export default defineComponent({
             formData.value.sellerId = newSellerId;
         });
 
+        /**
+         * Valida si el formulario es válido para enviar.
+         */
         const isValid = computed(() => {
             // Para respuestas, solo necesitamos un comentario
             if (props.isReplying) {
@@ -94,6 +128,9 @@ export default defineComponent({
             return formData.value.rating > 0 && formData.value.comment.trim().length > 0;
         });
 
+        /**
+         * Envía el formulario, emitiendo el evento correspondiente.
+         */
         const submit = async () => {
             if (!isValid.value) return;
 
@@ -120,6 +157,9 @@ export default defineComponent({
             }
         };
 
+        /**
+         * Cancela el formulario, emitiendo el evento correspondiente.
+         */
         const cancel = () => {
             emit('cancel');
         };

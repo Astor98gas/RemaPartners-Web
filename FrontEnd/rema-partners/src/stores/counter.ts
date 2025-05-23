@@ -1,12 +1,26 @@
+/**
+ * @file
+ * Store de Pinia para la gestión de traducciones y el idioma actual de la aplicación.
+ * Permite cambiar el idioma y obtener traducciones de claves específicas.
+ */
+
 import { defineStore } from 'pinia';
 import Cookies from 'js-cookie';
 
+/**
+ * Interfaz para la estructura de traducciones.
+ * Cada idioma contiene un objeto de pares clave-valor para las traducciones.
+ */
 interface Translations {
   [key: string]: {
     [key: string]: string;
   };
 }
 
+/**
+ * Store principal para la gestión de traducciones (i18n) y el idioma seleccionado.
+ * Proporciona acciones para cambiar el idioma y obtener traducciones.
+ */
 export const useutf8Store = defineStore('utf8', {
   state: () => {
     // Check if language is stored in cookies, otherwise default to Spanish
@@ -744,7 +758,7 @@ export const useutf8Store = defineStore('utf8', {
           'profile.not_logged_in': 'No Has Iniciado Sesión',
           'profile.login_required_message': 'Necesitas iniciar sesión para ver tu perfil',
           'profile.login': 'Iniciar Sesión',
-          'profile.signup': 'Registrarse',
+          'profile.signup': 'Registrar',
           'profile.ok': 'Aceptar',
           'profile.passwords_dont_match': 'Las contraseñas no coinciden',
           'profile.invalid_email': 'Por favor, introduce un correo electrónico válido',
@@ -1523,16 +1537,30 @@ export const useutf8Store = defineStore('utf8', {
     };
   },
   actions: {
+    /**
+     * Cambia el idioma actual y guarda la preferencia en cookies.
+     * @param {string} lang - Código del idioma a establecer.
+     */
     setLanguage(lang: string) {
       this.currentLanguage = lang;
       // Save the language preference in cookies for 30 days
       Cookies.set('language', lang, { expires: 30, path: '/' });
     },
+    /**
+     * Devuelve la traducción correspondiente a una clave según el idioma actual.
+     * Si no existe la traducción, retorna la clave.
+     * @param {string} key - Clave de traducción.
+     * @returns {string} Traducción o la clave si no existe.
+     */
     t(key: string): string {
       return this.translations[this.currentLanguage][key] || key;
     }
   },
   getters: {
+    /**
+     * Obtiene el idioma actual seleccionado.
+     * @returns {string} Idioma actual.
+     */
     getCurrentLanguage: (state) => {
       return state.currentLanguage;
     }

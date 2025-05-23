@@ -2,9 +2,9 @@ import axios from 'axios';
 
 export const dashboardService = {
     /**
-     * Obtiene las estadísticas generales del dashboard
-     * @param {number} year - Año a consultar
-     * @returns {Promise} Promesa con los datos del dashboard
+     * Obtiene las estadísticas generales del dashboard.
+     * @param {number} year - Año a consultar.
+     * @returns {Promise} Promesa con los datos del dashboard.
      */
     getStats: async (year: number) => {
         try {
@@ -23,9 +23,9 @@ export const dashboardService = {
     },
 
     /**
-     * Obtiene las estadísticas de visitas para un producto específico
-     * @param {string} productoId - ID del producto
-     * @returns {Promise} Promesa con los datos de visitas del producto
+     * Obtiene las estadísticas de visitas para un producto específico.
+     * @param {string} productoId - ID del producto.
+     * @returns {Promise} Promesa con los datos de visitas del producto.
      */
     getProductoVisitas: async (productoId: string) => {
         try {
@@ -40,10 +40,10 @@ export const dashboardService = {
     },
 
     /**
-     * Obtiene las estadísticas de visitas para un mes específico
-     * @param {number} año - Año a consultar
-     * @param {number} mes - Mes a consultar (1-12)
-     * @returns {Promise} Promesa con los datos de visitas del mes
+     * Obtiene las estadísticas de visitas para un mes específico.
+     * @param {number} año - Año a consultar.
+     * @param {number} mes - Mes a consultar (1-12).
+     * @returns {Promise} Promesa con los datos de visitas del mes.
      */
     getVisitasPorMes: async (año: number, mes: number) => {
         try {

@@ -143,7 +143,7 @@
                                 <!-- Descripción -->
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.description')
-                                        }}</label>
+                                    }}</label>
                                     <textarea v-model="formData.description" rows="4"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                                         :placeholder="utf8.t('profile.description_placeholder')">
@@ -153,7 +153,7 @@
                                 <!-- Redes sociales -->
                                 <div>
                                     <label class="block text-sm text-gray-500 mb-2">{{ utf8.t('profile.social_links')
-                                        }}</label>
+                                    }}</label>
 
                                     <div v-for="(link, index) in formData.socialLinks" :key="index"
                                         class="flex gap-2 mb-2">
@@ -190,14 +190,14 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.new_password')
-                                    }}</label>
+                                        }}</label>
                                     <input type="password" v-model="formData.password"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <p class="text-xs text-gray-500 mt-1">{{ utf8.t('profile.password_note') }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.confirm_password')
-                                    }}</label>
+                                        }}</label>
                                     <input type="password" v-model="formData.confirmPassword"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
@@ -283,7 +283,7 @@
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-amber-500"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                             </svg>
 
                                             <!-- Tooltip -->
@@ -498,6 +498,18 @@
 </template>
 
 <script lang="ts">
+/**
+ * Vista de perfil de usuario.
+ * Permite al usuario ver y editar su información personal, gestionar suscripciones,
+ * y acceder a diferentes funcionalidades según su rol en la plataforma.
+ * 
+ * Incluye funcionalidades para:
+ * - Editar información personal (nombre, email, contraseña, etc.)
+ * - Cargar y cambiar imagen de perfil
+ * - Gestionar enlaces a redes sociales
+ * - Ver y activar suscripciones premium
+ * - Acceder a funcionalidades específicas según el rol del usuario
+ */
 import ButtonBasic from '@/components/ui/ButtonBasic.vue';
 import { useUsers } from '@/composables/useUsers';
 import { useutf8Store } from '@/stores/counter';
@@ -566,21 +578,44 @@ export default defineComponent({
         };
     },
     computed: {
+        /**
+         * Indica si el usuario está autenticado.
+         */
         isLoggedIn() {
             return !!this.currentUser;
         },
+
+        /**
+         * Devuelve un mensaje de bienvenida personalizado para el usuario actual.
+         */
         welcomeMessage() {
             return this.currentUser ? `Hola, ${this.currentUser.username}` : '';
         },
+
+        /**
+         * Indica si el usuario tiene rol de administrador.
+         */
         isAdmin() {
             return this.currentUser?.rol?.name === 'ADMIN';
         },
+
+        /**
+         * Indica si el usuario tiene rol de vendedor.
+         */
         isVendedor() {
             return this.currentUser?.rol?.name === 'VENDEDOR';
         },
+
+        /**
+         * Indica si el usuario tiene rol de comprador.
+         */
         isComprador() {
             return this.currentUser?.rol?.name === 'COMPRADOR';
         },
+
+        /**
+         * Indica si el usuario tiene rol de trabajador.
+         */
         isTrabajador() {
             return this.currentUser?.rol?.name === 'TRABAJADOR';
         }
@@ -601,6 +636,9 @@ export default defineComponent({
         this.checkPaymentStatus();
     },
     methods: {
+        /**
+         * Verifica el estado de autenticación del usuario y carga sus datos.
+         */
         async checkLoginStatus() {
             try {
                 this.loading = true;
@@ -619,6 +657,9 @@ export default defineComponent({
                 this.loading = false;
             }
         },
+        /**
+         * Verifica si el usuario ha tenido suscripciones anteriormente.
+         */
         async checkSubscriptionHistory() {
             try {
                 if (!this.currentUser || !this.currentUser.id) return;
@@ -629,6 +670,9 @@ export default defineComponent({
                 console.error('Error checking subscription history:', error);
             }
         },
+        /**
+         * Reinicia los datos del formulario con la información actual del usuario.
+         */
         resetFormData() {
             if (this.currentUser) {
                 this.formData = {
@@ -644,16 +688,26 @@ export default defineComponent({
                 this.previewImage = this.currentUser.profileImage || null;
             }
         },
+        /**
+         * Alterna el modo de edición del perfil.
+         */
         toggleEditMode() {
             this.editMode = !this.editMode;
             if (this.editMode) {
                 this.resetFormData();
             }
         },
+        /**
+         * Cancela la edición del perfil y restaura los datos originales.
+         */
         cancelEdit() {
             this.editMode = false;
             this.resetFormData();
         },
+        /**
+         * Actualiza el perfil del usuario con los nuevos datos.
+         * Maneja la reautenticación si se cambia el nombre de usuario.
+         */
         async updateProfile() {
             const toast = useToast();
 
@@ -761,11 +815,19 @@ export default defineComponent({
                 this.updating = false;
             }
         },
+        /**
+         * Muestra un mensaje modal al usuario.
+         * @param title Título del mensaje
+         * @param message Contenido del mensaje
+         */
         showMessage(title: string, message: string) {
             this.modalTitle = title;
             this.modalMessage = message;
             this.showModal = true;
         },
+        /**
+         * Cierra la sesión del usuario actual.
+         */
         async logout() {
             try {
                 const userComposable = useUsers();
@@ -774,6 +836,9 @@ export default defineComponent({
                 console.error('Error al cerrar sesión:', error);
             }
         },
+        /**
+         * Verifica el estado del pago basado en parámetros de URL.
+         */
         checkPaymentStatus() {
             // Verificar si hay un parámetro de éxito o cancelación en la URL
             const urlParams = new URLSearchParams(window.location.search);
@@ -801,6 +866,10 @@ export default defineComponent({
                 }
             }
         },
+        /**
+         * Maneja el proceso cuando una suscripción ha sido exitosa.
+         * Actualiza el rol del usuario y muestra mensaje de confirmación.
+         */
         async handleSubscriptionSuccess() {
             this.showStripeModal = false;
 
@@ -878,6 +947,9 @@ export default defineComponent({
                 });
             }
         },
+        /**
+         * Maneja el proceso cuando una suscripción ha sido cancelada.
+         */
         handleSubscriptionCancel() {
             console.log('Handling subscription cancel'); // Añadir log para depuración
             this.showStripeModal = false;
@@ -889,6 +961,9 @@ export default defineComponent({
                 confirmButtonText: this.utf8.t('common.ok') || 'OK'
             });
         },
+        /**
+         * Crea una prueba gratuita para el usuario actual.
+         */
         async createFreeTrial() {
             try {
                 this.showSubscriptionOptions = false;
@@ -936,19 +1011,32 @@ export default defineComponent({
                 });
             }
         },
+        /**
+         * Inicia el proceso de suscripción premium mostrando el modal de pago.
+         */
         startPremiumSubscription() {
             console.log('Starting premium subscription'); // Añadir log para depuración
             this.showSubscriptionOptions = false;
             this.showStripeModal = true;
         },
+        /**
+         * Muestra las opciones de suscripción disponibles.
+         */
         toggleSubscriptionOption() {
             this.showSubscriptionOptions = true;
         },
+        /**
+         * Maneja errores de carga de imágenes mostrando una imagen por defecto.
+         */
         onImageError(event: Event) {
             // Fallback image for profile image loading errors
             (event.target as HTMLImageElement).src = new URL('@/assets/logoCuadrado.jpeg', import.meta.url).href;
         },
 
+        /**
+         * Procesa la carga de una nueva imagen de perfil.
+         * Convierte la imagen a base64 para almacenarla.
+         */
         handleImageUpload(event: Event) {
             const file = (event.target as HTMLInputElement).files?.[0];
             if (!file) return;
@@ -973,6 +1061,9 @@ export default defineComponent({
             reader.readAsDataURL(file);
         },
 
+        /**
+         * Añade un nuevo enlace de red social al perfil.
+         */
         addLink() {
             if (!this.formData.socialLinks) {
                 this.formData.socialLinks = [];
@@ -985,6 +1076,10 @@ export default defineComponent({
             });
         },
 
+        /**
+         * Elimina un enlace de red social del perfil.
+         * @param index Índice del enlace a eliminar
+         */
         removeLink(index: number) {
             if (this.formData.socialLinks && this.formData.socialLinks.length > index) {
                 this.formData.socialLinks.splice(index, 1);

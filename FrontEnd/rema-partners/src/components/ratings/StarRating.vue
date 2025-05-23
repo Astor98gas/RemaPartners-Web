@@ -24,21 +24,51 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 
+/**
+ * Componente Vue para mostrar y seleccionar una calificación de estrellas.
+ * 
+ * Permite mostrar una calificación de 1 a 5 estrellas, con opción de ser interactivo
+ * para que el usuario pueda seleccionar o modificar la puntuación.
+ * 
+ * @component
+ * @example
+ * <StarRating v-model="valoracion" :interactive="true" :showRatingText="true" />
+ */
 export default defineComponent({
     name: 'StarRating',
     props: {
+        /**
+         * Valor numérico de la calificación actual (de 0 a 5).
+         * @type {number}
+         * @default 0
+         */
         modelValue: {
             type: Number,
             default: 0
         },
+        /**
+         * Indica si el componente permite interacción del usuario (selección de estrellas).
+         * @type {boolean}
+         * @default false
+         */
         interactive: {
             type: Boolean,
             default: false
         },
+        /**
+         * Muestra el valor numérico de la calificación junto a las estrellas.
+         * @type {boolean}
+         * @default false
+         */
         showRatingText: {
             type: Boolean,
             default: false
         },
+        /**
+         * Deshabilita la interacción con las estrellas.
+         * @type {boolean}
+         * @default false
+         */
         disabled: {
             type: Boolean,
             default: false
@@ -47,6 +77,12 @@ export default defineComponent({
     setup(props, { emit }) {
         const hoverRating = ref(0);
 
+        /**
+         * Establece la calificación seleccionada por el usuario.
+         * Si el usuario pulsa la misma calificación que ya tenía, se deselecciona (valor 0).
+         * 
+         * @param {number} rating - Número de estrellas seleccionadas.
+         */
         const setRating = (rating: number) => {
             if (props.interactive && !props.disabled) {
                 // Si el rating actual es igual al que se está pulsando, 

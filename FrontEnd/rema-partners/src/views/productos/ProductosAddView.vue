@@ -174,6 +174,19 @@
 </template>
 
 <script lang="ts">
+/**
+ * Vista para añadir o editar productos.
+ * Implementa un formulario por pasos para la creación o edición de productos,
+ * incluyendo validaciones, carga de categorías y campos dinámicos.
+ * 
+ * Métodos principales:
+ * - nextStep: Avanza al siguiente paso del formulario.
+ * - previousStep: Retrocede al paso anterior.
+ * - validateCurrentStep: Valida los campos del paso actual.
+ * - saveProduct: Guarda o actualiza el producto.
+ * - loadProductData: Carga los datos de un producto existente para edición.
+ * - initCamposCategoria: Inicializa los campos dinámicos de la categoría seleccionada.
+ */
 import { defineComponent } from 'vue';
 import { EEstado } from '@/models/enums/EEstado';
 import { EMoneda } from '@/models/enums/EMoneda';
@@ -236,12 +249,17 @@ export default defineComponent({
         };
     },
     computed: {
+        /**
+         * Título de la página según si es edición o creación.
+         */
         pageTitle(): string {
             return this.isEdit
                 ? this.t('producto.edit.title')
                 : this.t('producto.add.title');
         },
-        // Propiedad computada para manejar el precio con decimales
+        /**
+         * Propiedad computada para manejar el precio con decimales.
+         */
         precioDecimal: {
             get(): string {
                 return (this.producto.precioCentimos / 100).toFixed(2);
@@ -266,10 +284,16 @@ export default defineComponent({
         }
     },
     methods: {
+        /**
+         * Traduce una clave de idioma usando el store global.
+         */
         t(key: string): string {
             const store = useutf8Store();
             return store.t(key);
         },
+        /**
+         * Avanza al siguiente paso del formulario si es válido.
+         */
         nextStep() {
             if (this.validateCurrentStep()) {
                 if (this.currentStep === 2) {
@@ -282,11 +306,17 @@ export default defineComponent({
                 }
             }
         },
+        /**
+         * Retrocede al paso anterior del formulario.
+         */
         previousStep() {
             if (this.currentStep > 1) {
                 this.currentStep--;
             }
         },
+        /**
+         * Valida los campos del paso actual del formulario.
+         */
         validateCurrentStep(): boolean {
             switch (this.currentStep) {
                 case 1:
@@ -359,6 +389,9 @@ export default defineComponent({
                     return false;
             }
         },
+        /**
+         * Carga los datos de un producto existente para edición.
+         */
         async loadProductData() {
             if (!this.isEdit || !this.productId) return;
 
@@ -444,6 +477,9 @@ export default defineComponent({
                 this.loading = false;
             }
         },
+        /**
+         * Guarda o actualiza el producto según el modo.
+         */
         async saveProduct() {
             try {
                 this.loading = true;
@@ -497,9 +533,15 @@ export default defineComponent({
                 this.loading = false;
             }
         },
+        /**
+         * Obtiene la categoría seleccionada.
+         */
         getCategoriaSeleccionada(): Categoria | undefined {
             return this.categorias.find(cat => cat.id === this.producto.idCategoria);
         },
+        /**
+         * Inicializa los campos dinámicos de la categoría seleccionada.
+         */
         initCamposCategoria() {
             const categoriaSeleccionada = this.getCategoriaSeleccionada();
             if (categoriaSeleccionada) {

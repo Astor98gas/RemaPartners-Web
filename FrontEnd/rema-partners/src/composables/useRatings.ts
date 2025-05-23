@@ -3,6 +3,10 @@ import { ratingService } from '@/services/rating.service'
 import type { Rating, RatingFormData, RatingReplyData } from '@/models/rating'
 import { useToast } from 'vue-toastification'
 
+/**
+ * Composable para gestionar valoraciones (ratings).
+ * Permite obtener, crear, actualizar, eliminar valoraciones y añadir respuestas.
+ */
 export function useRatings() {
     const ratings = ref<Rating[]>([])
     const userRating = ref<Rating | null>(null)
@@ -11,7 +15,12 @@ export function useRatings() {
     const loading = ref<boolean>(false)
     const toast = useToast()
 
-    // Cargar valoraciones de un vendedor
+    /**
+     * Carga valoraciones de un vendedor.
+     * @param {string} sellerId - ID del vendedor.
+     * @returns {Promise<any[]>} Lista de valoraciones.
+     * @throws Error si ocurre un problema al cargar.
+     */
     const getSellerRatings = async (sellerId: string) => {
         try {
             loading.value = true
@@ -28,7 +37,12 @@ export function useRatings() {
         }
     }
 
-    // Crear una nueva valoración
+    /**
+     * Crea una nueva valoración.
+     * @param {RatingFormData} ratingData - Datos de la valoración.
+     * @returns {Promise<any>} Valoración creada.
+     * @throws Error si ocurre un problema al crear.
+     */
     const createRating = async (ratingData: RatingFormData) => {
         try {
             loading.value = true
@@ -47,7 +61,13 @@ export function useRatings() {
         }
     }
 
-    // Actualizar una valoración existente
+    /**
+     * Actualiza una valoración existente.
+     * @param {string} ratingId - ID de la valoración.
+     * @param {RatingFormData} ratingData - Datos a actualizar.
+     * @returns {Promise<any>} Valoración actualizada.
+     * @throws Error si ocurre un problema al actualizar.
+     */
     const updateRating = async (ratingId: string, ratingData: RatingFormData) => {
         try {
             loading.value = true
@@ -66,7 +86,13 @@ export function useRatings() {
         }
     }
 
-    // Obtener la valoración de un usuario para un vendedor
+    /**
+     * Obtiene la valoración de un usuario para un vendedor.
+     * @param {string} userId - ID del usuario.
+     * @param {string} sellerId - ID del vendedor.
+     * @returns {Promise<any|null>} Valoración encontrada o null.
+     * @throws Error si ocurre un problema al buscar.
+     */
     const getUserRatingForSeller = async (userId: string, sellerId: string) => {
         try {
             loading.value = true
@@ -89,7 +115,12 @@ export function useRatings() {
         }
     }
 
-    // Añadir o actualizar respuesta a una valoración
+    /**
+     * Añade o actualiza respuesta a una valoración.
+     * @param {RatingReplyData} replyData - Datos de la respuesta.
+     * @returns {Promise<any>} Respuesta añadida.
+     * @throws Error si ocurre un problema al añadir.
+     */
     const addReplyToRating = async (replyData: RatingReplyData) => {
         try {
             loading.value = true
@@ -112,7 +143,13 @@ export function useRatings() {
         }
     }
 
-    // Eliminar una valoración
+    /**
+     * Elimina una valoración.
+     * @param {string} ratingId - ID de la valoración.
+     * @param {string} sellerId - ID del vendedor.
+     * @returns {Promise<void>}
+     * @throws Error si ocurre un problema al eliminar.
+     */
     const deleteRating = async (ratingId: string, sellerId: string) => {
         try {
             loading.value = true

@@ -28,6 +28,19 @@
 import DeleteButton from '../ui/DeleteButton.vue';
 import EditButton from '../ui/EditButton.vue';
 
+/**
+ * Componente para mostrar la información de una categoría.
+ * 
+ * Props:
+ * - categoriaId: Identificador único de la categoría.
+ * - categoriaTitulo: Título de la categoría.
+ * - categoriaDescripcion: Descripción de la categoría.
+ * - campos: Lista de campos asociados a la categoría.
+ * 
+ * Emits:
+ * - delete: Se emite cuando se solicita eliminar la categoría.
+ * - edit: Se emite cuando se solicita editar la categoría.
+ */
 export default {
     name: 'CategoriaComponent',
     components: {

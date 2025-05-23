@@ -111,6 +111,17 @@
 </template>
 
 <script>
+/**
+ * Vista principal del dashboard de vendedor.
+ * Muestra estadísticas sobre los productos del vendedor, incluyendo:
+ * - Total de productos publicados
+ * - Total de visitas recibidas
+ * - Promedio mensual de visitas
+ * - Gráfico de visitas mensuales
+ * - Productos más visitados
+ * 
+ * Permite filtrar por año y actualizar las estadísticas en tiempo real.
+ */
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import dashboardService from '@/services/dashboard.service';
@@ -150,7 +161,9 @@ export default {
             t('months.october'), t('months.november'), t('months.december')
         ];
 
-        // Función para cargar los datos del dashboard
+        /**
+         * Carga los datos del dashboard filtrados por el año seleccionado.
+         */
         const loadDashboardData = async () => {
             loading.value = true;
             error.value = null;
@@ -170,7 +183,10 @@ export default {
             }
         };
 
-        // Preparar datos para el gráfico
+        /**
+         * Prepara los datos para el gráfico de visitas mensuales.
+         * @returns Configuración formateada para el componente de gráfico
+         */
         const prepareChartData = () => {
             // Verificar si hay datos para no causar errores
             if (!dashboardData.value || !dashboardData.value.visitasPorMes) {
@@ -223,6 +239,10 @@ export default {
             };
         };
 
+        /**
+         * Calcula el promedio mensual de visitas.
+         * @returns Promedio mensual formateado
+         */
         const calculateMonthlyAverage = () => {
             if (!dashboardData.value.visitasPorMes) return '0';
 
@@ -235,14 +255,24 @@ export default {
             return (totalVisitas / mesesConVisitas).toFixed(1);
         };
 
+        /**
+         * Navega a la vista detallada de estadísticas de un producto específico.
+         * @param productId ID del producto a visualizar
+         */
         const goToProductDetail = (productId) => {
             router.push({ name: 'producto-estadisticas', params: { id: productId } });
         };
 
+        /**
+         * Actualiza los datos del dashboard.
+         */
         const refreshDashboard = () => {
             loadDashboardData();
         };
 
+        /**
+         * Navega al perfil del usuario.
+         */
         const goToProfile = () => {
             router.push({ name: 'profile' });
         };

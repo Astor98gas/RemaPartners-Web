@@ -10,6 +10,16 @@
 import UserItem from './UserItem.vue'
 import type { User } from '@/models/user'
 
+/**
+ * Lista de usuarios.
+ * 
+ * Props:
+ * - users: Array de objetos User a mostrar.
+ * 
+ * Emits:
+ * - update: Se emite cuando se actualiza un usuario.
+ * - delete: Se emite cuando se elimina un usuario.
+ */
 defineProps<{
     users: User[]
 }>()

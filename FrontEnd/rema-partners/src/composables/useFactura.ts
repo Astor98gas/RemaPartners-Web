@@ -2,6 +2,10 @@ import { ref } from "vue";
 import { facturaService } from "@/services/factura.service";
 import type { FacturaEntity } from "@/models/factura";
 
+/**
+ * Composable para gestionar facturas.
+ * Permite crear, obtener y listar facturas por diferentes criterios.
+ */
 export function useFactura() {
     const currentFactura = ref<FacturaEntity | null>(null);
     const facturas = ref<FacturaEntity[]>([]);
@@ -10,11 +14,10 @@ export function useFactura() {
     const loading = ref<boolean>(false);
 
     /**
-     * Creates a new invoice
-     * 
-     * @param factura - The invoice data to create
-     * @returns The created invoice object
-     * @throws Error if the invoice cannot be created
+     * Crea una nueva factura.
+     * @param {FacturaEntity} factura - Datos de la factura.
+     * @returns {Promise<any>} Factura creada.
+     * @throws Error si ocurre un problema al crear.
      */
     const createFactura = async (factura: FacturaEntity) => {
         try {
@@ -35,15 +38,14 @@ export function useFactura() {
     };
 
     /**
-     * Creates an invoice from a product sale
-     * 
-     * @param idProducto - The ID of the sold product
-     * @param idComprador - The ID of the buyer
-     * @param idVendedor - The ID of the seller
-     * @param cantidad - The quantity of items sold
-     * @param idChat - The ID of the chat where the sale took place
-     * @returns The created invoice object
-     * @throws Error if the invoice cannot be created
+     * Crea una factura a partir de una venta.
+     * @param {string} idProducto - ID del producto vendido.
+     * @param {string} idComprador - ID del comprador.
+     * @param {string} idVendedor - ID del vendedor.
+     * @param {number} cantidad - Cantidad vendida.
+     * @param {string} idChat - ID del chat asociado.
+     * @returns {Promise<any>} Factura creada.
+     * @throws Error si ocurre un problema al crear.
      */
     const createFromSale = async (idProducto: string, idComprador: string, idVendedor: string, cantidad: number, idChat: string) => {
         try {
@@ -64,11 +66,10 @@ export function useFactura() {
     };
 
     /**
-     * Gets an invoice by its ID
-     * 
-     * @param id - The ID of the invoice to retrieve
-     * @returns The invoice object
-     * @throws Error if the invoice cannot be fetched
+     * Obtiene una factura por su ID.
+     * @param {string} id - ID de la factura.
+     * @returns {Promise<any>} Factura encontrada.
+     * @throws Error si ocurre un problema al buscar.
      */
     const getFacturaById = async (id: string) => {
         try {
@@ -88,11 +89,10 @@ export function useFactura() {
     };
 
     /**
-     * Gets all invoices where the user is the buyer
-     * 
-     * @param idComprador - The ID of the buyer
-     * @returns Array of invoices
-     * @throws Error if the invoices cannot be fetched
+     * Obtiene todas las facturas donde el usuario es comprador.
+     * @param {string} idComprador - ID del comprador.
+     * @returns {Promise<any[]>} Lista de facturas.
+     * @throws Error si ocurre un problema al buscar.
      */
     const getFacturasByBuyerId = async (idComprador: string) => {
         try {
@@ -114,11 +114,10 @@ export function useFactura() {
     };
 
     /**
-     * Gets all invoices where the user is the seller
-     * 
-     * @param idVendedor - The ID of the seller
-     * @returns Array of invoices
-     * @throws Error if the invoices cannot be fetched
+     * Obtiene todas las facturas donde el usuario es vendedor.
+     * @param {string} idVendedor - ID del vendedor.
+     * @returns {Promise<any[]>} Lista de facturas.
+     * @throws Error si ocurre un problema al buscar.
      */
     const getFacturasBySellerId = async (idVendedor: string) => {
         try {
@@ -140,11 +139,10 @@ export function useFactura() {
     };
 
     /**
-     * Gets all invoices for a specific product
-     * 
-     * @param idProducto - The ID of the product
-     * @returns Array of invoices
-     * @throws Error if the invoices cannot be fetched
+     * Obtiene todas las facturas asociadas a un producto.
+     * @param {string} idProducto - ID del producto.
+     * @returns {Promise<any[]>} Lista de facturas.
+     * @throws Error si ocurre un problema al buscar.
      */
     const getFacturasByProductId = async (idProducto: string) => {
         try {
@@ -164,11 +162,10 @@ export function useFactura() {
     };
 
     /**
-     * Gets all invoices associated with a chat
-     * 
-     * @param idChat - The ID of the chat
-     * @returns Array of invoices
-     * @throws Error if the invoices cannot be fetched
+     * Obtiene todas las facturas asociadas a un chat.
+     * @param {string} idChat - ID del chat.
+     * @returns {Promise<any[]>} Lista de facturas.
+     * @throws Error si ocurre un problema al buscar.
      */
     const getFacturasByChatId = async (idChat: string) => {
         try {

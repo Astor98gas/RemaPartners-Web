@@ -12,33 +12,67 @@ import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue';
 import Chart from 'chart.js/auto';
 import { useutf8Store } from '@/stores/counter';
 
+/**
+ * Componente VisitasChart
+ * Muestra un gráfico (barra, línea o pastel) de visitas mensuales.
+ *
+ * @component
+ * @prop {String} [titulo='Visitas Mensuales'] - Título del gráfico.
+ * @prop {Object} datos - Datos del gráfico (labels y datasets).
+ * @prop {String} [tipoGrafico='bar'] - Tipo de gráfico ('bar', 'line', 'pie').
+ * @prop {Number} [altura=300] - Altura del gráfico en píxeles.
+ * @prop {Array} [etiquetas=null] - Etiquetas personalizadas para el eje X.
+ */
 export default {
     name: 'VisitasChart',
     props: {
+        /**
+         * Título del gráfico.
+         */
         titulo: {
             type: String,
             default: 'Visitas Mensuales'
         },
+        /**
+         * Datos del gráfico (labels y datasets).
+         */
         datos: {
             type: Object,
             required: true
         },
+        /**
+         * Tipo de gráfico a mostrar.
+         */
         tipoGrafico: {
             type: String,
             default: 'bar',
             validator: (value) => ['bar', 'line', 'pie'].includes(value)
         },
+        /**
+         * Altura del gráfico en píxeles.
+         */
         altura: {
             type: Number,
             default: 300
         },
+        /**
+         * Etiquetas personalizadas para el eje X.
+         */
         etiquetas: {
             type: Array,
             default: null
         }
     },
     setup(props) {
+        /**
+         * Referencia al canvas del gráfico.
+         * @type {Ref<HTMLCanvasElement>}
+         */
         const chartCanvas = ref(null);
+        /**
+         * Instancia del gráfico Chart.js.
+         * @type {Ref<Chart|null>}
+         */
         const chartInstance = ref(null);
         const store = useutf8Store();
         const t = (key) => store.t(key);
@@ -54,6 +88,9 @@ export default {
         // Altura fija (corregida para que funcione con Tailwind)
         const containerClass = computed(() => `h-[${props.altura}px] relative`);
 
+        /**
+         * Crea o actualiza el gráfico con los datos actuales.
+         */
         const createChart = () => {
             console.log("Datos recibidos en VisitasChart:", props.datos);
 

@@ -54,17 +54,40 @@
 </template>
 
 <script>
+/**
+ * Componente VentasEstadisticasCard
+ * Tarjeta visual para mostrar estadísticas de ventas, compras o importes con icono, valor y cambio porcentual.
+ *
+ * @component
+ * @prop {String} titulo - Título de la estadística.
+ * @prop {String|Number} valor - Valor principal a mostrar.
+ * @prop {String} [tipo='otros'] - Tipo de estadística ('ventas', 'compras', 'importe', 'otros').
+ * @prop {Number|null} [cambio=null] - Valor numérico del cambio respecto a un periodo anterior.
+ * @prop {String} [cambioTexto=''] - Texto descriptivo del cambio.
+ * @prop {Boolean} [formatoMoneda=false] - Si se debe mostrar el valor como moneda.
+ * @prop {String} [moneda='EUR'] - Código de la moneda a mostrar.
+ */
 export default {
     name: 'VentasEstadisticasCard',
     props: {
+        /**
+         * Título de la estadística.
+         */
         titulo: {
             type: String,
             required: true
         },
+        /**
+         * Valor principal a mostrar.
+         */
         valor: {
             type: [String, Number],
             required: true
         },
+        /**
+         * Tipo de estadística para icono y color.
+         * Puede ser 'ventas', 'compras', 'importe' u 'otros'.
+         */
         tipo: {
             type: String,
             default: 'otros',
@@ -72,18 +95,30 @@ export default {
                 return ['ventas', 'compras', 'importe', 'otros'].includes(value);
             }
         },
+        /**
+         * Valor numérico del cambio respecto a un periodo anterior.
+         */
         cambio: {
             type: Number,
             default: null
         },
+        /**
+         * Texto descriptivo del cambio.
+         */
         cambioTexto: {
             type: String,
             default: ''
         },
+        /**
+         * Indica si el valor debe mostrarse como moneda.
+         */
         formatoMoneda: {
             type: Boolean,
             default: false
         },
+        /**
+         * Código de la moneda a mostrar.
+         */
         moneda: {
             type: String,
             default: 'EUR',
@@ -91,6 +126,10 @@ export default {
         }
     },
     computed: {
+        /**
+         * Color de fondo del icono según el tipo.
+         * @returns {String}
+         */
         iconBgColor() {
             const colores = {
                 ventas: 'bg-green-100',
@@ -100,6 +139,10 @@ export default {
             };
             return colores[this.tipo] || colores.otros;
         },
+        /**
+         * Color del icono según el tipo.
+         * @returns {String}
+         */
         iconColor() {
             const colores = {
                 ventas: 'text-green-600',
@@ -109,11 +152,21 @@ export default {
             };
             return colores[this.tipo] || colores.otros;
         },
+        /**
+         * Indica si el cambio es positivo o negativo.
+         * @returns {Boolean}
+         */
         cambioPositivo() {
             return this.cambio !== null && this.cambio >= 0;
         }
     },
     methods: {
+        /**
+         * Formatea un valor numérico como moneda.
+         * @param {Number|String} valor - Valor a formatear.
+         * @param {String} moneda - Código de la moneda.
+         * @returns {String} Valor formateado como moneda.
+         */
         formatearMoneda(valor, moneda) {
             const amount = typeof valor === 'string' ? parseFloat(valor) : valor;
             return new Intl.NumberFormat('es-ES', {

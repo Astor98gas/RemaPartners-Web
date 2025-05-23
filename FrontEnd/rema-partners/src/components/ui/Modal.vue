@@ -38,7 +38,22 @@ import { defineComponent } from 'vue'
 import ButtonBasic from '@/components/ui/ButtonBasic.vue'
 import { useutf8Store } from '@/stores/counter'
 
-
+/**
+ * Componente Modal reutilizable.
+ * 
+ * Permite mostrar contenido en una ventana modal superpuesta.
+ * Incluye título, botón de cierre y slots para contenido y acciones.
+ * 
+ * @component
+ * @prop {Boolean} modelValue - Controla la visibilidad del modal.
+ * @prop {String} title - Título del modal.
+ * @prop {Boolean} hideCloseButton - Si se oculta el botón de cerrar.
+ * 
+ * @event update:modelValue - Se emite al cerrar el modal.
+ * @event close - Se emite cuando se cierra el modal.
+ * 
+ * @method closeModal - Cierra el modal y emite los eventos correspondientes.
+ */
 export default defineComponent({
     name: 'Modal',
     components: {

@@ -107,6 +107,16 @@
 </template>
 
 <script lang="ts">
+/**
+ * Componente de barra lateral (sidebar) para la navegación principal de la aplicación.
+ * Permite mostrar enlaces dinámicos y estáticos según el rol y autenticación del usuario.
+ * Incluye funcionalidad para colapsar/expandir la barra lateral y persistir el estado.
+ * 
+ * Métodos principales:
+ * - toggleSidebar: Alterna el estado de colapso de la barra lateral.
+ * - checkLoginStatus: Verifica el estado de autenticación y rol del usuario.
+ * - loadLinks: Carga los enlaces de navegación según el idioma y permisos.
+ */
 import { defineComponent, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useutf8Store } from '@/stores/counter';
@@ -130,6 +140,9 @@ export default defineComponent({
         };
     },
     computed: {
+        /**
+         * Filtra los enlaces dinámicos según el estado de autenticación y rol del usuario.
+         */
         filteredLinks() {
             return this.links.filter(link => {
                 // First check authentication requirements
@@ -158,6 +171,9 @@ export default defineComponent({
             });
         },
 
+        /**
+         * Filtra los enlaces estáticos según el estado de autenticación y rol del usuario.
+         */
         staticLinks() {
             // Filter static links by authentication and role requirements
             return this.links.filter(link => {
@@ -176,6 +192,11 @@ export default defineComponent({
             });
         },
 
+        /**
+         * Traduce una clave de idioma usando el store global.
+         * @param key Clave de traducción
+         * @returns Traducción correspondiente
+         */
         t(key: string): string {
             const store = useutf8Store();
             return store.t(key);
@@ -226,13 +247,19 @@ export default defineComponent({
         );
     },
     methods: {
-        // Método para alternar el estado de la barra lateral
+        /**
+         * Alterna el estado de colapso de la barra lateral y lo guarda en localStorage.
+         */
         toggleSidebar() {
             this.isCollapsed = !this.isCollapsed;
             // Guardar estado en localStorage para persistencia
             localStorage.setItem('sidebarCollapsed', this.isCollapsed.toString());
         },
 
+        /**
+         * Verifica el estado de autenticación y rol del usuario.
+         * Actualiza los enlaces de navegación en consecuencia.
+         */
         async checkLoginStatus() {
             try {
                 const usersComposable = useUsers();
@@ -249,6 +276,9 @@ export default defineComponent({
             }
         },
 
+        /**
+         * Carga los enlaces de navegación según el idioma y permisos del usuario.
+         */
         loadLinks() {
             const utf8 = useutf8Store();
             this.links = [

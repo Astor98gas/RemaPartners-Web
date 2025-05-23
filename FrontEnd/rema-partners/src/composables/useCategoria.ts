@@ -3,6 +3,11 @@ import { categoriaService } from "@/services/categoria.service";
 import type { Categoria, CategoriaModify } from "@/models/categoria";
 import Cookies from "js-cookie";
 
+/**
+ * Composable para gestionar las operaciones relacionadas con categorías.
+ * Proporciona métodos para obtener, crear, actualizar y eliminar categorías.
+ * También maneja estados de carga, éxito y error.
+ */
 export function useCategoria() {
     const categorias = ref<Categoria[]>([]);
     const error = ref<string | null>(null);
@@ -10,6 +15,10 @@ export function useCategoria() {
     const loading = ref<boolean>(false);
     const currentCategoria = ref<Categoria | null>(null);
 
+    /**
+     * Obtiene todas las categorías.
+     * @returns {Promise<void>}
+     */
     const getCategorias = async () => {
         try {
             loading.value = true;
@@ -21,6 +30,12 @@ export function useCategoria() {
             loading.value = false;
         }
     };
+    /**
+     * Crea una nueva categoría.
+     * @param {CategoriaModify} categoria - Datos de la categoría a crear.
+     * @returns {Promise<any>} - Categoría creada.
+     * @throws Error si ocurre un problema al crear.
+     */
     const createCategoria = async (categoria: CategoriaModify) => {
         try {
             loading.value = true;
@@ -39,6 +54,12 @@ export function useCategoria() {
             loading.value = false;
         }
     }
+    /**
+     * Obtiene una categoría por su ID.
+     * @param {string} id - ID de la categoría.
+     * @returns {Promise<any>} - Categoría encontrada.
+     * @throws Error si ocurre un problema al buscar.
+     */
     const getCategoriaById = async (id: string) => {
         try {
             loading.value = true;
@@ -54,6 +75,13 @@ export function useCategoria() {
             loading.value = false;
         }
     }
+    /**
+     * Actualiza una categoría existente.
+     * @param {string} id - ID de la categoría.
+     * @param {CategoriaModify} categoria - Datos a actualizar.
+     * @returns {Promise<any>} - Categoría actualizada.
+     * @throws Error si ocurre un problema al actualizar.
+     */
     const updateCategoria = async (id: string, categoria: CategoriaModify) => {
         try {
             loading.value = true;
@@ -72,6 +100,12 @@ export function useCategoria() {
             loading.value = false;
         }
     }
+    /**
+     * Elimina una categoría por su ID.
+     * @param {string} id - ID de la categoría.
+     * @returns {Promise<any>} - Respuesta de eliminación.
+     * @throws Error si ocurre un problema al eliminar.
+     */
     const deleteCategoria = async (id: string) => {
         try {
             loading.value = true;
