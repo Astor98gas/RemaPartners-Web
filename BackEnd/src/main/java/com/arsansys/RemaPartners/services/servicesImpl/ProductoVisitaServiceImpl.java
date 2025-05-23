@@ -9,10 +9,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.arsansys.RemaPartners.models.entities.ProductoEntity;
 import com.arsansys.RemaPartners.models.entities.ProductoVisitaEntity;
 import com.arsansys.RemaPartners.repositories.ProductoVisitaRepository;
-import com.arsansys.RemaPartners.services.ProductoService;
 import com.arsansys.RemaPartners.services.ProductoVisitaService;
 
 @Service
@@ -20,9 +18,6 @@ public class ProductoVisitaServiceImpl implements ProductoVisitaService {
 
     @Autowired
     private ProductoVisitaRepository productoVisitaRepository;
-
-    @Autowired
-    private ProductoService productoService;
 
     @Override
     public ProductoVisitaEntity registrarVisita(String productoId, String vendedorId) {

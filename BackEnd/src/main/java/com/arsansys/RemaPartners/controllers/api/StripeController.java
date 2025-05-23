@@ -12,8 +12,6 @@ import com.arsansys.RemaPartners.models.entities.UserEntity;
 import com.arsansys.RemaPartners.models.enums.ERol;
 import com.arsansys.RemaPartners.services.UserService;
 import com.arsansys.RemaPartners.services.stripe.SuscripcionService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.stripe.model.Customer;
 import com.stripe.model.CustomerSearchResult;
@@ -22,7 +20,6 @@ import com.stripe.model.PromotionCodeCollection;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -328,50 +325,50 @@ public class StripeController {
         try {
             String userId = (String) requestData.get("userId");
             Boolean hasPaid = (Boolean) requestData.get("hasPaid");
-            
+
             if (userId == null || hasPaid == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("success", false);
                 error.put("message", "User ID and payment status are required");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
-            
+
             if (hasPaid) {
                 // Obtener el usuario
                 UserEntity user = userService.getUserById(userId);
-                
+
                 if (user == null) {
                     Map<String, Object> error = new HashMap<>();
                     error.put("success", false);
                     error.put("message", "User not found");
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
                 }
-                
+
                 // Crear nueva suscripción
                 Suscripcion suscripcion = suscripcionService.createSuscripcion(userId);
-                
+
                 // Actualizar rol del usuario a VENDEDOR
                 RolEntity rolVendedor = new RolEntity();
                 rolVendedor.setName(ERol.VENDEDOR);
                 user.setRol(rolVendedor);
                 userService.updateUser(user);
-                
+
                 // Preparar respuesta
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", true);
                 response.put("message", "Premium subscription activated successfully");
                 response.put("subscription", suscripcion);
-                
+
                 return ResponseEntity.ok(response);
             }
-            
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "No action taken");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
-            
+
             Map<String, Object> error = new HashMap<>();
             error.put("success", false);
             error.put("message", e.getMessage());

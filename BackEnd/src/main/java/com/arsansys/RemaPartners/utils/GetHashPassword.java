@@ -1,6 +1,6 @@
 package com.arsansys.RemaPartners.utils;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
+// import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class GetHashPassword {
 

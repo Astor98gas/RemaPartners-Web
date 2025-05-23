@@ -254,7 +254,7 @@ export default {
                     const mesIndex = parseInt(mes) - 1;
                     if (mesIndex >= 0 && mesIndex < 12) {
                         cantidadData[mesIndex] = ventasPorMes[mes].cantidad || 0;
-                        importeData[mesIndex] = ventasPorMes[mes].importe || 0;
+                        importeData[mesIndex] = (ventasPorMes[mes].importe || 0) / 100;
                     }
                 });
             } else if (Array.isArray(ventasPorMes)) {
@@ -323,7 +323,7 @@ export default {
                     const mesIndex = parseInt(mes) - 1;
                     if (mesIndex >= 0 && mesIndex < 12) {
                         cantidadData[mesIndex] = comprasPorMes[mes].cantidad || 0;
-                        importeData[mesIndex] = comprasPorMes[mes].importe || 0;
+                        importeData[mesIndex] = (comprasPorMes[mes].importe || 0) / 100;
                     }
                 });
             } else if (Array.isArray(comprasPorMes)) {

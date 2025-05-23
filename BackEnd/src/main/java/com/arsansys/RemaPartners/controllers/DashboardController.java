@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.arsansys.RemaPartners.models.entities.ProductoEntity;
 import com.arsansys.RemaPartners.models.entities.ProductoVisitaEntity;
 import com.arsansys.RemaPartners.models.entities.UserEntity;
-import com.arsansys.RemaPartners.security.jwt.JwtUtils;
 import com.arsansys.RemaPartners.services.ProductoService;
 import com.arsansys.RemaPartners.services.ProductoVisitaService;
 import com.arsansys.RemaPartners.services.UserService;
@@ -40,9 +39,6 @@ public class DashboardController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private JwtUtils jwtUtils;
 
     /**
      * Endpoint para obtener las estadísticas generales del dashboard

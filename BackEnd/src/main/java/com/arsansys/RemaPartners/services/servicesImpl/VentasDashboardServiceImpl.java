@@ -1,6 +1,5 @@
 package com.arsansys.RemaPartners.services.servicesImpl;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,6 @@ import com.arsansys.RemaPartners.models.entities.ProductoEntity;
 import com.arsansys.RemaPartners.repositories.FacturaRepository;
 import com.arsansys.RemaPartners.services.FacturaService;
 import com.arsansys.RemaPartners.services.ProductoService;
-import com.arsansys.RemaPartners.services.UserService;
 import com.arsansys.RemaPartners.services.VentasDashboardService;
 
 @Service
@@ -26,9 +24,6 @@ public class VentasDashboardServiceImpl implements VentasDashboardService {
 
     @Autowired
     private ProductoService productoService;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private FacturaRepository facturaRepository;
