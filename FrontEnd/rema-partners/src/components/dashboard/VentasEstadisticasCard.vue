@@ -26,7 +26,7 @@
                     </dt>
                     <dd class="flex items-baseline">
                         <div class="text-2xl font-semibold text-gray-900">
-                            <template v-if="formatoMoneda">{{ formatearMoneda(valor) }}</template>
+                            <template v-if="formatoMoneda">{{ formatearMoneda(valor, moneda) }}</template>
                             <template v-else>{{ valor }}</template>
                         </div>
                         <div v-if="cambio !== null"
@@ -114,11 +114,11 @@ export default {
         }
     },
     methods: {
-        formatearMoneda(valor) {
+        formatearMoneda(valor, moneda) {
             const amount = typeof valor === 'string' ? parseFloat(valor) : valor;
             return new Intl.NumberFormat('es-ES', {
                 style: 'currency',
-                currency: this.moneda,
+                currency: moneda,
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2
             }).format(amount);

@@ -52,8 +52,8 @@
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                             <!-- Imagen -->
                             <div class="lg:col-span-3 flex justify-center lg:justify-start">
-                                <img v-if="productoInfo?.imagenes?.length > 0" :src="productoInfo.imagenes[0]"
-                                    :alt="productoInfo.titulo"
+                                <img v-if="productoInfo?.imagenes?.length > 0"
+                                    :src="t('link.servidor.low') + productoInfo.imagenes[0]" :alt="productoInfo.titulo"
                                     class="w-40 h-40 object-cover rounded-lg border border-gray-200"
                                     @error="onImageError">
                                 <div v-else
@@ -94,7 +94,7 @@
                                     :valor="estadisticas?.totalVentas || 0" tipo="ventas" class="w-full" />
                                 <VentasEstadisticasCard :titulo="t('sales.stats.totalAmount')"
                                     :valor="(estadisticas?.importeTotal || 0) / 100" tipo="importe" formatoMoneda="true"
-                                    class="w-full" />
+                                    :moneda="productoInfo?.moneda" class="w-full" />
                             </div>
                         </div>
                     </div>
