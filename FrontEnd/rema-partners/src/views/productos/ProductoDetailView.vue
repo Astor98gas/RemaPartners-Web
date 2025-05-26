@@ -239,7 +239,7 @@
                             class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow col-span-1 md:col-span-2 lg:col-span-3">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.direccion') }}</p>
                             <p class="text-gray-900 font-semibold mb-2">{{ product.direccion || t('common.notAvailable')
-                                }}</p>
+                            }}</p>
 
                             <div v-if="product.direccion"
                                 class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden shadow-sm mt-2 hover:shadow-md transition-shadow"
@@ -356,7 +356,8 @@
             :original-price="product.precioCentimos" :currency="product.moneda" @close="showOfferModal = false"
             @offer-submitted="handleOfferSubmitted" />
 
-        <vue-easy-lightbox :visible="lightboxVisible" :imgs="product?.imagenes || []" :index="currentImageIndex"
+        <vue-easy-lightbox :visible="lightboxVisible"
+            :imgs="(product?.imagenes || []).map(img => t('link.servidor') + img)" :index="currentImageIndex"
             @hide="lightboxVisible = false" :scroll-disabled="true" />
     </div>
 </template>
