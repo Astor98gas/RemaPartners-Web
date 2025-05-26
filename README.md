@@ -134,3 +134,8 @@ Disponible como página web y aplicación móvil, ofrece un espacio seguro y esp
 - **Android:**
 
 ![Captura de pantalla_20250526_114729](https://github.com/user-attachments/assets/e18ba111-10f5-4483-bfe0-4992840ccd55)
+
+## Video
+
+https://github.com/user-attachments/assets/5dc23fae-d5f2-4304-94bf-2526695347ed
+
