@@ -15,7 +15,6 @@ Disponible como página web y aplicación móvil, ofrece un espacio seguro y esp
 
   ![Captura de pantalla_20250526_113854](https://github.com/user-attachments/assets/123bc716-143c-4a65-8ba1-d2a3ae08059f)
 
-
 - **Login/Registro:** Para poder comprar o vender productos lo primero es registrarse o iniciar sesión
 
 ![Captura de pantalla_20250526_100757](https://github.com/user-attachments/assets/98ef5de8-7af9-4240-b213-0daedc2b84f0)
@@ -118,3 +117,20 @@ Disponible como página web y aplicación móvil, ofrece un espacio seguro y esp
 ![Captura de pantalla_20250526_113550](https://github.com/user-attachments/assets/b6b72ed8-c1d6-44da-b1e3-2dcbb01f7785)
 
 ![Captura de pantalla_20250526_113606](https://github.com/user-attachments/assets/8523262c-aabc-4667-bf75-8e6fc2aee5a5)
+
+## Arquitectura
+
+![imagen](https://github.com/user-attachments/assets/67410167-5199-4e69-a485-a2b6ca6f36bb)
+
+- **Back-End:**
+
+![Captura de pantalla_20250526_114514](https://github.com/user-attachments/assets/9dc603ff-ac1f-4c1a-9f36-e75432c5f3cc)
+
+- **Front-End:**
+
+![Captura de pantalla_20250526_114548](https://github.com/user-attachments/assets/888c6f43-3a27-4d00-95c8-5668d0755849)
+
+
+- **Android:**
+
+![Captura de pantalla_20250526_114729](https://github.com/user-attachments/assets/e18ba111-10f5-4483-bfe0-4992840ccd55)
