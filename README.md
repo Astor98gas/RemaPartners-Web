@@ -11,7 +11,7 @@ Disponible como página web y aplicación móvil, ofrece un espacio seguro y esp
 
 **• RF1:** Los usuarios deben poder registrarse con correo electrónico y contraseña.
 
-**• RF2:** Los usuarios deben poder registrarse utilizando su cuenta de Google.
+~~**• RF2:** Los usuarios deben poder registrarse utilizando su cuenta de Google.~~
 
 **• RF3:** Validar que el correo electrónico sea único en el sistema.
 
@@ -29,8 +29,8 @@ Disponible como página web y aplicación móvil, ofrece un espacio seguro y esp
 
 **1.3. Seguimiento de Usuarios**
 
-**• RF5:** Los usuarios deben poder seguir a vendedores favoritos para recibir notificaciones
-sobre nuevos productos.
+~~**• RF5:** Los usuarios deben poder seguir a vendedores favoritos para recibir notificaciones
+sobre nuevos productos.~~
 
 **1.4. Galería de Imágenes para Productos**
 
@@ -82,14 +82,11 @@ específicos asociados a esa categoría.
 
   • Ciudad.
   
-  • Provincia.
-  
-**• RF16:** El sistema debe permitir añadir campos adicionales de forma modular (similar a las
-categorías).
+**• RF16:** Campo descripción para poder indicar todo lo que necesiten.
 
 **3.2. Historial de Productos**
 
-**• RF17:** Mostrar un historial de cambios en los productos (ediciones, cambios de estado, etc.).
+**• RF17:** Mostrar fecha de actualización de producto.
 
 **3.3. Productos Relacionados**
 
@@ -203,7 +200,13 @@ comentarios.
 
 **11.3. Notificaciones**
 
-**• RNF9:** Utilizar un servicio de notificaciones push (Firebase Cloud Messaging o similar).
+**• RNF9:** Utilizar un servicio de notificaciones push (Firebase Cloud Messaging).
+
+## Mejoras
+
+- Se ha añadido la posibilidad de realizar una venta desde el chat.
+
+- Se ha creado un apartado con las facturas de las ventas realizadas desde el chat
 
 ## Características
 
