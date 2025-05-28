@@ -100,7 +100,7 @@ específicos asociados a esa categoría.
 
 **• RF20:** Solo los usuarios con suscripción activa pueden publicar productos.
 
-**• RF21:** Los usuarios deben poder gestionar su suscripción (activar, cancelar, renovar).
+**• RF21:** Suscripción manual cada mes.
 
 **4.2. Prueba Gratuita**
 
@@ -112,7 +112,7 @@ específicos asociados a esa categoría.
 
 **• RF23:** El back-end debe enviar notificaciones a los usuarios por:
 
-  • Móvil (push notifications).
+  • Móvil.
   
 **• RF24:** Los usuarios deben poder configurar qué tipos de notificaciones desean recibir en los
 ajustes de su cuenta.
@@ -130,7 +130,7 @@ comentario.
 
 **• RF27:** Los vendedores deben poder validar los comentarios.
 
-**• RF28:** Los vendedores deben poder solicitar la eliminación de comentarios inadecuados.
+**• RF28:** Solo los administradores y trabajadores han de poder eliminar comentarios.
 
 **7. Venta y Chat**
 
@@ -155,7 +155,7 @@ chat.
 
   • Número de vistas de sus productos.
   
-  • Conversiones (ventas realizadas).
+  • Ventas realizadas.
   
   • Valoraciones promedio.
   
@@ -164,7 +164,8 @@ chat.
 **9.1. Idiomas**
     
 **• RF34:** Ofrecer la aplicación en múltiples idiomas para llegar a un público global.
-Requerimientos no funcionales
+
+## Requerimientos no funcionales
 
 **10.1. Seguridad**
 
@@ -207,6 +208,10 @@ comentarios.
 - Se ha añadido la posibilidad de realizar una venta desde el chat.
 
 - Se ha creado un apartado con las facturas de las ventas realizadas desde el chat
+
+- En el panel de visualización de ventas los valores se convierten automáticamente a euros en tiempo real con el mercado.
+
+- Las imágenes se cargan en baja calidad cuando no se requiere en la máxima calidad.
 
 ## Características
 
