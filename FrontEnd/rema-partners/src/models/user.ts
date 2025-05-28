@@ -16,7 +16,8 @@ export interface User {
     description?: string;
     profileImage?: string;
     socialLinks?: SocialLink[];
-    confirmPassword: string
+    confirmPassword: string,
+    notificaciones: boolean
 }
 
 export interface UserFormData {

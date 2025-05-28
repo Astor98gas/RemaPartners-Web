@@ -236,7 +236,6 @@ export function useUsers() {
                 };
 
                 success.value = 'Profile updated successfully!';
-                toast.success('Profile updated successfully!');
                 return response.data;
             } else {
                 throw new Error('User not found or no ID provided');

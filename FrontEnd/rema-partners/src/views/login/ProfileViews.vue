@@ -17,7 +17,8 @@
                     description: this.currentUser.description || '',
                     profileImage: this.currentUser.profileImage || '',
                     socialLinks: this.currentUser.socialLinks ? 
-                        [...this.currentUser.socialLinks] : []
+                        [...this.currentUser.socialLinks] : [],
+                    notificaciones: this.currentUser.notificaciones !== false
                 };
                 this.previewImage = this.currentUser.profileImage || null;
             }
@@ -88,6 +89,38 @@
                                             <i v-if="link.icon" :class="link.icon" class="mr-2"></i>
                                             <span>{{ link.platform }}</span>
                                         </a>
+                                    </div>
+                                </div>
+
+                                <!-- Estado de notificaciones -->
+                                <div>
+                                    <p class="text-sm text-gray-500">{{ utf8.t('profile.notifications') ||
+                                        'Notificaciones' }}</p>
+                                    <div class="flex items-center mt-1">
+                                        <div class="flex items-center">
+                                            <div class="w-4 h-4 mr-2">
+                                                <svg v-if="currentUser.notificaciones !== false"
+                                                    xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M15 17h5l-5 5-5-5h5v-6h5v6z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M9 12l2 2 4-4" />
+                                                </svg>
+                                                <svg v-else xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636" />
+                                                </svg>
+                                            </div>
+                                            <span class="text-lg font-medium">
+                                                {{ currentUser.notificaciones !== false ?
+                                                    (utf8.t('profile.notifications_enabled') || 'Activadas') :
+                                                    (utf8.t('profile.notifications_disabled') || 'Desactivadas') }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -188,6 +221,27 @@
                                         {{ utf8.t('profile.add_social_link') }}
                                     </button>
                                 </div>
+
+                                <!-- Configuración de notificaciones -->
+                                <div>
+                                    <label class="block text-sm text-gray-500 mb-2">{{
+                                        utf8.t('profile.notification_settings') || 'Configuración de notificaciones'
+                                    }}</label>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="notifications-checkbox"
+                                            v-model="formData.notificaciones"
+                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <label for="notifications-checkbox" class="ml-2 text-sm text-gray-700">
+                                            {{ utf8.t('profile.allow_notifications') || 'Permitir notificaciones push'
+                                            }}
+                                        </label>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        {{ utf8.t('profile.notifications_description') ||
+                                            'Recibirás notificaciones sobre mensajes nuevos y actividad importante.' }}
+                                    </p>
+                                </div>
+
                                 <div>
                                     <label class="block text-sm text-gray-500">{{ utf8.t('profile.new_password')
                                         }}</label>
@@ -551,6 +605,7 @@ export default defineComponent({
                 description: '',
                 profileImage: '',
                 socialLinks: [] as SocialLink[],
+                notificaciones: true,
             },
             previewImage: null as string | null,
             premiumFeatures: [
@@ -683,7 +738,8 @@ export default defineComponent({
                     description: this.currentUser.description || '',
                     profileImage: this.currentUser.profileImage || '',
                     socialLinks: this.currentUser.socialLinks ?
-                        [...this.currentUser.socialLinks] : []
+                        [...this.currentUser.socialLinks] : [],
+                    notificaciones: this.currentUser.notificaciones !== false
                 };
                 this.previewImage = this.currentUser.profileImage || null;
             }
@@ -739,7 +795,8 @@ export default defineComponent({
                     email: this.formData.email,
                     description: this.formData.description,
                     profileImage: this.formData.profileImage,
-                    socialLinks: this.formData.socialLinks
+                    socialLinks: this.formData.socialLinks,
+                    notificaciones: this.formData.notificaciones
                 };
 
                 // Solo incluir la contraseña si se ha proporcionado una nueva

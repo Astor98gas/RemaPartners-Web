@@ -26,7 +26,8 @@ import java.util.Map;
 
 /**
  * Controlador REST para la gestión de pagos y suscripciones con Stripe.
- * Permite crear sesiones de pago, activar pruebas gratuitas, verificar historial de suscripciones y actualizar el estado de pago de los usuarios.
+ * Permite crear sesiones de pago, activar pruebas gratuitas, verificar
+ * historial de suscripciones y actualizar el estado de pago de los usuarios.
  */
 @RestController
 @RequestMapping("/api/stripe/")
@@ -60,7 +61,8 @@ public class StripeController {
     /**
      * Crea una sesión de pago de Stripe para el usuario.
      *
-     * @param requestData Datos necesarios para crear la sesión (priceId, successUrl, cancelUrl, clientReferenceId, promoCode).
+     * @param requestData Datos necesarios para crear la sesión (priceId,
+     *                    successUrl, cancelUrl, clientReferenceId, promoCode).
      * @return URL de la sesión de pago creada o error si ocurre algún problema.
      */
     @PostMapping("/create-checkout-session")
@@ -106,7 +108,6 @@ public class StripeController {
                 if (searchResult.getData() != null && !searchResult.getData().isEmpty()) {
                     // Cliente existente encontrado
                     customer = searchResult.getData().get(0);
-                    System.out.println("Cliente existente encontrado con ID: " + customer.getId());
 
                     // Actualizar metadatos del cliente
                     Map<String, Object> metadata = new HashMap<>();
@@ -120,7 +121,6 @@ public class StripeController {
                     customer = customer.update(updateParams);
                 } else {
                     // Cliente no encontrado, crear uno nuevo
-                    System.out.println("Cliente no encontrado, creando nuevo");
                     Map<String, Object> customerParams = new HashMap<>();
                     customerParams.put("email", userEmail);
                     customerParams.put("name", userName);
@@ -134,7 +134,6 @@ public class StripeController {
                 }
             } catch (Exception e) {
                 // Si hay un error en la búsqueda, crear un nuevo cliente
-                System.out.println("Error buscando cliente: " + e.getMessage());
                 Map<String, Object> customerParams = new HashMap<>();
                 customerParams.put("email", userEmail);
                 customerParams.put("name", userName);
@@ -217,7 +216,8 @@ public class StripeController {
                         promoApplied = true;
                     }
                 } catch (Exception e) {
-                    System.out.println("Error al aplicar código promocional: " + e.getMessage());
+                    // Si ocurre un error al aplicar el código promocional, imprimir el error
+                    e.printStackTrace();
                 }
             }
 
@@ -247,10 +247,12 @@ public class StripeController {
     }
 
     /**
-     * Activa una prueba gratuita para el usuario si no ha tenido suscripciones previas.
+     * Activa una prueba gratuita para el usuario si no ha tenido suscripciones
+     * previas.
      *
      * @param requestData Datos con el ID del usuario.
-     * @return Estado de la activación de la prueba gratuita y la suscripción creada.
+     * @return Estado de la activación de la prueba gratuita y la suscripción
+     *         creada.
      */
     @PostMapping("/create-free-trial")
     public ResponseEntity<Map<String, Object>> createFreeTrial(@RequestBody Map<String, Object> requestData) {
@@ -349,7 +351,8 @@ public class StripeController {
     }
 
     /**
-     * Actualiza el estado de pago del usuario y activa la suscripción premium si corresponde.
+     * Actualiza el estado de pago del usuario y activa la suscripción premium si
+     * corresponde.
      *
      * @param requestData Datos con el ID del usuario y el estado de pago.
      * @return Estado de la operación y la suscripción creada si aplica.

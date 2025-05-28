@@ -83,4 +83,10 @@ public class UserEntity {
      */
     @Builder.Default
     private List<SocialLinkEntity> socialLinks = null;
+
+    /**
+     * Permisos para enviar notificaciones al usuario.
+     */
+    @Builder.Default
+    private Boolean notificaciones = true;
 }

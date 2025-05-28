@@ -24,7 +24,8 @@ import com.arsansys.RemaPartners.services.firebase.FirebaseMessagingService;
 
 /**
  * Controlador REST para la gestión de chats entre usuarios.
- * Proporciona endpoints para crear chats, agregar mensajes, obtener chats por diferentes criterios y eliminar chats.
+ * Proporciona endpoints para crear chats, agregar mensajes, obtener chats por
+ * diferentes criterios y eliminar chats.
  */
 @RestController
 @RequestMapping("/api/chat")
@@ -97,21 +98,22 @@ public class ChatController {
 
                 // Then try to send notification separately
                 try {
-                    // Determine recipient user ID
+                    // Determinar el ID del usuario destinatario
                     String idUsuario = chat.getIdVendedor().equals(mensaje.getIdEmisor())
                             ? chat.getIdComprador()
                             : chat.getIdVendedor();
 
-                    // Get user and their tokens
+                    // Obtener usuario y sus tokens
                     var recipient = userService.getUserById(idUsuario);
+
                     if (recipient != null && recipient.getGoogleToken() != null
-                            && !recipient.getGoogleToken().isEmpty()) {
-                        // Get sender username
+                            && !recipient.getGoogleToken().isEmpty() && recipient.getNotificaciones()) {
+                        // Obtener nombre de usuario del emisor
                         var sender = userService.getUserById(mensaje.getIdEmisor());
                         String title = "Nuevo mensaje de " +
                                 (sender != null ? sender.getUsername() : "Usuario");
 
-                        // Create notification
+                        // Crear notificación
                         Note note = new Note();
                         note.setSubject(title);
                         note.setContent(mensaje.getMensaje());
@@ -120,15 +122,14 @@ public class ChatController {
                         data.put("idEmisor", mensaje.getIdEmisor());
                         note.setData(data);
 
-                        // Use the token directly
+                        // Usar el token directamente
                         String token = recipient.getGoogleToken();
                         note.setToken(token);
 
                         firebaseService.sendNotification(note, token);
                     }
                 } catch (Exception e) {
-                    // Log notification error but don't fail the API response
-                    System.err.println("Error sending notification: " + e.getMessage());
+                    // Registrar error de notificación pero no fallar la respuesta de la API
                     e.printStackTrace();
                 }
 
@@ -137,7 +138,6 @@ public class ChatController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            System.err.println("Error processing message: " + e.getMessage());
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

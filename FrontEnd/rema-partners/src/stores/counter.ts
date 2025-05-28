@@ -539,6 +539,12 @@ export const useutf8Store = defineStore('utf8', {
           'ratings.response_update_success': 'Response updated successfully',
           'ratings.response_delete_success': 'Response deleted successfully',
           'ratings.max_length': 'Maximum {count} characters',
+          'profile.notifications': 'Notifications',
+          'profile.notifications_enabled': 'Enabled',
+          'profile.notifications_disabled': 'Disabled',
+          'profile.notification_settings': 'Notification Settings',
+          'profile.allow_notifications': 'Allow push notifications',
+          'profile.notifications_description': 'You will receive notifications about new messages and important activity.',
         },
         es: {
           'link.servidor': 'http://localhost:8080/api/images/',
@@ -1050,6 +1056,12 @@ export const useutf8Store = defineStore('utf8', {
           'ratings.response_delete_success': 'Respuesta eliminada con éxito',
           'ratings.max_length': 'Máximo {count} caracteres',
           'sales.stats.amount': 'Importe',
+          'profile.notifications': 'Notificaciones',
+          'profile.notifications_enabled': 'Activadas',
+          'profile.notifications_disabled': 'Desactivadas',
+          'profile.notification_settings': 'Configuración de notificaciones',
+          'profile.allow_notifications': 'Permitir notificaciones push',
+          'profile.notifications_description': 'Recibirás notificaciones sobre mensajes nuevos y actividad importante.',
         },
         cat: {
           'link.servidor': 'http://localhost:8080/api/images/',
@@ -1532,6 +1544,12 @@ export const useutf8Store = defineStore('utf8', {
           'ratings.response_update_success': 'Resposta actualitzada amb èxit',
           'ratings.response_delete_success': 'Resposta eliminada amb èxit',
           'ratings.max_length': 'Màxim {count} caràcters',
+          'profile.notifications': 'Notificacions',
+          'profile.notifications_enabled': 'Activades',
+          'profile.notifications_disabled': 'Desactivades',
+          'profile.notification_settings': 'Configuració de notificacions',
+          'profile.allow_notifications': 'Permetre notificacions push',
+          'profile.notifications_description': 'Rebràs notificacions sobre missatges nous i activitat important.',
         }
       } as Translations
     };
