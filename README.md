@@ -3,6 +3,208 @@
 REMA Partners es una plataforma integral de compraventa de maquinaria industrial de segunda mano, diseñada para facilitar las transacciones entre empresas del sector.
 Disponible como página web y aplicación móvil, ofrece un espacio seguro y especializado donde las empresas pueden publicar, gestionar y encontrar maquinaria usada con filtros avanzados y características adaptadas a las necesidades industriales.
 
+## Requerimientos funcionales:
+
+**1.Base**
+
+**1.1. Creación de Usuario**
+
+**• RF1:** Los usuarios deben poder registrarse con correo electrónico y contraseña.
+
+**• RF2:** Los usuarios deben poder registrarse utilizando su cuenta de Google.
+
+**• RF3:** Validar que el correo electrónico sea único en el sistema.
+
+**1.2. Perfiles de Usuario**
+
+**• RF4:** Los usuarios deben poder personalizar sus perfiles con:
+
+  • Foto de perfil.
+  
+  • Descripción personal.
+  
+  • Enlaces a redes sociales.
+  
+  • Historial de ventas y valoraciones.
+
+**1.3. Seguimiento de Usuarios**
+
+**• RF5:** Los usuarios deben poder seguir a vendedores favoritos para recibir notificaciones
+sobre nuevos productos.
+
+**1.4. Galería de Imágenes para Productos**
+
+**• RF6:** Los usuarios deben poder subir múltiples imágenes por producto.
+
+**• RF7:** Implementar un visor de imágenes con zoom y desplazamiento.
+
+**2. Categorías**
+
+**2.1. CRUD de Categorías**
+
+**• RF8:** Los empleados deben poder crear, leer, actualizar y eliminar categorías.
+
+**• RF9:** Cada categoría debe tener los siguientes campos mínimos:
+
+  • Nombre (obligatorio).
+  
+  • Descripción (opcional).
+  
+**• RF10:** El sistema debe ser modular para permitir la adición de nuevos campos a las
+categorías.
+
+**2.2. Búsqueda Avanzada**
+
+**• RF11:** Los usuarios deben poder buscar productos por:
+
+  • Palabras clave.
+  
+  • Categorías.
+  
+  • Ubicación (radio de búsqueda).
+  
+  • Precio (rango mínimo y máximo).
+  
+  • Estado (nuevo, usado, en oferta).
+  
+**3. Productos**
+
+**.1. Alta de Productos**
+   
+**• RF12:** Solo los usuarios con suscripción activa pueden publicar productos.
+
+**• RF13:** Al crear un producto, el usuario debe seleccionar una categoría y cargar los campos
+específicos asociados a esa categoría.
+
+**• RF14:** El sistema debe permitir cargar la ubicación actual del producto.
+
+**• RF15:** El usuario debe poder editar la ubicación del producto, seleccionando:
+
+  • Ciudad.
+  
+  • Provincia.
+  
+**• RF16:** El sistema debe permitir añadir campos adicionales de forma modular (similar a las
+categorías).
+
+**3.2. Historial de Productos**
+
+**• RF17:** Mostrar un historial de cambios en los productos (ediciones, cambios de estado, etc.).
+
+**3.3. Productos Relacionados**
+
+**• RF18:** Mostrar productos similares o relacionados en la página de un producto.
+
+**4. Suscripciones**
+
+**4.1. Suscripción para Publicidad**
+
+**• RF19:** Implementar un sistema de suscripción utilizando Stripe para procesar pagos.
+
+**• RF20:** Solo los usuarios con suscripción activa pueden publicar productos.
+
+**• RF21:** Los usuarios deben poder gestionar su suscripción (activar, cancelar, renovar).
+
+**4.2. Prueba Gratuita**
+
+**• RF22:** Ofrecer una prueba gratuita de la suscripción para atraer nuevos usuarios.
+
+**5. Notificaciones**
+
+**5.1. Envío de Notificaciones**
+
+**• RF23:** El back-end debe enviar notificaciones a los usuarios por:
+
+  • Móvil (push notifications).
+  
+**• RF24:** Los usuarios deben poder configurar qué tipos de notificaciones desean recibir en los
+ajustes de su cuenta.
+
+**6. Comentarios y Valoraciones**
+
+**6.1. Respuestas a Comentarios**
+
+**• RF25:** Permitir a los vendedores responder a los comentarios de los compradores.
+
+**6.2. Valoraciones a Vendedores**
+
+**• RF26:** Los usuarios deben poder valorar a los vendedores con una puntuación y un
+comentario.
+
+**• RF27:** Los vendedores deben poder validar los comentarios.
+
+**• RF28:** Los vendedores deben poder solicitar la eliminación de comentarios inadecuados.
+
+**7. Venta y Chat**
+
+**7.1. Ofertas y Negociación**
+
+**• RF29:** Permitir a los compradores hacer ofertas a los vendedores a través del chat.
+
+**7.2. Chat entre Cliente y Vendedor**
+
+**• RF30:** Implementar un sistema de chat en tiempo real entre el cliente y el vendedor.
+
+**• RF31:** Los mensajes deben almacenarse en la base de datos para su consulta posterior.
+
+**• RF32:** Los usuarios deben recibir notificaciones cuando reciban un nuevo mensaje en el
+chat.
+
+**8. Funcionalidades de Analítica y Reportes**
+
+**8.1. Panel de Control para Vendedores**
+
+**• RF33:** Proporcionar a los vendedores un panel de control con métricas como:
+
+  • Número de vistas de sus productos.
+  
+  • Conversiones (ventas realizadas).
+  
+  • Valoraciones promedio.
+  
+**9. Internacionalización**
+
+**9.1. Idiomas**
+    
+**• RF34:** Ofrecer la aplicación en múltiples idiomas para llegar a un público global.
+Requerimientos no funcionales
+
+**10.1. Seguridad**
+
+**• RNF1:** Implementar autenticación segura (JWT, OAuth).
+
+**• RNF2:** Asegurar que los datos sensibles (contraseñas, información de pago) estén
+encriptados.
+
+**10.2. Escalabilidad**
+
+**• RNF3:** La aplicación debe ser escalable para soportar un crecimiento en el número de
+usuarios y productos.
+
+**10.3. Compatibilidad**
+
+**• RNF4:** La aplicación móvil debe ser compatible con Android.
+
+**• RNF5:** La aplicación web debe ser compatible con los principales navegadores (Chrome,
+Firefox).
+
+**11. Requerimientos Técnicos**
+
+**11.1. Base de Datos**
+
+**• RNF6:** Utilizar MongoDB para almacenar datos de categorías, productos, usuarios y
+comentarios.
+
+**11.2. Integración de APIs**
+
+**• RNF7:** Integrar la API de Google para el registro con Google.
+
+**• RNF8:** Integrar la API de Stripe para el procesamiento de pagos.
+
+**11.3. Notificaciones**
+
+**• RNF9:** Utilizar un servicio de notificaciones push (Firebase Cloud Messaging o similar).
+
 ## Características
 
 ### Sin Rol
