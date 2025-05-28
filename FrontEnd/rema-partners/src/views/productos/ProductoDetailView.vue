@@ -220,17 +220,19 @@
                         <div
                             class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
                             <p class="text-gray-500 text-sm mb-1">{{ t('common.dates') }}</p>
+                            <!--
                             <p class="text-gray-700 text-sm">
                                 <span class="font-medium">{{ t('common.createdOn') }}:</span>
                                 {{ formatDate(product.fechaCreacion) }}
                             </p>
-                            <p class="text-gray-700 text-sm" v-if="product.fechaModificacion">
-                                <span class="font-medium">{{ t('common.modifiedOn') }}:</span>
-                                {{ formatDate(product.fechaModificacion) }}
-                            </p>
+                            -->
                             <p class="text-gray-700 text-sm" v-if="product.fechaPublicacion">
                                 <span class="font-medium">{{ t('common.publishedOn') }}:</span>
                                 {{ formatDate(product.fechaPublicacion) }}
+                            </p>
+                            <p class="text-gray-700 text-sm" v-if="product.fechaActualizacion">
+                                <span class="font-medium">{{ t('common.modifiedOn') }}:</span>
+                                {{ formatDate(product.fechaActualizacion) }}
                             </p>
                         </div>
 

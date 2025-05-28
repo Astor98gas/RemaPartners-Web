@@ -1,5 +1,6 @@
 package com.arsansys.RemaPartners.services.servicesImpl;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,6 +188,7 @@ public class ProductoServiceImpl implements ProductoService {
             if (!productoRepository.existsById(productoEntity.getId())) {
                 throw new RuntimeException("Product not found");
             }
+            productoEntity.setFechaActualizacion(Instant.now().toString());
             return productoRepository.save(productoEntity);
         } catch (Exception e) {
             throw new RuntimeException("Error updating product: " + e.getMessage());

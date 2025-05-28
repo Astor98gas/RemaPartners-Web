@@ -15,7 +15,7 @@ export interface Producto {
     moneda: EMoneda;
     stock: number;
     fechaCreacion: string;
-    fechaModificacion: string;
+    fechaActualizacion: string;
     fechaPublicacion: string;
     fechaBaja: string;
     direccion: string;
