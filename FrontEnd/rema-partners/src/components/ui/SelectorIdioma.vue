@@ -56,7 +56,7 @@ export default {
         }
     },
     mounted() {
-        // Cerrar el menú cuando se hace clic fuera
+        // Cerrar el menú cuando se hace clic fuera del componente
         document.addEventListener('click', this.closeDropdown)
     },
     beforeUnmount() {

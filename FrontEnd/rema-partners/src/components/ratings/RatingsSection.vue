@@ -140,7 +140,7 @@ export default defineComponent({
         const usersComposable = useUsers();
         const toast = useToast();
 
-        // State
+        // Estado
         const ratings = ref<Rating[]>([]);
         const userRating = ref<Rating | null>(null);
         const loading = ref(true);
@@ -150,16 +150,16 @@ export default defineComponent({
         const selectedRating = ref<Rating | null>(null);
         const userData = ref<any>(null); // Para almacenar información del usuario actual incluyendo rol
 
-        // Computed
+        // Propiedades computadas
         const averageRating = computed(() => {
             if (ratings.value.length === 0) return 0;
 
             const sum = ratings.value.reduce((acc, rating) => acc + rating.rating, 0);
-            return Math.round((sum / ratings.value.length) * 10) / 10; // 1 decimal place
+            return Math.round((sum / ratings.value.length) * 10) / 10; // 1 lugar decimal
         });
 
         const sortedRatings = computed(() => {
-            // Sort by date, most recent first
+            // Ordenar por fecha, más recientes primero
             return [...ratings.value].sort((a, b) => {
                 return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
             });
@@ -173,7 +173,7 @@ export default defineComponent({
             return !!props.currentUserId && props.currentUserId !== props.sellerId;
         });
 
-        // Methods
+        // Métodos
         /**
          * Carga todas las valoraciones del vendedor.
          */
@@ -401,12 +401,12 @@ export default defineComponent({
             }
         };
 
-        // Watch for changes in sellerId to reload ratings
+        // Observar cambios en sellerId para recargar valoraciones
         watch(() => props.sellerId, () => {
             loadRatings();
         });
 
-        // Initial load
+        // Carga inicial
         onMounted(() => {
             loadRatings();
             loadUserData();

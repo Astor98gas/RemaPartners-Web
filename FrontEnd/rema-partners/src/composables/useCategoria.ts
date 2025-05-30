@@ -25,7 +25,7 @@ export function useCategoria() {
             const response = await categoriaService.getCategorias();
             categorias.value = response.data;
         } catch (err: any) {
-            error.value = err.response?.data?.message || "Error fetching categorias";
+            error.value = err.response?.data?.message || "Error obteniendo categorías";
         } finally {
             loading.value = false;
         }
@@ -41,13 +41,13 @@ export function useCategoria() {
             loading.value = true;
             error.value = null;
             const response = await categoriaService.createCategoria(categoria);
-            success.value = "Categoria created successfully!";
+            success.value = "Categoría creada exitosamente!";
             error.value = null;
             await getCategorias();
             return response.data;
         } catch (err: any) {
-            console.error("Error creating categoria:", err);
-            error.value = err.response?.data?.message || "Error creating categoria";
+            console.error("Error creando categoría:", err);
+            error.value = err.response?.data?.message || "Error creando categoría";
             success.value = null;
             throw err;
         } finally {
@@ -67,8 +67,8 @@ export function useCategoria() {
             const response = await categoriaService.getCategoriaById(id);
             currentCategoria.value = response.data;
         } catch (err: any) {
-            console.error("Error fetching categoria by ID:", err);
-            error.value = err.response?.data?.message || "Error fetching categoria by ID";
+            console.error("Error obteniendo categoría por ID:", err);
+            error.value = err.response?.data?.message || "Error obteniendo categoría por ID";
             success.value = null;
             throw err;
         } finally {
@@ -87,13 +87,13 @@ export function useCategoria() {
             loading.value = true;
             error.value = null;
             const response = await categoriaService.updateCategoria(id, categoria);
-            success.value = "Categoria updated successfully!";
+            success.value = "Categoría actualizada exitosamente!";
             error.value = null;
             await getCategorias();
             return response.data;
         } catch (err: any) {
-            console.error("Error updating categoria:", err);
-            error.value = err.response?.data?.message || "Error updating categoria";
+            console.error("Error actualizando categoría:", err);
+            error.value = err.response?.data?.message || "Error actualizando categoría";
             success.value = null;
             throw err;
         } finally {
@@ -111,13 +111,13 @@ export function useCategoria() {
             loading.value = true;
             error.value = null;
             const response = await categoriaService.deleteCategoria(id);
-            success.value = "Categoria deleted successfully!";
+            success.value = "Categoría eliminada exitosamente!";
             error.value = null;
             await getCategorias();
             return response.data;
         } catch (err: any) {
-            console.error("Error deleting categoria:", err);
-            error.value = err.response?.data?.message || "Error deleting categoria";
+            console.error("Error eliminando categoría:", err);
+            error.value = err.response?.data?.message || "Error eliminando categoría";
             success.value = null;
             throw err;
         } finally {

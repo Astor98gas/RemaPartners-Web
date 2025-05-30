@@ -339,14 +339,14 @@ export default defineComponent({
             if (!invoiceId) return;
 
             try {
-                // Option 1: Use the invoice from the list, but map the fields if needed
+                // Opción 1: Usar la factura de la lista, pero mapear los campos si es necesario
                 const invoice = this.facturas.find(f => f.id === invoiceId);
                 if (invoice) {
-                    console.log("Selected invoice:", invoice); // Debug
-                    // Map the fields to ensure consistency
+                    console.log("Selected invoice:", invoice); // Depuración
+                    // Mapear los campos para asegurar consistencia
                     this.selectedInvoice = {
                         ...invoice,
-                        // Use only properties that exist in the type
+                        // Usar solo propiedades que existen en el tipo
                         tituloProducto: invoice.tituloProducto,
                         estado: invoice.estado,
                         precioCentimos: invoice.precioCentimos,

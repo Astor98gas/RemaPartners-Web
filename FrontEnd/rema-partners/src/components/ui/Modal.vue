@@ -2,9 +2,9 @@
     <teleport to="body">
         <transition name="modal-fade">
             <div v-if="modelValue" class="fixed inset-0 flex items-center justify-center z-40">
-                <!-- Modificado el overlay para que sea más ligero y no bloquee -->
+                <!-- Overlay modificado para ser más ligero y no bloquear completamente -->
                 <div class="fixed inset-0 bg-black/30" @click="closeModal"></div>
-                <!-- Ajustado el z-index y mejorado el contraste -->
+                <!-- z-index ajustado y contraste mejorado -->
                 <div class="bg-white rounded-lg shadow-xl border border-gray-200 p-6 w-auto max-w-2xl relative z-50">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-bold">{{ title }}</h2>

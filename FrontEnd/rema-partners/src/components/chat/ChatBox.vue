@@ -1,6 +1,6 @@
 <template>
     <div class="chat-box rounded-lg overflow-hidden border border-gray-300 shadow-lg flex flex-col">
-        <!-- Chat header -->
+        <!-- Cabecera del chat -->
         <div class="bg-blue-600 text-white py-3 px-4 flex justify-between items-center">
             <div class="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="flex items-center space-x-2">
-                <!-- Delete Chat Button -->
+                <!-- Botón eliminar chat -->
                 <button v-if="productNotFound" @click="confirmDeleteChat"
                     class="text-white bg-red-500 hover:bg-red-600 rounded-lg px-2 py-1 text-xs flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
@@ -30,7 +30,7 @@
                     {{ t('chat.delete') }}
                 </button>
 
-                <!-- Mark as Sold Button (Only for sellers) -->
+                <!-- Botón marcar como vendido (Solo para vendedores) -->
                 <button v-if="isSeller && !productNotFound && currentProduct && currentProduct.stock > 0"
                     @click="confirmMarkAsSold"
                     class="text-white bg-green-500 hover:bg-green-600 rounded-lg px-2 py-1 text-xs flex items-center">
@@ -41,7 +41,7 @@
                     {{ t('chat.markAsSold') }}
                 </button>
 
-                <!-- Close Button -->
+                <!-- Botón cerrar -->
                 <button @click="$emit('close')" class="text-white hover:text-gray-200 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        <!-- Product not found warning if applicable -->
+        <!-- Advertencia de producto no encontrado si es aplicable -->
         <div v-if="productNotFound" class="bg-yellow-100 text-yellow-800 p-3 text-sm border-b border-yellow-200">
             <div class="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
@@ -64,7 +64,7 @@
             </div>
         </div>
 
-        <!-- Chat messages -->
+        <!-- Mensajes del chat -->
         <div ref="messagesContainer" class="flex-1 p-4 bg-gray-50 overflow-y-auto"
             style="max-height: calc(100% - 120px);">
             <div v-if="isLoading" class="flex justify-center items-center h-full">
@@ -97,7 +97,7 @@
             </template>
         </div>
 
-        <!-- Message input -->
+        <!-- Campo de entrada de mensaje -->
         <div class="p-3 bg-white border-t border-gray-200">
             <form @submit.prevent="sendMessage" class="flex">
                 <input ref="messageInput" v-model="newMessage" type="text"
@@ -230,16 +230,16 @@ export default defineComponent({
                     this.chatPartnerName = userName;
                 }
 
-                // Load the product information 
+                // Cargar la información del producto
                 await this.loadProductInfo();
 
                 this.setupAutoRefresh();
 
-                // Focus the input field after chat is initialized
+                // Enfocar el campo de entrada después de inicializar el chat
                 this.focusInput();
             } catch (err) {
-                console.error('Error initializing chat:', err);
-                this.error = (err instanceof Error ? err.message : 'Error loading chat messages');
+                console.error('Error inicializando chat:', err);
+                this.error = (err instanceof Error ? err.message : 'Error cargando mensajes del chat');
             } finally {
                 this.loading = false;
                 this.scrollToBottom();
@@ -257,10 +257,10 @@ export default defineComponent({
                 await this.productoComposable.getProductoById(this.currentChat.idProducto);
                 this.currentProduct = this.productoComposable.currentProducto;
 
-                // Set flag if product doesn't exist or is no longer active
+                // Establecer bandera si el producto no existe o ya no está activo
                 this.productNotFound = !this.currentProduct || !this.currentProduct.activo;
             } catch (err) {
-                console.error('Error loading product info:', err);
+                console.error('Error cargando información del producto:', err);
                 this.productNotFound = true;
             }
         },
@@ -293,7 +293,7 @@ export default defineComponent({
                             this.focusInput();
                         }
                     } catch (err) {
-                        console.error('Error al actualizar mensajes:', err);
+                        console.error('Error actualizando mensajes:', err);
                     } finally {
                         this.loading = false;
                         await this.scrollToBottom();
@@ -322,11 +322,11 @@ export default defineComponent({
                 this.chat = updatedChat;
                 this.newMessage = '';
 
-                // Focus back on input after sending
+                // Enfocar de nuevo en el campo de entrada después de enviar
                 this.focusInput();
             } catch (err) {
                 console.error('Error enviando mensaje:', err);
-                this.error = (err instanceof Error ? err.message : 'Error sending message');
+                this.error = (err instanceof Error ? err.message : 'Error enviando mensaje');
             } finally {
                 this.loading = false;
                 await this.scrollToBottom();
@@ -369,10 +369,10 @@ export default defineComponent({
                     confirmButtonText: this.t('common.ok')
                 });
 
-                // Close the chat box
+                // Cerrar la caja de chat
                 this.$emit('close');
             } catch (err) {
-                console.error('Error deleting chat:', err);
+                console.error('Error eliminando chat:', err);
                 Swal.fire({
                     icon: 'error',
                     title: this.t('chat.delete.error'),
@@ -400,7 +400,7 @@ export default defineComponent({
                 return;
             }
 
-            // Create select options for quantity
+            // Crear opciones de selección para la cantidad
             const inputOptions: Record<string, string> = {};
             for (let i = 1; i <= availableStock; i++) {
                 inputOptions[i.toString()] = i.toString();
@@ -412,14 +412,14 @@ export default defineComponent({
                 input: 'select',
                 inputOptions: inputOptions,
                 inputLabel: this.t('chat.markAsSold.quantity'),
-                inputValue: '1', // Default value
+                inputValue: '1', // Valor por defecto
                 showCancelButton: true,
                 confirmButtonText: this.t('common.yes'),
                 cancelButtonText: this.t('common.cancel'),
                 reverseButtons: true,
                 inputValidator: (value) => {
                     if (!value) {
-                        return 'You need to select a quantity!';
+                        return 'Necesitas seleccionar una cantidad!';
                     }
                 }
             }).then(async (result) => {
@@ -444,13 +444,13 @@ export default defineComponent({
                 this.loading = true;
                 await this.productoComposable.markAsSold(this.currentChat.idProducto, quantity);
 
-                // Refresh product info
+                // Actualizar información del producto
                 await this.loadProductInfo();
 
-                // Create an invoice for this sale
+                // Crear una factura para esta venta
                 if (this.currentChat.id && this.currentProduct) {
                     try {
-                        // Create invoice using the dedicated endpoint
+                        // Crear factura usando el endpoint dedicado
                         await this.facturaComposable.createFromSale(
                             this.currentChat.idProducto,
                             this.currentChat.idComprador,
@@ -459,15 +459,15 @@ export default defineComponent({
                             this.currentChat.id
                         );
 
-                        console.log('Invoice created successfully for the sale');
+                        console.log('Factura creada exitosamente para la venta');
                     } catch (invoiceErr) {
-                        console.error('Error creating invoice:', invoiceErr);
-                        // We don't want to fail the whole sale process if invoice creation fails
-                        // Just log the error and continue
+                        console.error('Error creando factura:', invoiceErr);
+                        // No queremos que falle todo el proceso de venta si la creación de factura falla
+                        // Solo registrar el error y continuar
                     }
                 }
 
-                // Notify the buyer that the product has been sold by sending a system message
+                // Notificar al comprador que el producto ha sido vendido enviando un mensaje del sistema
                 if (this.currentProduct) {
                     const message = `[${this.t('chat.markAsSold')}] ${quantity} - ${this.currentProduct.titulo}`;
                     await this.chatComposable.addMessage(
@@ -483,7 +483,7 @@ export default defineComponent({
                     confirmButtonText: this.t('common.ok')
                 });
             } catch (err) {
-                console.error('Error marking product as sold:', err);
+                console.error('Error marcando producto como vendido:', err);
                 Swal.fire({
                     icon: 'error',
                     title: this.t('chat.markAsSold.error'),
@@ -514,7 +514,7 @@ export default defineComponent({
                     day: 'numeric'
                 }).format(date);
             } catch (error) {
-                console.error('Error formatting date:', error);
+                console.error('Error formateando fecha:', error);
                 return dateStr;
             }
         },

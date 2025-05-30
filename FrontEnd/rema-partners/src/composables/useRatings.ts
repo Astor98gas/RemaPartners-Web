@@ -29,7 +29,7 @@ export function useRatings() {
             ratings.value = response.data
             return response.data
         } catch (err: any) {
-            console.error('Error fetching seller ratings:', err)
+            console.error('Error obteniendo valoraciones del vendedor:', err)
             error.value = err.response?.data?.message || 'Error al cargar las valoraciones'
             throw err
         } finally {
@@ -53,7 +53,7 @@ export function useRatings() {
             await getSellerRatings(ratingData.sellerId)
             return response.data
         } catch (err: any) {
-            console.error('Error creating rating:', err)
+            console.error('Error creando valoración:', err)
             error.value = err.response?.data?.message || 'Error al crear la valoración'
             throw err
         } finally {
@@ -78,7 +78,7 @@ export function useRatings() {
             await getSellerRatings(ratingData.sellerId)
             return response.data
         } catch (err: any) {
-            console.error('Error updating rating:', err)
+            console.error('Error actualizando valoración:', err)
             error.value = err.response?.data?.message || 'Error al actualizar la valoración'
             throw err
         } finally {
@@ -107,7 +107,7 @@ export function useRatings() {
                 return null
             }
 
-            console.error('Error fetching user rating:', err)
+            console.error('Error obteniendo valoración del usuario:', err)
             error.value = err.response?.data?.message || 'Error al cargar la valoración'
             throw err
         } finally {
@@ -135,7 +135,7 @@ export function useRatings() {
 
             return response.data
         } catch (err: any) {
-            console.error('Error adding reply:', err)
+            console.error('Error añadiendo respuesta:', err)
             error.value = err.response?.data?.message || 'Error al añadir la respuesta'
             throw err
         } finally {
@@ -159,7 +159,7 @@ export function useRatings() {
             // Actualizar la lista de valoraciones
             await getSellerRatings(sellerId)
         } catch (err: any) {
-            console.error('Error deleting rating:', err)
+            console.error('Error eliminando valoración:', err)
             error.value = err.response?.data?.message || 'Error al eliminar la valoración'
             throw err
         } finally {

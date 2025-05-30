@@ -61,6 +61,7 @@ export default {
 </script>
 
 <style scoped>
+/* Optimizaciones de rendimiento para animaciones suaves */
 button {
     backface-visibility: hidden;
     transform: translateZ(0);

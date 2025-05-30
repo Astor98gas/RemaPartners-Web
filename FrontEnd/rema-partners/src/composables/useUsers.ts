@@ -26,7 +26,7 @@ export function useUsers() {
             const response = await userService.getUsers()
             users.value = response.data
         } catch (err: any) {
-            error.value = err.response?.data?.message || 'Error fetching users'
+            error.value = err.response?.data?.message || 'Error obteniendo usuarios'
         } finally {
             loading.value = false
         }
@@ -65,18 +65,18 @@ export function useUsers() {
                 // Actualizar el estado del usuario actual
                 await isLoggedIn()
 
-                success.value = 'Login successful!'
+                success.value = 'Inicio de sesión exitoso!'
                 error.value = null
                 window.location.href = '/'
                 return response.data
             } else {
-                error.value = 'Login failed: No token received'
+                error.value = 'Error de inicio de sesión: No se recibió token'
                 success.value = null
-                throw new Error('No token received')
+                throw new Error('No se recibió token')
             }
         } catch (err: any) {
-            console.error('Login error:', err)
-            error.value = err.response?.data?.message || 'Error logging in'
+            console.error('Error de inicio de sesión:', err)
+            error.value = err.response?.data?.message || 'Error iniciando sesión'
             success.value = null
             throw err
         } finally {
@@ -102,8 +102,8 @@ export function useUsers() {
             currentUser.value = response.data
             return response.data
         } catch (err: any) {
-            console.error('Error checking login status:', err)
-            error.value = err.response?.data?.message || 'Error checking login status'
+            console.error('Error verificando estado de sesión:', err)
+            error.value = err.response?.data?.message || 'Error verificando estado de sesión'
             if (err.response && (err.response.status === 401 || err.response.status === 403)) {
                 Cookies.remove('token') // Eliminar el token si no es válido
                 currentUser.value = null
@@ -124,19 +124,19 @@ export function useUsers() {
         try {
             loading.value = true
             const response = await userService.createUser(formData)
-            success.value = 'User created successfully!'
+            success.value = 'Usuario creado exitosamente!'
             error.value = null
             if (response.data && response.data.token) {
                 Cookies.set('token', response.data.token, { expires: 7, path: '/' })
-                success.value = 'Login successful!'
+                success.value = 'Inicio de sesión exitoso!'
                 error.value = null
                 window.location.href = '/'
             } else {
-                error.value = 'Login failed'
+                error.value = 'Error de inicio de sesión'
                 success.value = null
             }
         } catch (err: any) {
-            error.value = err.response?.data?.message || 'Error creating user'
+            error.value = err.response?.data?.message || 'Error creando usuario'
             success.value = null
         } finally {
             loading.value = false
@@ -154,7 +154,7 @@ export function useUsers() {
             await userService.logout() // Llama al backend para invalidar el token
             Cookies.remove('token') // Elimina el token de las cookies
             currentUser.value = null // Resetea el usuario actual
-            success.value = 'Logout successful!'
+            success.value = 'Cierre de sesión exitoso!'
             error.value = null
 
             // Redirige al usuario a la página de login solo si redirect es true
@@ -162,8 +162,8 @@ export function useUsers() {
                 window.location.href = '/login'
             }
         } catch (err: any) {
-            console.error('Logout error:', err)
-            error.value = err.response?.data?.message || 'Error logging out'
+            console.error('Error cerrando sesión:', err)
+            error.value = err.response?.data?.message || 'Error cerrando sesión'
             success.value = null
         } finally {
             loading.value = false
@@ -190,7 +190,7 @@ export function useUsers() {
 
             return { exists: false };
         } catch (err: any) {
-            console.error('Error checking user existence:', err);
+            console.error('Error verificando existencia de usuario:', err);
             throw err;
         }
     };
@@ -219,13 +219,13 @@ export function useUsers() {
                 // Llamar al servicio para actualizar el usuario
                 const response = await userService.updateUser(userId, updatedUser);
 
-                // Check if username was changed (special response from backend)
+                // Verificar si el nombre de usuario fue cambiado (respuesta especial del backend)
                 if (response.data && response.data.usernameChanged) {
-                    // Need to log out and re-login
-                    success.value = 'Profile updated successfully. Please login again with your new username.';
-                    // Perform logout without redirect
+                    // Necesita cerrar sesión e iniciar sesión nuevamente
+                    success.value = 'Perfil actualizado exitosamente. Por favor inicia sesión nuevamente con tu nuevo nombre de usuario.';
+                    // Realizar logout sin redirección
                     await logout(false);
-                    // Return special flag to indicate username change
+                    // Retornar bandera especial para indicar cambio de nombre de usuario
                     return { usernameChanged: true, message: response.data.message };
                 }
 
@@ -235,14 +235,14 @@ export function useUsers() {
                     ...userData
                 };
 
-                success.value = 'Profile updated successfully!';
+                success.value = 'Perfil actualizado exitosamente!';
                 return response.data;
             } else {
-                throw new Error('User not found or no ID provided');
+                throw new Error('Usuario no encontrado o no se proporcionó ID');
             }
         } catch (err: any) {
-            console.error('Error updating profile:', err);
-            error.value = err.response?.data?.message || 'Error updating profile';
+            console.error('Error actualizando perfil:', err);
+            error.value = err.response?.data?.message || 'Error actualizando perfil';
             toast.error(error.value);
             throw err;
         } finally {
@@ -263,8 +263,8 @@ export function useUsers() {
             currentUser.value = response.data;
             return currentUser.value;
         } catch (err: any) {
-            console.error("Error refreshing user:", err);
-            error.value = err.response?.data?.message || "Error refreshing user data";
+            console.error("Error refrescando usuario:", err);
+            error.value = err.response?.data?.message || "Error refrescando datos de usuario";
             success.value = null;
             throw err;
         } finally {
@@ -286,8 +286,8 @@ export function useUsers() {
             const response = await userService.getUserProfileById(userId);
             return response.data;
         } catch (err: any) {
-            console.error("Error fetching user profile:", err);
-            error.value = err.response?.data?.message || "Error fetching user profile";
+            console.error("Error obteniendo perfil de usuario:", err);
+            error.value = err.response?.data?.message || "Error obteniendo perfil de usuario";
             throw err;
         } finally {
             loading.value = false;

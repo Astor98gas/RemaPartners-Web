@@ -12,7 +12,7 @@
                 </button>
             </div>
 
-            <!-- Product info -->
+            <!-- Información del producto -->
             <div class="flex items-center mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100 shadow-sm">
                 <div class="w-20 h-20 flex-shrink-0 rounded-md overflow-hidden mr-4">
                     <img :src="t('link.servidor.low') + productImage" :alt="productTitle"
@@ -20,14 +20,14 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <h4 class="font-medium text-gray-900 text-base mb-1 truncate" :title="productTitle">{{ productTitle
-                    }}</h4>
+                        }}</h4>
                     <p class="text-gray-700 text-sm font-semibold bg-white inline-block px-2 py-1 rounded-md">
                         {{ formatCurrency(originalPrice, currency) }}
                     </p>
                 </div>
             </div>
 
-            <!-- Input form -->
+            <!-- Formulario de entrada -->
             <form @submit.prevent="submitOffer" class="space-y-5">
                 <div>
                     <label for="offerAmount" class="block text-sm font-medium text-gray-700 mb-2">
@@ -226,7 +226,7 @@ export default {
     }
 }
 
-/* Fix for the number input spinner */
+/* Estilos para el spinner del input number */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     opacity: 0.3;

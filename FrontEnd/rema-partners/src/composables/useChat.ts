@@ -33,8 +33,8 @@ export function useChat() {
             currentChat.value = response.data;
             return response.data;
         } catch (err: any) {
-            console.error("Error fetching chat by ID:", err);
-            error.value = err.response?.data?.message || "Error fetching chat by ID";
+            console.error("Error obteniendo chat por ID:", err);
+            error.value = err.response?.data?.message || "Error obteniendo chat por ID";
             success.value = null;
             throw err;
         } finally {
@@ -55,8 +55,8 @@ export function useChat() {
             const response = await chatService.getChatsByProductId(idProducto);
             chats.value = response.data;
         } catch (err: any) {
-            console.error("Error fetching chats by product ID:", err);
-            error.value = err.response?.data?.message || "Error fetching chats by product ID";
+            console.error("Error obteniendo chats por ID de producto:", err);
+            error.value = err.response?.data?.message || "Error obteniendo chats por ID de producto";
             success.value = null;
             throw err;
         } finally {
@@ -77,8 +77,8 @@ export function useChat() {
             const response = await chatService.getChatsByBuyerId(idComprador);
             chats.value = response.data;
         } catch (err: any) {
-            console.error("Error fetching chats by buyer ID:", err);
-            error.value = err.response?.data?.message || "Error fetching chats by buyer ID";
+            console.error("Error obteniendo chats por ID de comprador:", err);
+            error.value = err.response?.data?.message || "Error obteniendo chats por ID de comprador";
             success.value = null;
             throw err;
         } finally {
@@ -99,8 +99,8 @@ export function useChat() {
             const response = await chatService.getChatsBySellerId(idVendedor);
             chats.value = response.data;
         } catch (err: any) {
-            console.error("Error fetching chats by seller ID:", err);
-            error.value = err.response?.data?.message || "Error fetching chats by seller ID";
+            console.error("Error obteniendo chats por ID de vendedor:", err);
+            error.value = err.response?.data?.message || "Error obteniendo chats por ID de vendedor";
             success.value = null;
             throw err;
         } finally {
@@ -124,8 +124,8 @@ export function useChat() {
             currentChat.value = response.data;
             return response.data;
         } catch (err: any) {
-            console.error("Error fetching/creating chat by participants:", err);
-            error.value = err.response?.data?.message || "Error fetching/creating chat by participants";
+            console.error("Error obteniendo/creando chat por participantes:", err);
+            error.value = err.response?.data?.message || "Error obteniendo/creando chat por participantes";
             success.value = null;
             throw err;
         } finally {
@@ -156,8 +156,8 @@ export function useChat() {
             currentChat.value = response.data;
             return response.data;
         } catch (err: any) {
-            console.error("Error adding message to chat:", err);
-            error.value = err.response?.data?.message || "Error adding message to chat";
+            console.error("Error añadiendo mensaje al chat:", err);
+            error.value = err.response?.data?.message || "Error añadiendo mensaje al chat";
             success.value = null;
             throw err;
         } finally {
@@ -176,23 +176,23 @@ export function useChat() {
             loading.value = true;
             error.value = null;
             const response = await chatService.deleteChat(chatId);
-            success.value = "Chat deleted successfully";
+            success.value = "Chat eliminado exitosamente";
 
-            // Remove the chat from the chat list if it exists
+            // Remover el chat de la lista de chats si existe
             const index = chats.value.findIndex(chat => chat.id === chatId);
             if (index !== -1) {
                 chats.value.splice(index, 1);
             }
 
-            // Clear current chat if it was the deleted one
+            // Limpiar el chat actual si era el que se eliminó
             if (currentChat.value?.id === chatId) {
                 currentChat.value = null;
             }
 
             return response.data;
         } catch (err: any) {
-            console.error("Error deleting chat:", err);
-            error.value = err.response?.data?.message || "Error deleting chat";
+            console.error("Error eliminando chat:", err);
+            error.value = err.response?.data?.message || "Error eliminando chat";
             success.value = null;
             throw err;
         } finally {
@@ -217,7 +217,7 @@ export function useChat() {
             }
             return '';
         } catch (err) {
-            console.error("Error fetching user name:", err);
+            console.error("Error obteniendo nombre de usuario:", err);
             return '';
         }
     };
@@ -242,7 +242,7 @@ export function useChat() {
             // Obtener el nombre del interlocutor
             return await getUserNameById(partnerId);
         } catch (err) {
-            console.error("Error fetching chat partner name:", err);
+            console.error("Error obteniendo nombre del interlocutor del chat:", err);
             return '';
         }
     };

@@ -7,7 +7,7 @@
             <p class="text-gray-600 text-sm mb-4">{{ categoriaDescripcion }}</p>
             <div class="mt-4">
                 <h3 class="text-gray-700 font-semibold mb-2">Campos:</h3>
-                <!-- Diseño de cuadrícula para las cartas -->
+                <!-- Diseño de cuadrícula para las tarjetas -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     <div v-for="(campo, index) in campos" :key="index"
                         class="campo-card bg-gray-100 p-4 rounded-lg shadow-md text-center">

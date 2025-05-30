@@ -28,7 +28,7 @@ export default {
 };
 </script>
 
-<!-- Modified from Uiverse.io by vinodjangid07 -->
+<!-- Modificado desde Uiverse.io por vinodjangid07 -->
 <style>
 .delete-button {
     width: 50px;

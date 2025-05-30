@@ -33,7 +33,7 @@ export default {
 };
 </script>
 
-<!-- Modified from Uiverse.io by vinodjangid07 -->
+<!-- Modificado desde Uiverse.io por vinodjangid07 -->
 <style>
 .edit-button {
     width: 50px;

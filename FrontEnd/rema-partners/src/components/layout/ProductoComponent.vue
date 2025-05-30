@@ -7,7 +7,7 @@
             <img class="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                 :src="t('link.servidor.low') + producto.imagenes[0]" :alt="producto.titulo" @error="onImageError" />
 
-            <!-- Badge de stock movido dentro del contenedor de imagen -->
+            <!-- Insignia de stock movida dentro del contenedor de imagen -->
             <div class="absolute top-3 right-3">
                 <span v-if="producto.stock > 5"
                     class="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">
@@ -22,14 +22,14 @@
                 </span>
             </div>
 
-            <!-- Estado del producto badge -->
+            <!-- Insignia del estado del producto -->
             <div class="absolute top-3 left-3">
                 <span class="bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium">
                     {{ t(`producto.estados.${producto.estado}`) }}
                 </span>
             </div>
 
-            <!-- Fecha de publicación badge -->
+            <!-- Insignia de fecha de publicación -->
             <div class="absolute bottom-3 left-3">
                 <span class="bg-white/80 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">
                     {{ formatDate(producto.fechaPublicacion) }}
@@ -51,7 +51,7 @@
                     <span class="text-gray-600 text-sm ml-1">{{ producto.moneda }}</span>
                 </span>
 
-                <!-- Badge destacado si aplicable -->
+                <!-- Insignia destacada si aplica -->
                 <span v-if="producto.destacado" class="bg-yellow-400 text-yellow-800 text-xs px-2 py-1 rounded-full">
                     {{ t('producto.destacado') }}
                 </span>
@@ -159,7 +159,7 @@
             </router-link>
         </div>
 
-        <!-- Admin actions button -->
+        <!-- Botón de acciones de administrador -->
         <div v-if="isAdmin" class="flex justify-center p-3 bg-gray-100 border-t border-gray-200">
             <button @click="toggleProductStatus"
                 class="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transform hover:scale-105 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-amber-300 shadow-sm w-full">
@@ -244,7 +244,7 @@ export default defineComponent({
                     this.$emit('status-changed', this.producto);
                 })
                 .catch((error) => {
-                    console.error('Error toggling product status:', error);
+                    console.error('Error al cambiar el estado del producto:', error);
                 });
             this.$emit('toggle-status', this.producto.id);
         },
@@ -264,7 +264,7 @@ export default defineComponent({
                     day: 'numeric'
                 }).format(date);
             } catch (error) {
-                console.error('Error formatting date:', error);
+                console.error('Error al formatear la fecha:', error);
                 return dateStr;
             }
         }

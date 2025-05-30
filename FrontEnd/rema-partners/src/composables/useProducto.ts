@@ -26,8 +26,8 @@ export function useProducto() {
             const response = await productoService.getProductosByIdCategoria(id);
             productos.value = response.data;
         } catch (err: any) {
-            console.error("Error fetching productos by category ID:", err);
-            error.value = err.response?.data?.message || "Error fetching productos by category ID";
+            console.error("Error obteniendo productos por ID de categoría:", err);
+            error.value = err.response?.data?.message || "Error obteniendo productos por ID de categoría";
             success.value = null;
             throw err;
         } finally {
@@ -45,13 +45,13 @@ export function useProducto() {
             loading.value = true;
             error.value = null;
             const response = await productoService.toggleStatus(id);
-            success.value = "Producto status toggled successfully!";
+            success.value = "Estado del producto cambiado exitosamente!";
             error.value = null;
             await getProductos();
             return response.data;
         } catch (err: any) {
-            console.error("Error toggling producto status:", err);
-            error.value = err.response?.data?.message || "Error toggling producto status";
+            console.error("Error cambiando estado del producto:", err);
+            error.value = err.response?.data?.message || "Error cambiando estado del producto";
             success.value = null;
             throw err;
         } finally {
@@ -69,7 +69,7 @@ export function useProducto() {
             const response = await productoService.getProductos();
             productos.value = response.data;
         } catch (err: any) {
-            error.value = err.response?.data?.message || "Error fetching productos";
+            error.value = err.response?.data?.message || "Error obteniendo productos";
         } finally {
             loading.value = false;
         }
@@ -85,8 +85,8 @@ export function useProducto() {
             const response = await productoService.getProductos();
             productos.value = response.data.filter((producto: Producto) => producto.activo);
         } catch (err: any) {
-            console.error("Error fetching active productos:", err);
-            error.value = err.response?.data?.message || "Error fetching active productos";
+            console.error("Error obteniendo productos activos:", err);
+            error.value = err.response?.data?.message || "Error obteniendo productos activos";
             success.value = null;
             throw err;
         } finally {
@@ -103,13 +103,13 @@ export function useProducto() {
             loading.value = true;
             error.value = null;
             const response = await productoService.createProducto(producto);
-            success.value = "Producto created successfully!";
+            success.value = "Producto creado exitosamente!";
             error.value = null;
             await getProductos();
             return response.data;
         } catch (err: any) {
-            console.error("Error creating producto:", err);
-            error.value = err.response?.data?.message || "Error creating producto";
+            console.error("Error creando producto:", err);
+            error.value = err.response?.data?.message || "Error creando producto";
             success.value = null;
             throw err;
         } finally {
@@ -128,8 +128,8 @@ export function useProducto() {
             const response = await productoService.getProductoById(id);
             currentProducto.value = response.data;
         } catch (err: any) {
-            console.error("Error fetching producto by ID:", err);
-            error.value = err.response?.data?.message || "Error fetching producto by ID";
+            console.error("Error obteniendo producto por ID:", err);
+            error.value = err.response?.data?.message || "Error obteniendo producto por ID";
             success.value = null;
             throw err;
         } finally {
@@ -147,13 +147,13 @@ export function useProducto() {
             loading.value = true;
             error.value = null;
             const response = await productoService.updateProducto(id, producto);
-            success.value = "Producto updated successfully!";
+            success.value = "Producto actualizado exitosamente!";
             error.value = null;
             await getProductos();
             return response.data;
         } catch (err: any) {
-            console.error("Error updating producto:", err);
-            error.value = err.response?.data?.message || "Error updating producto";
+            console.error("Error actualizando producto:", err);
+            error.value = err.response?.data?.message || "Error actualizando producto";
             success.value = null;
             throw err;
         } finally {
@@ -170,13 +170,13 @@ export function useProducto() {
             loading.value = true;
             error.value = null;
             const response = await productoService.deleteProducto(id);
-            success.value = "Producto deleted successfully!";
+            success.value = "Producto eliminado exitosamente!";
             error.value = null;
             await getProductos();
             return response.data;
         } catch (err: any) {
-            console.error("Error deleting producto:", err);
-            error.value = err.response?.data?.message || "Error deleting producto";
+            console.error("Error eliminando producto:", err);
+            error.value = err.response?.data?.message || "Error eliminando producto";
             success.value = null;
             throw err;
         } finally {
@@ -195,7 +195,7 @@ export function useProducto() {
             const response = await productoService.getProductosByUsuario(idUsuario);
             productos.value = response.data;
         } catch (err: any) {
-            error.value = err.response?.data?.message || "Error fetching productos by user";
+            error.value = err.response?.data?.message || "Error obteniendo productos por usuario";
         } finally {
             loading.value = false;
         }
@@ -211,26 +211,29 @@ export function useProducto() {
             loading.value = true;
             error.value = null;
 
-            // Get current product to know current stock
+            // Obtener el producto actual para conocer el stock actual
             await getProductoById(id);
             if (!currentProducto.value) {
-                throw new Error("Product not found");
+                throw new Error("Producto no encontrado");
             }
 
-            // Ensure quantity is valid
+            // Asegurar que la cantidad sea válida
             const validQuantity = Math.min(quantity, currentProducto.value.stock);
             const newStock = Math.max(0, currentProducto.value.stock - validQuantity);
 
             const response = await productoService.markAsSold(id, validQuantity);
-            success.value = "Product marked as sold successfully!";
+            success.value = "Producto marcado como vendido exitosamente!";
             error.value = null;
 
-            // Update the current product if it matches
+            // Actualizar el producto actual si coincide
             if (currentProducto.value && currentProducto.value.id === id) {
                 currentProducto.value.stock = newStock;
+                if (newStock === 0) {
+                    currentProducto.value.activo = false;
+                }
             }
 
-            // Update products list if it includes this product
+            // Actualizar la lista de productos si incluye este producto
             const productIndex = productos.value.findIndex(p => p.id === id);
             if (productIndex !== -1) {
                 productos.value[productIndex].stock = newStock;
@@ -238,8 +241,8 @@ export function useProducto() {
 
             return response.data;
         } catch (err: any) {
-            console.error("Error marking product as sold:", err);
-            error.value = err.response?.data?.message || "Error marking product as sold";
+            console.error("Error marcando producto como vendido:", err);
+            error.value = err.response?.data?.message || "Error marcando producto como vendido";
             success.value = null;
             throw err;
         } finally {

@@ -25,11 +25,11 @@ export function useFactura() {
             error.value = null;
             const response = await facturaService.createFactura(factura);
             currentFactura.value = response.data;
-            success.value = "Invoice created successfully";
+            success.value = "Factura creada exitosamente";
             return response.data;
         } catch (err: any) {
-            console.error("Error creating invoice:", err);
-            error.value = err.response?.data?.message || "Error creating invoice";
+            console.error("Error creando factura:", err);
+            error.value = err.response?.data?.message || "Error creando factura";
             success.value = null;
             throw err;
         } finally {
@@ -53,11 +53,11 @@ export function useFactura() {
             error.value = null;
             const response = await facturaService.createFromSale(idProducto, idComprador, idVendedor, cantidad, idChat);
             currentFactura.value = response.data;
-            success.value = "Invoice created successfully from sale";
+            success.value = "Factura creada exitosamente desde la venta";
             return response.data;
         } catch (err: any) {
-            console.error("Error creating invoice from sale:", err);
-            error.value = err.response?.data?.message || "Error creating invoice from sale";
+            console.error("Error creando factura desde la venta:", err);
+            error.value = err.response?.data?.message || "Error creando factura desde la venta";
             success.value = null;
             throw err;
         } finally {
@@ -79,8 +79,8 @@ export function useFactura() {
             currentFactura.value = response.data;
             return response.data;
         } catch (err: any) {
-            console.error("Error fetching invoice by ID:", err);
-            error.value = err.response?.data?.message || "Error fetching invoice by ID";
+            console.error("Error obteniendo factura por ID:", err);
+            error.value = err.response?.data?.message || "Error obteniendo factura por ID";
             success.value = null;
             throw err;
         } finally {
@@ -98,14 +98,14 @@ export function useFactura() {
         try {
             loading.value = true;
             error.value = null;
-            console.log(`useFactura: Fetching invoices for buyer with ID: ${idComprador}`);
+            console.log(`useFactura: Obteniendo facturas para comprador con ID: ${idComprador}`);
             const response = await facturaService.getFacturasByBuyerId(idComprador);
-            console.log("useFactura: Buyer invoices API response:", response);
+            console.log("useFactura: Respuesta de API de facturas de comprador:", response);
             facturas.value = response.data;
             return response.data;
         } catch (err: any) {
-            console.error("Error fetching buyer invoices:", err);
-            error.value = err.response?.data?.message || "Error fetching buyer invoices";
+            console.error("Error obteniendo facturas de comprador:", err);
+            error.value = err.response?.data?.message || "Error obteniendo facturas de comprador";
             success.value = null;
             throw err;
         } finally {
@@ -123,14 +123,14 @@ export function useFactura() {
         try {
             loading.value = true;
             error.value = null;
-            console.log(`useFactura: Fetching invoices for seller with ID: ${idVendedor}`);
+            console.log(`useFactura: Obteniendo facturas para vendedor con ID: ${idVendedor}`);
             const response = await facturaService.getFacturasBySellerId(idVendedor);
-            console.log("useFactura: Seller invoices API response:", response);
+            console.log("useFactura: Respuesta de API de facturas de vendedor:", response);
             facturas.value = response.data;
             return response.data;
         } catch (err: any) {
-            console.error("Error fetching seller invoices:", err);
-            error.value = err.response?.data?.message || "Error fetching seller invoices";
+            console.error("Error obteniendo facturas de vendedor:", err);
+            error.value = err.response?.data?.message || "Error obteniendo facturas de vendedor";
             success.value = null;
             throw err;
         } finally {
@@ -152,8 +152,8 @@ export function useFactura() {
             facturas.value = response.data;
             return response.data;
         } catch (err: any) {
-            console.error("Error fetching product invoices:", err);
-            error.value = err.response?.data?.message || "Error fetching product invoices";
+            console.error("Error obteniendo facturas de producto:", err);
+            error.value = err.response?.data?.message || "Error obteniendo facturas de producto";
             success.value = null;
             throw err;
         } finally {
@@ -175,8 +175,8 @@ export function useFactura() {
             facturas.value = response.data;
             return response.data;
         } catch (err: any) {
-            console.error("Error fetching chat invoices:", err);
-            error.value = err.response?.data?.message || "Error fetching chat invoices";
+            console.error("Error obteniendo facturas de chat:", err);
+            error.value = err.response?.data?.message || "Error obteniendo facturas de chat";
             success.value = null;
             throw err;
         } finally {

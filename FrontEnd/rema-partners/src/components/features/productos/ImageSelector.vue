@@ -12,7 +12,7 @@
                         class="w-full h-full object-cover rounded" />
                     <button @click.stop="removeImage(index - 1)"
                         class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 shadow-md transition-colors">
-                        <span class="sr-only">Remove</span>
+                        <span class="sr-only">Eliminar</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12" />
@@ -120,14 +120,14 @@ export default {
                 try {
                     // Validar tamaño del archivo (5MB máximo)
                     if (file.size > 5 * 1024 * 1024) {
-                        console.error('File too large');
+                        console.error('Archivo demasiado grande');
                         // Mostrar error al usuario
                         return;
                     }
 
                     // Validar tipo de archivo
                     if (!file.type.startsWith('image/')) {
-                        console.error('Invalid file type');
+                        console.error('Tipo de archivo inválido');
                         // Mostrar error al usuario
                         return;
                     }
@@ -176,7 +176,7 @@ export default {
                     this.$emit('update:images', filteredImages);
 
                 } catch (error) {
-                    console.error('Error uploading image:', error);
+                    console.error('Error subiendo imagen:', error);
 
                     // Restaurar preview en caso de error
                     const newPreview = [...this.imagePreview];
@@ -185,7 +185,7 @@ export default {
 
                     // Mostrar error específico al usuario
                     if (error.name === 'AbortError') {
-                        alert('La subida de imagen se canceló por timeout');
+                        alert('La subida de imagen se canceló por tiempo');
                     } else {
                         alert(`Error subiendo imagen: ${error.message}`);
                     }
@@ -205,16 +205,16 @@ export default {
             this.$nextTick(() => {
                 // Crear copia del array actual
                 const newPreview = [...this.imagePreview];
-                
+
                 // Limpiar la posición específica sin reorganizar
                 newPreview[index] = '';
-                
+
                 // Actualizar la previsualización de manera inmutable
                 this.imagePreview = newPreview;
 
                 // Filtrar solo las imágenes válidas para emitir al padre
                 const filteredImages = newPreview.filter(img => img !== '');
-                
+
                 // Emitir de manera síncrona para mantener consistencia
                 this.$emit('update:images', filteredImages);
             });
@@ -228,9 +228,9 @@ export default {
             handler(newImages) {
                 // Evitar actualizaciones innecesarias comparando el contenido
                 const currentFiltered = this.imagePreview.filter(img => img !== '');
-                const arraysEqual = newImages.length === currentFiltered.length && 
+                const arraysEqual = newImages.length === currentFiltered.length &&
                     newImages.every((img, index) => img === currentFiltered[index]);
-                
+
                 if (!arraysEqual) {
                     // Si recibimos nuevas imágenes desde el componente padre, actualizar preview
                     const newPreview = Array(this.maxImages).fill('');
