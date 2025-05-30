@@ -131,6 +131,18 @@ public class FileController {
         try {
             Path filePath = Path.of(uploadDir, fileName);
 
+            Path lowResFilePath = Path.of(uploadDir, "low" + fileName);
+            // Verificar si ya existe una versión de baja resolución
+            if (Files.exists(lowResFilePath)) {
+                // Si existe, devolverla directamente
+                Resource resource = new UrlResource(lowResFilePath.toUri());
+                String contentType = determineContentType(fileName);
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(contentType))
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"low" + fileName + "\"")
+                        .body(resource);
+            }
+
             if (Files.exists(filePath)) {
                 // Determinar el tipo de contenido
                 String contentType = determineContentType(fileName);
@@ -140,6 +152,11 @@ public class FileController {
 
                 // Crear recurso a partir de los bytes
                 ByteArrayResource resource = new ByteArrayResource(lowResImageData);
+
+                // Guardar la versión de baja resolución en el servidor
+                String fileNameWithLowPrefix = "low" + fileName;
+                Path lowResFilePathWithPrefix = Path.of(uploadDir, fileNameWithLowPrefix);
+                Files.write(lowResFilePathWithPrefix, lowResImageData);
 
                 return ResponseEntity.ok()
                         .contentType(MediaType.parseMediaType(contentType))
