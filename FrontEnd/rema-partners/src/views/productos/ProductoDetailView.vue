@@ -89,8 +89,7 @@
                         class="bg-amber-500 text-white px-3 py-1 rounded-full font-medium shadow-md flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                         {{ t('producto.lowStock') }}
                     </span>
@@ -122,8 +121,7 @@
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
                     <h1 class="text-3xl font-bold text-gray-900">{{ product.titulo }}</h1>
                     <div class="text-3xl font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-lg">
-                        {{ (product.precioCentimos / 100).toFixed(2) }}
-                        <span class="text-gray-600 text-lg ml-1">{{ product.moneda }}</span>
+                        {{ formatPrice(product.precioCentimos, product.moneda) }}
                     </div>
                 </div>
 
@@ -241,7 +239,7 @@
                             class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow col-span-1 md:col-span-2 lg:col-span-3">
                             <p class="text-gray-500 text-sm mb-1">{{ t('producto.direccion') }}</p>
                             <p class="text-gray-900 font-semibold mb-2">{{ product.direccion || t('common.notAvailable')
-                            }}</p>
+                                }}</p>
 
                             <div v-if="product.direccion"
                                 class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden shadow-sm mt-2 hover:shadow-md transition-shadow"
@@ -529,6 +527,23 @@ export default defineComponent({
                 console.error('Error formatting date:', error);
                 return dateStr;
             }
+        },
+        /**
+         * Formatea el precio con separadores de miles y decimales según la moneda.
+         * @param {number} precioCentimos - Precio en centimos.
+         * @param {string} moneda - Código de la moneda.
+         * @returns {string} Precio formateado.
+         */
+        formatPrice(precioCentimos: number, moneda: string = 'EUR'): string {
+            const precio = precioCentimos / 100;
+            const locale = document.documentElement.lang === 'en' ? 'en-US' : 'es-ES';
+
+            return new Intl.NumberFormat(locale, {
+                style: 'currency',
+                currency: moneda,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(precio);
         },
         /**
          * Activa o desactiva el producto.

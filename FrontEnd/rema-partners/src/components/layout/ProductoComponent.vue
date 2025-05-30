@@ -46,9 +46,8 @@
             <div class="mb-3 flex justify-between items-center">
                 <span>
                     <span class="text-2xl font-bold text-blue-600">
-                        {{ (producto.precioCentimos / 100).toFixed(2) }}
+                        {{ formatPrice(producto.precioCentimos, producto.moneda) }}
                     </span>
-                    <span class="text-gray-600 text-sm ml-1">{{ producto.moneda }}</span>
                 </span>
 
                 <!-- Insignia destacada si aplica -->
@@ -267,7 +266,24 @@ export default defineComponent({
                 console.error('Error al formatear la fecha:', error);
                 return dateStr;
             }
-        }
+        },
+        /**
+         * Formatea el precio con separadores de miles y decimales según la moneda.
+         * @param {number} precioCentimos - Precio en centimos.
+         * @param {string} moneda - Código de la moneda.
+         * @returns {string} Precio formateado.
+         */
+        formatPrice(precioCentimos: number, moneda: string = 'EUR'): string {
+            const precio = precioCentimos / 100;
+            const locale = document.documentElement.lang === 'en' ? 'en-US' : 'es-ES';
+
+            return new Intl.NumberFormat(locale, {
+                style: 'currency',
+                currency: moneda,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(precio);
+        },
     }
 });
 </script>
