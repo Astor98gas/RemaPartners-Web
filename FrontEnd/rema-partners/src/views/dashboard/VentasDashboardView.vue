@@ -255,9 +255,9 @@ export default {
                         data: Array(12).fill(0),
                         backgroundColor: 'rgba(16, 185, 129, 0.6)', // Verde
                         borderColor: 'rgba(16, 185, 129, 1)',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        isCurrency: false // No es moneda, es cantidad
                     }],
-                    isCurrency: true,
                     currency: 'EUR'
                 };
             }
@@ -295,7 +295,8 @@ export default {
                         backgroundColor: 'rgba(16, 185, 129, 0.6)', // Verde
                         borderColor: 'rgba(16, 185, 129, 1)',
                         borderWidth: 1,
-                        yAxisID: 'y'
+                        yAxisID: 'y',
+                        isCurrency: false // No es moneda, es cantidad
                     },
                     {
                         label: t('sales.stats.amount'),
@@ -304,10 +305,10 @@ export default {
                         borderColor: 'rgba(79, 70, 229, 1)',
                         borderWidth: 1,
                         yAxisID: 'y1',
-                        hidden: true // Por defecto oculto para no saturar la vista
+                        hidden: true, // Por defecto oculto para no saturar la vista
+                        isCurrency: true // Sí es moneda
                     }
                 ],
-                isCurrency: true,
                 currency: 'EUR'
             };
         };
@@ -327,9 +328,9 @@ export default {
                         data: Array(12).fill(0),
                         backgroundColor: 'rgba(59, 130, 246, 0.6)', // Azul
                         borderColor: 'rgba(59, 130, 246, 1)',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        isCurrency: false // No es moneda, es cantidad
                     }],
-                    isCurrency: true,
                     currency: 'EUR'
                 };
             }
@@ -367,7 +368,8 @@ export default {
                         backgroundColor: 'rgba(59, 130, 246, 0.6)', // Azul
                         borderColor: 'rgba(59, 130, 246, 1)',
                         borderWidth: 1,
-                        yAxisID: 'y'
+                        yAxisID: 'y',
+                        isCurrency: false // No es moneda, es cantidad
                     },
                     {
                         label: t('sales.stats.amount'),
@@ -376,10 +378,10 @@ export default {
                         borderColor: 'rgba(124, 58, 237, 1)',
                         borderWidth: 1,
                         yAxisID: 'y1',
-                        hidden: true // Por defecto oculto para no saturar la vista
+                        hidden: true, // Por defecto oculto para no saturar la vista
+                        isCurrency: true // Sí es moneda
                     }
                 ],
-                isCurrency: true,
                 currency: 'EUR'
             };
         };

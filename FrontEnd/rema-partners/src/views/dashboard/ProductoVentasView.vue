@@ -286,7 +286,8 @@ export default {
                     backgroundColor: 'rgba(16, 185, 129, 0.6)', // Verde
                     borderColor: 'rgba(16, 185, 129, 1)',
                     borderWidth: 1,
-                    yAxisID: 'y'
+                    yAxisID: 'y',
+                    isCurrency: false // No es moneda, es cantidad
                 });
                 datasets.push({
                     label: t('sales.stats.amount'),
@@ -295,7 +296,8 @@ export default {
                     borderColor: 'rgba(124, 58, 237, 1)',
                     borderWidth: 1,
                     yAxisID: 'y1',
-                    hidden: true // Oculto por defecto
+                    hidden: true, // Oculto por defecto
+                    isCurrency: true // Sí es moneda
                 });
             } else {
                 // Si hay múltiples años, crear un dataset por año
@@ -319,6 +321,7 @@ export default {
                         backgroundColor: colors[index % colors.length].bg,
                         borderColor: colors[index % colors.length].border,
                         borderWidth: 1,
+                        isCurrency: false // Para múltiples años, solo mostramos cantidades
                     });
                 });
             }
@@ -326,7 +329,6 @@ export default {
             return {
                 labels: mesesTraducidos,
                 datasets: datasets,
-                isCurrency: true,
                 currency: productoInfo.value?.moneda || 'EUR'
             };
         };

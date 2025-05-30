@@ -127,26 +127,6 @@ export default {
             const options = {
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: props.tipoGrafico !== 'pie' ? {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0,
-                            callback: function (value) {
-                                // Si estamos mostrando valores monetarios
-                                if (props.datos.isCurrency) {
-                                    return new Intl.NumberFormat('es-ES', {
-                                        style: 'currency',
-                                        currency: props.datos.currency || 'EUR',
-                                        minimumFractionDigits: 0,
-                                        maximumFractionDigits: 0
-                                    }).format(value);
-                                }
-                                return value;
-                            }
-                        }
-                    }
-                } : undefined,
                 plugins: {
                     legend: {
                         display: props.datos.datasets && props.datos.datasets.length > 1
@@ -157,8 +137,8 @@ export default {
                                 const label = context.dataset.label || '';
                                 let value = context.raw;
 
-                                // Si estamos manejando valores monetarios
-                                if (props.datos.isCurrency) {
+                                // Verificar si este dataset específico debe mostrarse como moneda
+                                if (context.dataset.isCurrency) {
                                     value = new Intl.NumberFormat('es-ES', {
                                         style: 'currency',
                                         currency: props.datos.currency || 'EUR'
@@ -170,7 +150,39 @@ export default {
                             }
                         }
                     }
-                }
+                },
+                scales: props.tipoGrafico !== 'pie' ? {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            callback: function (value) {
+                                // Para el eje Y principal, no mostrar como moneda (cantidades)
+                                return value;
+                            }
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                // Para el eje Y secundario, mostrar como moneda (importes)
+                                return new Intl.NumberFormat('es-ES', {
+                                    style: 'currency',
+                                    currency: props.datos.currency || 'EUR',
+                                    minimumFractionDigits: 0,
+                                    maximumFractionDigits: 0
+                                }).format(value);
+                            }
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                } : undefined
             };
 
             try {
